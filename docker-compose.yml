@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: jagdamba_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-jagdamba_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-jagdamba_secret_pass_2026}
+      POSTGRES_DB: ${POSTGRES_DB:-jagdamba_mobile}
+    ports:
+      # Bind to localhost only to avoid exposing the database to the entire local network
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jagdamba_user} -d ${POSTGRES_DB:-jagdamba_mobile}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  # Named persistent volume preserving database data across container restarts
+  postgres_data:
+    name: jagdamba_postgres_data
