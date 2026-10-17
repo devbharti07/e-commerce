@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --primary: #14213d;
+    --primary-foreground: #ffffff;
+    --accent: #fca311;
+    --accent-foreground: #14213d;
+    --background: #f7f8fa;
+    --surface: #ffffff;
+    --surface-elevated: #f1f3f7;
+    --text-primary: #172033;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --success: #15803d;
+    --warning: #d97706;
+    --error: #dc2626;
+  }
+
+  .dark {
+    --primary: #fca311;
+    --primary-foreground: #0b1120;
+    --accent: #fca311;
+    --accent-foreground: #0b1120;
+    --background: #0b1120;
+    --surface: #111827;
+    --surface-elevated: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --border: #374151;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --error: #ef4444;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Custom Scrollbar for sleek B2B experience */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}

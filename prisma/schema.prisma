@@ -1,0 +1,304 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User role enum emulation for SQLite compatibility
+// Roles: CUSTOMER, OWNER
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  phone         String
+  businessName  String?
+  gstNumber     String?
+  role          String    @default("CUSTOMER") // "CUSTOMER" | "OWNER"
+  isVerified    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  addresses     Address[]
+  orders        Order[]
+  conversations Conversation[]
+  messages      Message[]
+  subscriptions NotificationSubscription[]
+  auditLogs     AuditLog[]
+}
+
+model Address {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName     String
+  mobileNumber String
+  houseOrShop  String
+  street       String
+  locality     String
+  city         String
+  state        String
+  pinCode      String
+  country      String   @default("India")
+  instructions String?
+  latitude     Float?
+  longitude    Float?
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Brand {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  logoUrl     String?
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products    Product[]
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products    Product[]
+}
+
+model Product {
+  id             String                 @id @default(cuid())
+  brandId        String
+  brand          Brand                  @relation(fields: [brandId], references: [id])
+  categoryId     String
+  category       Category               @relation(fields: [categoryId], references: [id])
+  name           String
+  slug           String                 @unique
+  model          String
+  modelNumber    String
+  description    String
+  condition      String                 @default("Brand New Sealed")
+  warrantyMonths Int                    @default(12)
+  returnDays     Int                    @default(7)
+  isPublished    Boolean                @default(true)
+  isArchived     Boolean                @default(false)
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  variants       ProductVariant[]
+  images         ProductImage[]
+  specifications ProductSpecification[]
+}
+
+model ProductVariant {
+  id                 String                     @id @default(cuid())
+  productId          String
+  product            Product                    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku                String                     @unique
+  ramGb              Int
+  storageGb          Int
+  colorName          String
+  colorHex           String                     @default("#000000")
+  region             String                     @default("India (IN)")
+  condition          String                     @default("Brand New")
+  baseWholesalePrice Int // in paise/cents (integer minor units, e.g. 5000000 = ₹50,000.00)
+  minOrderQty        Int                        @default(2)
+  maxOrderQty        Int?
+  lowStockThreshold  Int                        @default(5)
+  onHandStock        Int                        @default(0)
+  reservedStock      Int                        @default(0)
+  isAvailable        Boolean                    @default(true)
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  pricingTiers       PricingTier[]
+  inventoryMovements InventoryMovement[]
+  orderItems         OrderItem[]
+  subscriptions      NotificationSubscription[]
+  images             ProductImage[]
+}
+
+model ProductImage {
+  id           String          @id @default(cuid())
+  productId    String
+  product      Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId    String?
+  variant      ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  url          String
+  publicId     String?
+  displayOrder Int             @default(0)
+  isPrimary    Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+}
+
+model ProductSpecification {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  group     String   // e.g. "Display", "Performance", "Camera", "Battery", "Connectivity"
+  key       String   // e.g. "Screen Size", "Processor", "Battery Capacity"
+  value     String   // e.g. "6.7 inch AMOLED 120Hz", "Snapdragon 8 Gen 3", "5000 mAh"
+  createdAt DateTime @default(now())
+
+  @@unique([productId, group, key])
+}
+
+model PricingTier {
+  id        String         @id @default(cuid())
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  minQty    Int
+  maxQty    Int?
+  unitPrice Int // integer minor units
+  createdAt DateTime       @default(now())
+
+  @@unique([variantId, minQty])
+}
+
+model InventoryMovement {
+  id               String         @id @default(cuid())
+  variantId        String
+  variant          ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  changeQty        Int
+  reason           String         // "INITIAL_STOCK", "RESTOCK", "CORRECTION", "RESERVATION", "ORDER_CONFIRMED", "ORDER_CANCELLED_RELEASE"
+  balanceOnHand    Int
+  balanceReserved  Int
+  referenceOrderId String?
+  performedById    String?
+  createdAt        DateTime       @default(now())
+}
+
+model Order {
+  id                      String          @id @default(cuid())
+  orderNumber             String          @unique // e.g. "JM-2026-0001"
+  customerId              String
+  customer                User            @relation(fields: [customerId], references: [id])
+  status                  String          @default("REQUESTED") 
+  // Statuses: REQUESTED, UNDER_REVIEW, DISCUSSION_PENDING, CHANGES_REQUESTED, AWAITING_CUSTOMER_APPROVAL, CONFIRMED, PROCESSING, READY_FOR_DISPATCH, SHIPPED, DELIVERED, CANCELLED, REJECTED, EXPIRED
+  subtotal                Int // minor units
+  taxAmount               Int             @default(0)
+  deliveryFee             Int             @default(0)
+  totalAmount             Int // minor units
+  dealerNotes             String?
+  customerNotes           String?
+  shippingAddressSnapshot String // JSON snapshot of full address + map coordinates at order time
+  currentRevisionIndex    Int             @default(0)
+  confirmedAt             DateTime?
+  cancelledAt             DateTime?
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  items                   OrderItem[]
+  revisions               OrderRevision[]
+  conversation            Conversation?
+}
+
+model OrderItem {
+  id          String         @id @default(cuid())
+  orderId     String
+  order       Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId   String
+  variant     ProductVariant @relation(fields: [variantId], references: [id])
+  productName String
+  variantName String
+  sku         String
+  ramGb       Int
+  storageGb   Int
+  colorName   String
+  quantity    Int
+  unitPrice   Int // minor units snapshot
+  lineTotal   Int // minor units snapshot
+}
+
+model OrderRevision {
+  id              String   @id @default(cuid())
+  orderId         String
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  revisionNumber  Int
+  proposedByRole  String   // "OWNER" | "CUSTOMER"
+  proposedByUserId String
+  changesSummary  String
+  previousTotal   Int
+  newTotal        Int
+  status          String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  reviewedAt      DateTime?
+  createdAt       DateTime @default(now())
+}
+
+model Conversation {
+  id         String    @id @default(cuid())
+  orderId    String    @unique
+  order      Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   User      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  messages   Message[]
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  senderRole     String       // "CUSTOMER" | "OWNER"
+  content        String
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+}
+
+model NotificationSubscription {
+  id         String         @id @default(cuid())
+  variantId  String
+  variant    ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  customerId String?
+  customer   User?          @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  email      String
+  phone      String?
+  status     String         @default("ACTIVE") // ACTIVE, NOTIFIED, CANCELLED
+  createdAt  DateTime       @default(now())
+  notifiedAt DateTime?
+}
+
+model NotificationDelivery {
+  id        String   @id @default(cuid())
+  type      String   // "RESTOCK", "ORDER_STATUS", "DEALER_MESSAGE"
+  recipient String
+  title     String
+  body      String
+  status    String   @default("PENDING") // PENDING, SENT, FAILED
+  error     String?
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action      String   // e.g. "PRODUCT_UPDATE", "STOCK_ADJUSTMENT", "ORDER_CONFIRMATION"
+  entity      String
+  entityId    String
+  detailsJson String?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  isPublic  Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+}

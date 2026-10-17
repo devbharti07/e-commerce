@@ -1,0 +1,81 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { prisma } from "@/lib/prisma";
+import { verifyPassword, createSessionToken, AUTH_COOKIE_NAME } from "@/lib/auth";
+
+const LoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const result = LoginSchema.safeParse(body);
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: "Invalid email or password format" },
+        { status: 400 }
+      );
+    }
+
+    const { email, password } = result.data;
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+    const valid = await verifyPassword(password, user.passwordHash);
+    if (!valid) {
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+    const sessionPayload = {
+      userId: user.id,
+      email: user.email,
+      role: user.role as "CUSTOMER" | "OWNER",
+      name: user.name,
+    };
+
+    const token = await createSessionToken(sessionPayload);
+
+    const response = NextResponse.json({
+      success: true,
+      user: {
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        businessName: user.businessName,
+      },
+    });
+
+    response.cookies.set({
+      name: AUTH_COOKIE_NAME,
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: "/",
+    });
+
+    return response;
+  } catch (error) {
+    console.error("Login API error:", error);
+    return NextResponse.json(
+      { error: "Internal server error during authentication" },
+      { status: 500 }
+    );
+  }
+}
