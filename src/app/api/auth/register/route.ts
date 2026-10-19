@@ -3,14 +3,32 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, createSessionToken, AUTH_COOKIE_NAME } from "@/lib/auth";
 
-const RegisterSchema = z.object({
-  name: z.string().min(2, "Full name is required"),
-  email: z.string().email("Valid business email is required"),
-  phone: z.string().min(10, "Valid 10-digit phone number is required"),
-  businessName: z.string().min(2, "Shop / Retail business name is required"),
-  gstNumber: z.string().optional(),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
+const RegisterSchema = z
+  .object({
+    name: z.string().trim().min(2, "Full name must be at least 2 characters"),
+    email: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .email("Please provide a valid email address (e.g. yourname@gmail.com)"),
+    phone: z.string().trim().optional().default(""),
+    businessName: z.string().trim().optional(),
+    gstNumber: z.string().trim().optional(),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.confirmPassword !== undefined && data.confirmPassword !== "") {
+        return data.password === data.confirmPassword;
+      }
+      return true;
+    },
+    {
+      message: "Passwords do not match",
+      path: ["confirmPassword"],
+    }
+  );
 
 export async function POST(req: Request) {
   try {
@@ -25,31 +43,34 @@ export async function POST(req: Request) {
     }
 
     const { name, email, phone, businessName, gstNumber, password } = result.data;
+    const normalizedEmail = email.trim().toLowerCase();
 
+    // Check for duplicate account
     const existing = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
+      where: { email: normalizedEmail },
     });
 
     if (existing) {
       return NextResponse.json(
-        { error: "An account with this email already exists" },
-        { status: 400 }
+        { error: "An account with this email already exists. Please sign in instead." },
+        { status: 409 }
       );
     }
 
+    // Secure bcrypt hashing (12 rounds)
     const passwordHash = await hashPassword(password);
 
-    // Wholesale registrations default to CUSTOMER role (public admin registration is forbidden)
+    // Public signup is strictly locked to CUSTOMER role (privilege escalation prevented)
     const user = await prisma.user.create({
       data: {
-        name,
-        email: email.toLowerCase(),
-        phone,
-        businessName,
-        gstNumber: gstNumber || null,
+        name: name.trim(),
+        email: normalizedEmail,
+        phone: phone?.trim() || "+91 00000 00000",
+        businessName: businessName?.trim() || null,
+        gstNumber: gstNumber?.trim() || null,
         passwordHash,
         role: "CUSTOMER",
-        isVerified: true,
+        isVerified: false, // Accurately set to false until SMTP verification service is connected
       },
     });
 
@@ -87,7 +108,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Register API error:", error);
     return NextResponse.json(
-      { error: "Failed to create retailer account" },
+      { error: "Failed to create account. Please try again." },
       { status: 500 }
     );
   }

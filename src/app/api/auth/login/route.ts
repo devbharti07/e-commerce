@@ -4,8 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { verifyPassword, createSessionToken, AUTH_COOKIE_NAME } from "@/lib/auth";
 
 const LoginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  email: z.string().trim().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
 });
 
 export async function POST(req: Request) {
@@ -15,14 +15,16 @@ export async function POST(req: Request) {
 
     if (!result.success) {
       return NextResponse.json(
-        { error: "Invalid email or password format" },
+        { error: result.error.issues[0]?.message || "Invalid email or password format" },
         { status: 400 }
       );
     }
 
     const { email, password } = result.data;
+    const normalizedEmail = email.trim().toLowerCase();
+
     const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
+      where: { email: normalizedEmail },
     });
 
     if (!user) {

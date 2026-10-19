@@ -14,6 +14,7 @@ describe("E2E Wholesale Order Lifecycle & Security Verification", () => {
   let testVariant: any;
   let createdOrderId: string;
   let createdOrderNumber: string;
+  let fulfillmentOrderId: string;
 
   before(async () => {
     // Fetch seeded customer and owner
@@ -348,7 +349,7 @@ describe("E2E Wholesale Order Lifecycle & Security Verification", () => {
       }),
     });
     const newOrderData = await newOrderRes.json();
-    const fulfillmentOrderId = newOrderData.order.id;
+    fulfillmentOrderId = newOrderData.order.id;
 
     // Confirm order (reserves 3 units)
     await fetch(`${BASE_URL}/api/orders/${fulfillmentOrderId}/status`, {
@@ -447,5 +448,17 @@ describe("E2E Wholesale Order Lifecycle & Security Verification", () => {
     await prisma.inventoryMovement.deleteMany({ where: { variantId: restockVariant.id } });
     await prisma.auditLog.deleteMany({ where: { entityId: restockVariant.id } });
     await prisma.productVariant.delete({ where: { id: restockVariant.id } });
+  });
+
+  after(async () => {
+    const orderIds = [createdOrderId, fulfillmentOrderId].filter(Boolean);
+    for (const oid of orderIds) {
+      await prisma.inventoryMovement.deleteMany({ where: { referenceOrderId: oid } }).catch(() => {});
+      await prisma.message.deleteMany({ where: { conversation: { orderId: oid } } }).catch(() => {});
+      await prisma.conversation.deleteMany({ where: { orderId: oid } }).catch(() => {});
+      await prisma.orderRevision.deleteMany({ where: { orderId: oid } }).catch(() => {});
+      await prisma.orderItem.deleteMany({ where: { orderId: oid } }).catch(() => {});
+      await prisma.order.delete({ where: { id: oid } }).catch(() => {});
+    }
   });
 });

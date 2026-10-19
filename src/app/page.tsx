@@ -14,6 +14,7 @@ import {
   Layers,
   Truck,
   Sparkles,
+  Plus,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -234,10 +235,21 @@ export default async function HomePage() {
         </div>
 
         {products.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-xl p-8 text-center border border-slate-200 dark:border-slate-800 text-xs text-slate-500">
-            <Boxes className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-            <p className="font-semibold text-slate-700 dark:text-slate-300">No Products Published Yet</p>
-            <p className="mt-0.5">Check back soon or sign in as administrator to add models.</p>
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-10 text-center border border-slate-200 dark:border-slate-800 text-xs text-slate-500 shadow-2xs">
+            <Boxes className="w-10 h-10 text-slate-400 mx-auto mb-3" />
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">No Products Published Yet</p>
+            <p className="mt-1 text-slate-500 max-w-sm mx-auto">
+              Wholesale smartphone inventory is currently being updated. Authorized administrators can add new models in the admin console.
+            </p>
+            <div className="mt-4 flex items-center justify-center gap-3">
+              <Link
+                href="/admin/products"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold text-xs rounded-lg transition"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add Product (Admin)
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">

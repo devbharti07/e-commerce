@@ -17,7 +17,6 @@ async function main() {
       name: "Jagdamba Admin HQ",
       phone: "+91 98765 00000",
       businessName: "Jagdamba Mobile Distribution HQ",
-      passwordHash: adminPasswordHash,
       role: "OWNER",
       isVerified: true,
       isSuspended: false,
