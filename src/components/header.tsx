@@ -85,18 +85,17 @@ export function Header() {
       {/* Top Wholesale Trust Bar */}
       <div className="bg-slate-900 text-slate-300 text-[11px] sm:text-xs py-1 sm:py-1.5 px-3 sm:px-4 border-b border-slate-800">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-4 text-center sm:text-left">
-          <div className="flex items-center justify-center space-x-3 sm:space-x-4">
+          <div className="flex items-center justify-center">
             <span className="flex items-center gap-1.5 text-slate-300">
               <ShieldCheck className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>GST Input Credit Invoices</span>
             </span>
-            <span className="inline-flex items-center gap-1.5 text-slate-400">
+          </div>
+          <div className="flex items-center justify-center space-x-2 sm:space-x-3 text-slate-300">
+            <span className="inline-flex items-center gap-1.5">
               <PackageCheck className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>Direct Brand Sealed Packs</span>
             </span>
-          </div>
-          <div className="flex items-center justify-center space-x-2 sm:space-x-3 text-slate-400">
-            <span>Wholesale Desk: <strong className="text-slate-200"></strong></span>
             {user?.role === "OWNER" && (
               <Link
                 href="/admin"
