@@ -794,7 +794,7 @@ export function AdminOrderDetailClient({
                 Retailer Special Instructions
               </span>
               <p className="text-xs text-slate-700 dark:text-slate-300 italic leading-relaxed bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
-                "{order.customerNotes}"
+                &ldquo;{order.customerNotes}&rdquo;
               </p>
             </div>
           )}

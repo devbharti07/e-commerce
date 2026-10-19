@@ -4,9 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint"
+  },
+  "allowScripts": {
+    "unrs-resolver": true,
+    "prisma": true,
+    "@prisma/client": true,
+    "@prisma/engines": true
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
@@ -27,7 +33,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
+    "eslint": "^10.13.0",
     "eslint-config-next": "16.4.2",
     "tailwindcss": "^4",
     "typescript": "^5"

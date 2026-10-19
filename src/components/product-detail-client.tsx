@@ -9,7 +9,6 @@ import {
   Truck,
   RotateCcw,
   CheckCircle2,
-  AlertTriangle,
   Bell,
   ShoppingCart,
   ChevronRight,

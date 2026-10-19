@@ -63,7 +63,7 @@ export default function RegisterPage() {
             Register Retail Store Account
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Join Jagdamba Mobile's wholesale partner network for direct factory smartphone pricing
+            Join Jagdamba Mobile&apos;s wholesale partner network for direct factory smartphone pricing
           </p>
         </div>
 

@@ -16,42 +16,53 @@ import {
   Sparkles,
 } from "lucide-react";
 
-export default async function HomePage() {
-  // Fetch real brands from DB
-  const brands = await prisma.brand.findMany({
-    where: { isActive: true },
-    orderBy: { name: "asc" },
-  });
+export const dynamic = "force-dynamic";
 
-  // Fetch real published products with variants & pricing respecting featured and display order
-  const products = await prisma.product.findMany({
-    where: { isPublished: true, isArchived: false },
-    include: {
-      brand: true,
-      variants: {
-        where: { isAvailable: true },
+export default async function HomePage() {
+  let brands: any[] = [];
+  let products: any[] = [];
+  let totalVariantsCount = 0;
+  let siteSettings: any[] = [];
+
+  try {
+    const [fetchedBrands, fetchedProducts, count, settings] = await Promise.all([
+      prisma.brand.findMany({
+        where: { isActive: true },
+        orderBy: { name: "asc" },
+      }),
+      prisma.product.findMany({
+        where: { isPublished: true, isArchived: false },
         include: {
-          pricingTiers: {
-            orderBy: { minQty: "asc" },
+          brand: true,
+          variants: {
+            where: { isAvailable: true },
+            include: {
+              pricingTiers: {
+                orderBy: { minQty: "asc" },
+              },
+            },
+            orderBy: { baseWholesalePrice: "asc" },
+          },
+          images: {
+            orderBy: { displayOrder: "asc" },
           },
         },
-        orderBy: { baseWholesalePrice: "asc" },
-      },
-      images: {
-        orderBy: { displayOrder: "asc" },
-      },
-    },
-    take: 8,
-    orderBy: [{ isFeatured: "desc" }, { displayOrder: "asc" }, { createdAt: "desc" }],
-  });
+        take: 8,
+        orderBy: [{ isFeatured: "desc" }, { displayOrder: "asc" }, { createdAt: "desc" }],
+      }),
+      prisma.productVariant.count({
+        where: { isAvailable: true },
+      }),
+      prisma.siteSetting.findMany(),
+    ]);
 
-  // Calculate live wholesale statistics and site settings
-  const [totalVariantsCount, siteSettings] = await Promise.all([
-    prisma.productVariant.count({
-      where: { isAvailable: true },
-    }),
-    prisma.siteSetting.findMany(),
-  ]);
+    brands = fetchedBrands;
+    products = fetchedProducts;
+    totalVariantsCount = count;
+    siteSettings = settings;
+  } catch (error) {
+    console.warn("Database queries fallback during HomePage render:", error);
+  }
 
   const settingsMap: Record<string, string> = {};
   siteSettings.forEach((s) => {

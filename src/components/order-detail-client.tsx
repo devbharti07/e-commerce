@@ -7,16 +7,29 @@ import {
   Send,
   MessageSquare,
   Truck,
-  CheckCircle2,
   AlertTriangle,
   ArrowLeft,
   FileText,
-  Clock,
   History,
   Check,
   X,
   FileEdit,
 } from "lucide-react";
+
+interface AddressSnapshot {
+  fullName?: string;
+  mobileNumber?: string;
+  houseOrShop?: string;
+  street?: string;
+  locality?: string;
+  city?: string;
+  state?: string;
+  pinCode?: string;
+  country?: string;
+  instructions?: string;
+  latitude?: number;
+  longitude?: number;
+}
 
 interface OrderDetailClientProps {
   order: {
@@ -97,7 +110,7 @@ export function OrderDetailClient({
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
 
   // Parse Address Snapshot safely
-  let address: any = {};
+  let address: AddressSnapshot = {};
   try {
     address = JSON.parse(order.shippingAddressSnapshot);
   } catch {

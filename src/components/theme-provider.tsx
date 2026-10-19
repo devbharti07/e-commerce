@@ -17,14 +17,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("jm_theme") as Theme | null;
-    if (saved === "dark" || saved === "light") {
-      setTheme(saved);
-      document.documentElement.classList.toggle("dark", saved === "dark");
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setTheme("dark");
-      document.documentElement.classList.add("dark");
-    }
-    setMounted(true);
+    queueMicrotask(() => {
+      if (saved === "dark" || saved === "light") {
+        setTheme(saved);
+        document.documentElement.classList.toggle("dark", saved === "dark");
+      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        setTheme("dark");
+        document.documentElement.classList.add("dark");
+      }
+      setMounted(true);
+    });
   }, []);
 
   const toggleTheme = () => {

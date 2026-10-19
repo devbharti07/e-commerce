@@ -69,7 +69,7 @@ export function Footer() {
               </span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              India's verified wholesale smartphone distribution platform supplying mobile retailers,
+              India&apos;s verified wholesale smartphone distribution platform supplying mobile retailers,
               telecom shops, and regional dealer networks with live warehouse stock and volume tier pricing.
             </p>
             <p className="text-[11px] text-slate-500">GSTIN: 07AAAAA0000A1Z5</p>

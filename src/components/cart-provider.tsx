@@ -42,12 +42,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       const saved = localStorage.getItem("jm_cart");
       if (saved) {
-        setItems(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        queueMicrotask(() => {
+          setItems(parsed);
+          setLoaded(true);
+        });
+        return;
       }
     } catch (e) {
       console.error("Failed to load cart", e);
     }
-    setLoaded(true);
+    queueMicrotask(() => {
+      setLoaded(true);
+    });
   }, []);
 
   useEffect(() => {

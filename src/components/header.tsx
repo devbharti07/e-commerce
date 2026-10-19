@@ -16,7 +16,6 @@ import {
   PackageCheck,
   ChevronDown,
   Store,
-  ExternalLink,
 } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/components/auth-provider";
@@ -24,10 +23,6 @@ import { useCart } from "@/components/cart-provider";
 
 export function Header() {
   const pathname = usePathname();
-  if (pathname?.startsWith("/admin")) {
-    return null;
-  }
-
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
   const { totalQuantity } = useCart();
@@ -73,6 +68,10 @@ export function Header() {
       router.push("/catalog");
     }
   };
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { MapPin, Navigation, AlertCircle } from "lucide-react";
 
 export interface AddressFormData {
@@ -42,12 +42,14 @@ export function GoogleMapsAddressPicker({
     longitude: initialData?.longitude || 77.209,
   });
 
-  const [mapsLoaded, setMapsLoaded] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const mapRef = useRef<HTMLDivElement | null>(null);
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-  const updateField = (key: keyof AddressFormData, val: any) => {
+  const updateField = (
+    key: keyof AddressFormData,
+    val: AddressFormData[keyof AddressFormData]
+  ) => {
     const updated = { ...address, [key]: val };
     setAddress(updated);
     onChange(updated);

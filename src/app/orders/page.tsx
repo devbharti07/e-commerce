@@ -52,7 +52,7 @@ export default async function OrdersListPage() {
             No Bulk Orders Found
           </h2>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
-            You haven't submitted any wholesale order requests yet. Browse our inventory to request models.
+            You haven&apos;t submitted any wholesale order requests yet. Browse our inventory to request models.
           </p>
           <div className="pt-2">
             <Link
