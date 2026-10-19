@@ -81,7 +81,20 @@ export async function POST(req: Request) {
 
     return response;
   } catch (error) {
-    console.error("Login API error:", error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error("Login API error:", errorMsg);
+
+    if (
+      errorMsg.includes("does not exist in the current database") ||
+      errorMsg.includes("Can't reach database server") ||
+      errorMsg.includes("Authentication failed against database server")
+    ) {
+      return NextResponse.json(
+        { error: "Database service is initializing or unreachable. Please retry in a moment." },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json(
       { error: "Internal server error during authentication" },
       { status: 500 }

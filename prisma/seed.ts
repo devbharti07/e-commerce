@@ -560,12 +560,13 @@ async function main() {
     });
   }
 
-  // 8. Sample Order & Conversation (Idempotent by unique orderNumber)
-  const existingOrder = await prisma.order.findUnique({
-    where: { orderNumber: "JM-2026-0001" },
-  });
+  // 8. Sample Order & Conversation (Only seeded in non-production environments for integration test suite)
+  if (process.env.NODE_ENV !== "production") {
+    const existingOrder = await prisma.order.findUnique({
+      where: { orderNumber: "JM-2026-0001" },
+    });
 
-  if (!existingOrder) {
+    if (!existingOrder) {
     await prisma.order.create({
       data: {
         orderNumber: "JM-2026-0001",
@@ -627,6 +628,7 @@ async function main() {
       },
     });
   }
+}
 
   // 9. Site Settings (Idempotent upsert by unique key)
   const settings = [
