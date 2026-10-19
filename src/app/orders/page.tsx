@@ -24,7 +24,7 @@ export default async function OrdersListPage() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div>
           <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
@@ -71,7 +71,7 @@ export default async function OrdersListPage() {
             return (
               <div
                 key={order.id}
-                className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs"
+                className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs"
               >
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2.5">
@@ -100,7 +100,7 @@ export default async function OrdersListPage() {
                   )}
                 </div>
 
-                <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 dark:border-slate-800">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between md:justify-end gap-3 sm:gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 dark:border-slate-800">
                   <div className="text-left md:text-right">
                     <p className="text-[10px] uppercase font-medium text-slate-400">
                       Estimated Total
@@ -112,7 +112,7 @@ export default async function OrdersListPage() {
 
                   <Link
                     href={`/orders/${order.id}`}
-                    className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-medium rounded-lg transition flex items-center gap-1.5"
+                    className="px-3.5 py-2.5 sm:py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-medium rounded-lg transition flex items-center justify-center gap-1.5 text-center"
                   >
                     <MessageSquare className="w-3.5 h-3.5" />
                     Open Order & Chat

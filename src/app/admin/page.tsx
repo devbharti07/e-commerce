@@ -175,19 +175,19 @@ export default async function AdminDashboardPage() {
 
       {/* Actionable Alerts (Shown only when genuine attention is required) */}
       {(pendingOrdersCount > 0 || outOfStockVariants.length > 0 || lowStockVariants.length > 0) && (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {pendingOrdersCount > 0 && (
-            <div className="flex items-center justify-between p-3.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-xl text-xs text-amber-900 dark:text-amber-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 sm:p-3.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-xl text-xs text-amber-900 dark:text-amber-200">
               <div className="flex items-center gap-2.5 min-w-0">
                 <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                <span className="truncate">
+                <span>
                   <strong>{pendingOrdersCount} pending wholesale requests</strong> worth{" "}
                   <span className="tabular-nums font-semibold">{formatCurrency(pendingRequestsValue)}</span> awaiting dealer price confirmation.
                 </span>
               </div>
               <Link
                 href="/admin/orders"
-                className="font-semibold underline hover:no-underline ml-3 shrink-0 flex items-center gap-1 text-amber-700 dark:text-amber-400"
+                className="font-semibold underline hover:no-underline shrink-0 flex items-center gap-1 text-amber-700 dark:text-amber-400 self-end sm:self-auto"
               >
                 Review Orders &rarr;
               </Link>
@@ -195,16 +195,16 @@ export default async function AdminDashboardPage() {
           )}
 
           {(outOfStockVariants.length > 0 || lowStockVariants.length > 0) && (
-            <div className="flex items-center justify-between p-3.5 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 rounded-xl text-xs text-rose-900 dark:text-rose-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 sm:p-3.5 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 rounded-xl text-xs text-rose-900 dark:text-rose-200">
               <div className="flex items-center gap-2.5 min-w-0">
                 <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
-                <span className="truncate">
+                <span>
                   <strong>Stock Warning:</strong> {outOfStockVariants.length} models out of stock, {lowStockVariants.length} low on inventory.
                 </span>
               </div>
               <Link
                 href="/admin/inventory"
-                className="font-semibold underline hover:no-underline ml-3 shrink-0 flex items-center gap-1 text-rose-700 dark:text-rose-400"
+                className="font-semibold underline hover:no-underline shrink-0 flex items-center gap-1 text-rose-700 dark:text-rose-400 self-end sm:self-auto"
               >
                 Adjust Stock &rarr;
               </Link>
@@ -265,7 +265,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Operational Stats Strip (4 Compact Cards) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
           <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
             <span>Available Inventory</span>
@@ -348,7 +348,7 @@ export default async function AdminDashboardPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="min-w-[640px] w-full text-left text-xs">
                 <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-200 dark:border-slate-800">
                   <tr>
                     <th className="py-2.5 px-4">Order #</th>

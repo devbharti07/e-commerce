@@ -365,7 +365,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 </h3>
                 <span className="text-[11px] text-slate-400">Live Tier Auto-Calculation</span>
               </div>
-              <div className="grid grid-cols-3 gap-2.5 text-center">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-center">
                 {selectedVariant.pricingTiers.map((tier) => {
                   const isActive =
                     quantity >= tier.minQty &&
@@ -422,7 +422,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
             {availableUnits > 0 ? (
               <div className="space-y-3.5">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                   <div>
                     <label className="text-xs font-semibold block text-slate-200">
                       Order Quantity (Min: {selectedVariant.minOrderQty} pcs)
@@ -432,7 +432,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 bg-slate-800 p-1 rounded-lg border border-slate-700">
+                  <div className="flex items-center gap-1.5 bg-slate-800 p-1 rounded-lg border border-slate-700 self-start sm:self-auto">
                     <button
                       onClick={() =>
                         setQuantity((q) =>

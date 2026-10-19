@@ -188,10 +188,75 @@ export function AdminOrdersClient({ initialOrders }: AdminOrdersClientProps) {
         </div>
       </div>
 
-      {/* Orders Table */}
+      {/* Orders Container: Cards for small phones, table for tablet/desktop */}
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xs">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+        {/* Mobile Cards List (< sm) */}
+        <div className="block sm:hidden divide-y divide-slate-100 dark:divide-slate-800">
+          {filteredOrders.length === 0 ? (
+            <div className="py-12 px-4 text-center text-slate-400 text-xs">
+              <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              No orders match your filter criteria.
+            </div>
+          ) : (
+            filteredOrders.map((ord) => (
+              <div key={ord.id} className="p-4 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <span className="font-bold text-xs text-slate-900 dark:text-white">
+                      #{ord.orderNumber}
+                    </span>
+                    <p className="text-[10px] text-slate-400 mt-0.5">
+                      {formatDateTime(ord.createdAt)}
+                    </p>
+                  </div>
+                  <span
+                    className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide ${getStatusBadge(
+                      ord.status
+                    )}`}
+                  >
+                    {ord.status.replace(/_/g, " ")}
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg space-y-1 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">
+                      {ord.businessName || ord.customerName}
+                    </span>
+                    <span className="text-[11px] text-slate-400 font-mono">
+                      {ord.customerPhone}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                    {ord.totalUnits} Units • {ord.itemsSummary}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <div>
+                    <span className="text-[10px] uppercase font-semibold text-slate-400 block">
+                      Order Total
+                    </span>
+                    <span className="font-bold text-sm text-slate-900 dark:text-slate-100 tabular-nums">
+                      {formatCurrency(ord.totalAmount)}
+                    </span>
+                  </div>
+                  <Link
+                    href={`/admin/orders/${ord.id}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white text-xs font-semibold rounded-lg transition shadow-2xs"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Manage Order</span>
+                  </Link>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Full Data Table (>= sm) */}
+        <div className="hidden sm:block overflow-x-auto">
+          <table className="min-w-[760px] w-full text-left text-xs">
             <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-slate-200 dark:border-slate-800">
               <tr>
                 <th className="py-2.5 px-4">Order # & Date</th>

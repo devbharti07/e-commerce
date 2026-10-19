@@ -71,7 +71,7 @@ export function AdminLoginClient() {
   };
 
   return (
-    <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-8 shadow-xs space-y-6">
+    <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 sm:p-8 shadow-xs space-y-6">
       {/* Top Branding */}
       <div className="text-center space-y-2">
         <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 flex items-center justify-center mx-auto border border-slate-200 dark:border-slate-700">

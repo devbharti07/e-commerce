@@ -60,6 +60,13 @@ export function Header() {
     };
   }, [loginDropdownOpen]);
 
+  // Close mobile navigation menu on route transition
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setMobileMenuOpen(false);
+  }
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -76,24 +83,24 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
       {/* Top Wholesale Trust Bar */}
-      <div className="bg-slate-900 text-slate-300 text-xs py-1.5 px-4 border-b border-slate-800">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+      <div className="bg-slate-900 text-slate-300 text-[11px] sm:text-xs py-1 sm:py-1.5 px-3 sm:px-4 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-4 text-center sm:text-left">
+          <div className="flex items-center justify-center space-x-3 sm:space-x-4">
             <span className="flex items-center gap-1.5 text-slate-300">
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-              <span>GST Input Credit Tax Invoices</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span>GST Input Credit Invoices</span>
             </span>
-            <span className="hidden sm:inline-flex items-center gap-1.5 text-slate-400">
-              <PackageCheck className="w-3.5 h-3.5 text-amber-400" />
+            <span className="inline-flex items-center gap-1.5 text-slate-400">
+              <PackageCheck className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>Direct Brand Sealed Packs</span>
             </span>
           </div>
-          <div className="flex items-center space-x-3 text-slate-400">
+          <div className="flex items-center justify-center space-x-2 sm:space-x-3 text-slate-400">
             <span>Wholesale Desk: <strong className="text-slate-200">+91 98765 43210</strong></span>
             {user?.role === "OWNER" && (
               <Link
                 href="/admin"
-                className="bg-amber-400 text-slate-900 font-bold px-2 py-0.5 rounded text-[11px] hover:bg-amber-300 transition"
+                className="bg-amber-400 text-slate-900 font-bold px-2 py-0.5 rounded text-[11px] hover:bg-amber-300 transition shrink-0"
               >
                 Owner Dashboard
               </Link>
@@ -317,7 +324,7 @@ export function Header() {
 
                 <Link
                   href="/register"
-                  className="bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-xs transition"
+                  className="hidden sm:inline-block bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-xs transition"
                 >
                   Dealer Register
                 </Link>
@@ -352,14 +359,14 @@ export function Header() {
               <Link
                 href="/catalog"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-xs font-semibold text-slate-800 dark:text-slate-200 py-2 px-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md"
+                className="text-xs font-semibold text-slate-800 dark:text-slate-200 py-2.5 px-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
               >
                 Browse All Smartphones
               </Link>
               <Link
                 href="/orders"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-xs font-semibold text-slate-800 dark:text-slate-200 py-2 px-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md"
+                className="text-xs font-semibold text-slate-800 dark:text-slate-200 py-2.5 px-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
               >
                 My Orders & Chat
               </Link>
@@ -367,15 +374,45 @@ export function Header() {
                 <Link
                   href="/admin"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-xs font-bold text-amber-500 py-2 px-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md"
+                  className="text-xs font-bold text-amber-500 py-2.5 px-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
                 >
                   Owner Dashboard
                 </Link>
               )}
             </div>
 
-            {/* Mobile Logged-out Sign In Options */}
-            {!user && (
+            {/* Mobile Logged-in User Account Actions */}
+            {user ? (
+              <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="px-3 py-2 bg-slate-50 dark:bg-slate-800/60 rounded-lg">
+                  <p className="text-[10px] text-slate-400 font-medium">Signed in as</p>
+                  <p className="font-semibold text-xs truncate text-slate-900 dark:text-white">
+                    {user.name} ({user.email})
+                  </p>
+                  <span className="inline-block mt-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                    {user.role}
+                  </span>
+                </div>
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 text-xs font-semibold text-slate-800 dark:text-slate-200 py-2.5 px-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
+                >
+                  <UserIcon className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Retailer Profile</span>
+                </Link>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    logout();
+                  }}
+                  className="w-full text-left flex items-center gap-2 text-xs font-semibold text-rose-600 py-2.5 px-3 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition"
+                >
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            ) : (
+              /* Mobile Logged-out Sign In Options */
               <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">
                   Sign In Options
@@ -384,7 +421,7 @@ export function Header() {
                   <Link
                     href="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+                    className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
                   >
                     <Store className="w-3.5 h-3.5 text-blue-500" />
                     <span>User Sign In</span>
@@ -392,7 +429,7 @@ export function Header() {
                   <Link
                     href="/admin/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-slate-900 text-amber-400 hover:bg-slate-800 transition border border-slate-700"
+                    className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-semibold rounded-lg bg-slate-900 text-amber-400 hover:bg-slate-800 transition border border-slate-700"
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
                     <span>Admin Sign In</span>
@@ -401,7 +438,7 @@ export function Header() {
                 <Link
                   href="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block text-center py-2 bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-bold rounded-lg transition"
+                  className="block text-center py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-bold rounded-lg transition"
                 >
                   Register Retail Store
                 </Link>

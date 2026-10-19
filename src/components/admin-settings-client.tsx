@@ -105,7 +105,7 @@ export function AdminSettingsClient({ initialSettings }: AdminSettingsClientProp
       </div>
 
       {/* BUSINESS DETAILS */}
-      <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
         <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
           <Building className="w-4 h-4 text-slate-500" />
           Store Identity & Contact Details
@@ -179,7 +179,7 @@ export function AdminSettingsClient({ initialSettings }: AdminSettingsClientProp
       </div>
 
       {/* COMMERCIAL & WHOLESALE POLICIES */}
-      <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
         <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
           <FileText className="w-4 h-4 text-slate-500" />
           Wholesale Trade Terms & Invoicing Policy
@@ -201,7 +201,7 @@ export function AdminSettingsClient({ initialSettings }: AdminSettingsClientProp
       </div>
 
       {/* SEO METADATA */}
-      <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
         <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
           <Search className="w-4 h-4 text-slate-500" />
           Search Engine Optimization (SEO) Metadata

@@ -126,7 +126,7 @@ export function AdminRetailersClient({ initialRetailers }: AdminRetailersClientP
       {/* Table */}
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+          <table className="w-full min-w-[720px] text-left text-xs text-slate-600 dark:text-slate-300">
             <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 uppercase font-semibold text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-800">
               <tr>
                 <th className="px-5 py-3.5">Retail Business & Contact</th>

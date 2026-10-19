@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   Clock,
   Phone,
+  ArrowLeft,
 } from "lucide-react";
 
 interface ConversationSummary {
@@ -49,6 +50,7 @@ export function AdminMessagesClient({ initialConversations }: AdminMessagesClien
   const [activeConvId, setActiveConvId] = useState<string | null>(
     initialConversations[0]?.id || null
   );
+  const [mobileChatOpen, setMobileChatOpen] = useState(false);
 
   const [activeMessages, setActiveMessages] = useState<MessageItem[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -175,9 +177,13 @@ export function AdminMessagesClient({ initialConversations }: AdminMessagesClien
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs h-[750px] flex flex-col md:flex-row">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs h-[600px] sm:h-[700px] md:h-[750px] flex flex-col md:flex-row">
       {/* LEFT: Conversation List */}
-      <div className="w-full md:w-80 lg:w-96 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full bg-slate-50/50 dark:bg-slate-900/50">
+      <div
+        className={`${
+          mobileChatOpen ? "hidden md:flex" : "flex"
+        } w-full md:w-80 lg:w-96 border-r border-slate-200 dark:border-slate-800 flex-col h-full bg-slate-50/50 dark:bg-slate-900/50`}
+      >
         {/* Search header */}
         <div className="p-3.5 border-b border-slate-200 dark:border-slate-800">
           <div className="relative">
@@ -205,7 +211,10 @@ export function AdminMessagesClient({ initialConversations }: AdminMessagesClien
               return (
                 <button
                   key={c.id}
-                  onClick={() => setActiveConvId(c.id)}
+                  onClick={() => {
+                    setActiveConvId(c.id);
+                    setMobileChatOpen(true);
+                  }}
                   className={`w-full text-left p-3.5 transition flex flex-col gap-1 border-l-2 ${
                     active
                       ? "bg-white dark:bg-slate-800/80 border-slate-900 dark:border-slate-100 shadow-2xs"
@@ -241,23 +250,35 @@ export function AdminMessagesClient({ initialConversations }: AdminMessagesClien
       </div>
 
       {/* RIGHT: Chat Window */}
-      <div className="flex-1 flex flex-col h-full bg-white dark:bg-slate-900">
+      <div
+        className={`${
+          !mobileChatOpen ? "hidden md:flex" : "flex"
+        } flex-1 flex-col h-full bg-white dark:bg-slate-900`}
+      >
         {activeConversation ? (
           <>
             {/* Chat Header */}
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold flex items-center justify-center text-xs shrink-0">
+            <div className="p-3 sm:p-4 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white dark:bg-slate-900">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <button
+                  type="button"
+                  onClick={() => setMobileChatOpen(false)}
+                  className="md:hidden p-1.5 -ml-1 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition shrink-0"
+                  title="Back to conversation list"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold flex items-center justify-center text-xs shrink-0">
                   {activeConversation.customerName.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                    {activeConversation.businessName || activeConversation.customerName}
+                  <h3 className="font-semibold text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                    <span>{activeConversation.businessName || activeConversation.customerName}</span>
                     <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                       {activeConversation.orderStatus}
                     </span>
                   </h3>
-                  <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+                  <div className="flex items-center gap-2 text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400">
                     <span>Retailer: {activeConversation.customerName}</span>
                     <span>•</span>
                     <span className="font-mono">{activeConversation.customerPhone}</span>
@@ -265,10 +286,10 @@ export function AdminMessagesClient({ initialConversations }: AdminMessagesClien
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 self-start sm:self-auto pl-9 sm:pl-0">
                 <Link
                   href={`/admin/orders/${activeConversation.orderId}`}
-                  className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-medium rounded-lg transition flex items-center gap-1.5"
+                  className="px-2.5 sm:px-3 py-1 sm:py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-medium rounded-lg transition flex items-center gap-1.5"
                 >
                   Order #{activeConversation.orderNumber}
                   <ExternalLink className="w-3.5 h-3.5" />

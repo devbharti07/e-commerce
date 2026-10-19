@@ -102,7 +102,7 @@ export function AdminProfileClient({ initialUser }: AdminProfileClientProps) {
       {/* Profile & Password Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Administrator Profile */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
+        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
               <UserCheck className="w-4 h-4 text-slate-500" />
@@ -171,7 +171,7 @@ export function AdminProfileClient({ initialUser }: AdminProfileClientProps) {
         </div>
 
         {/* Change Password */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
+        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
               <KeyRound className="w-4 h-4 text-slate-500" />
@@ -247,7 +247,7 @@ export function AdminProfileClient({ initialUser }: AdminProfileClientProps) {
       </div>
 
       {/* SYSTEM INFRASTRUCTURE AUDIT CARD */}
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
         <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
           <Server className="w-4 h-4 text-slate-500" />
           Infrastructure & Security Baseline

@@ -307,7 +307,7 @@ export function OrderDetailClient({
   const statusBadge = getStatusBadge(status);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
       {/* Back to Orders Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-3">
@@ -475,8 +475,8 @@ export function OrderDetailClient({
 
       {/* CUSTOMER: Pending Revision Alert with Action Buttons */}
       {currentUserRole === "CUSTOMER" && pendingRevision && (
-        <div className="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-300 dark:border-amber-800 rounded-xl p-5 space-y-4 shadow-xs">
-          <div className="flex items-start justify-between gap-4">
+        <div className="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-300 dark:border-amber-800 rounded-xl p-4 sm:p-5 space-y-4 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-900/50 text-amber-900 dark:text-amber-200 text-xs font-medium">
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
@@ -517,7 +517,7 @@ export function OrderDetailClient({
         {/* Left Column: Order Items, Revisions History, & Shipping Address Snapshot */}
         <div className="lg:col-span-7 space-y-6">
           {/* Order Items Table */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 space-y-4 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 space-y-4 shadow-xs">
             <h2 className="font-semibold text-sm text-slate-900 dark:text-white flex items-center gap-2">
               <FileText className="w-4 h-4 text-slate-500" />
               Wholesale Order Line Items
@@ -566,7 +566,7 @@ export function OrderDetailClient({
 
           {/* Revisions History Log (if any revisions exist) */}
           {revisions.length > 0 && (
-            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 space-y-4 shadow-xs">
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 space-y-4 shadow-xs">
               <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
                 <History className="w-4 h-4 text-slate-500" />
                 Order Revisions History
@@ -609,7 +609,7 @@ export function OrderDetailClient({
           )}
 
           {/* Delivery Details Snapshot */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 space-y-3 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 space-y-3 shadow-xs">
             <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
               <Truck className="w-4 h-4 text-slate-500" />
               Shipping Destination & Transit Instructions
@@ -641,7 +641,7 @@ export function OrderDetailClient({
 
         {/* Right Column: Persistent Order Dealer Chat */}
         <div className="lg:col-span-5">
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col h-[560px] shadow-xs overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col h-[480px] sm:h-[560px] shadow-xs overflow-hidden">
             {/* Chat Header */}
             <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">

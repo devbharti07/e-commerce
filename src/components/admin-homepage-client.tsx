@@ -129,13 +129,13 @@ export function AdminHomepageClient({
       </div>
 
       {/* ANNOUNCEMENT BANNER SECTION */}
-      <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800">
           <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
-            <Megaphone className="w-4 h-4 text-slate-500" />
+            <Megaphone className="w-4 h-4 text-slate-500 shrink-0" />
             Header Promotional Announcement Banner
           </h3>
-          <label className="flex items-center gap-2 cursor-pointer text-xs">
+          <label className="flex items-center gap-2 cursor-pointer text-xs self-start sm:self-auto">
             <input
               type="checkbox"
               checked={announcementActive}
@@ -160,10 +160,10 @@ export function AdminHomepageClient({
       </div>
 
       {/* HOMEPAGE CONTENT INSTRUCTIONS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs">
           <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
-            <Truck className="w-4 h-4 text-slate-500" />
+            <Truck className="w-4 h-4 text-slate-500 shrink-0" />
             Delivery & Transit Information
           </h3>
           <textarea
@@ -174,9 +174,9 @@ export function AdminHomepageClient({
           />
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs">
+        <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs">
           <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-slate-500" />
+            <FileText className="w-4 h-4 text-slate-500 shrink-0" />
             Wholesale Ordering Instructions
           </h3>
           <textarea
@@ -189,10 +189,10 @@ export function AdminHomepageClient({
       </div>
 
       {/* FEATURED SMARTPHONES & ORDERING */}
-      <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-3 border-b border-slate-100 dark:border-slate-800">
           <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
-            <Smartphone className="w-4 h-4 text-slate-500" />
+            <Smartphone className="w-4 h-4 text-slate-500 shrink-0" />
             Homepage Featured Models & Display Ordering
           </h3>
           <span className="text-[11px] text-slate-400">

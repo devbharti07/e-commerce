@@ -87,6 +87,13 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
     };
   }, [profileDropdownOpen]);
 
+  // Close mobile sidebar on route transition
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setMobileOpen(false);
+  }
+
   const navigationGroups: { title: string; items: NavItem[] }[] = [
     {
       title: "Overview",
@@ -521,7 +528,7 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto">{children}</div>
+        <div className="flex-1 p-3 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto">{children}</div>
       </main>
     </div>
   );

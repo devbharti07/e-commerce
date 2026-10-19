@@ -116,9 +116,9 @@ export function Footer() {
         </div>
 
         {/* Bottom Rights */}
-        <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+        <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3 text-center sm:text-left">
           <p>© 2026 Jagdamba Mobile Distribution. All rights reserved.</p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
             <Link href="/catalog" className="hover:text-slate-400 transition">Catalog</Link>
             <span>•</span>
             <Link href="/login" className="hover:text-slate-400 transition">Retailer Login</Link>

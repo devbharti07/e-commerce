@@ -82,7 +82,7 @@ export function GoogleMapsAddressPicker({
   return (
     <div className="space-y-6">
       {/* Map Header / Status */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h3 className="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-2">
             <MapPin className="w-4 h-4 text-[#FCA311]" />
@@ -97,7 +97,7 @@ export function GoogleMapsAddressPicker({
           type="button"
           onClick={handleDetectLocation}
           disabled={isLocating}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs font-semibold rounded-lg text-gray-700 dark:text-gray-300 transition"
+          className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs font-semibold rounded-lg text-gray-700 dark:text-gray-300 transition"
         >
           <Navigation className={`w-3.5 h-3.5 ${isLocating ? "animate-spin" : ""}`} />
           {isLocating ? "Detecting..." : "Detect Current Location"}

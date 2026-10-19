@@ -82,7 +82,7 @@ export function AdminAuditLogsClient({ initialLogs }: AdminAuditLogsClientProps)
   return (
     <div className="space-y-6">
       {/* Security Notice Banner */}
-      <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex items-center justify-between gap-4 text-xs">
+      <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 text-xs">
         <div className="flex items-center gap-2.5">
           <Lock className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" />
           <span className="text-slate-700 dark:text-slate-300">
@@ -128,7 +128,7 @@ export function AdminAuditLogsClient({ initialLogs }: AdminAuditLogsClientProps)
       {/* Logs Table */}
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+          <table className="w-full min-w-[700px] text-left text-xs text-slate-600 dark:text-slate-300">
             <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 uppercase font-semibold text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-800">
               <tr>
                 <th className="px-5 py-3.5">Timestamp</th>
@@ -205,8 +205,8 @@ export function AdminAuditLogsClient({ initialLogs }: AdminAuditLogsClientProps)
 
       {/* VIEW PAYLOAD MODAL */}
       {activeModalLog && (
-        <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+        <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-3 sm:p-4 backdrop-blur-xs">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">

@@ -6,6 +6,12 @@ import { CartProvider } from "@/components/cart-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata: Metadata = {
   title: "Jagdamba Mobile | Wholesale Smartphone Distribution Platform",
   description: "B2B wholesale smartphone marketplace for mobile retailers, resellers, and dealers. Live inventory, genuine brand-sealed stock, and volume tier pricing.",

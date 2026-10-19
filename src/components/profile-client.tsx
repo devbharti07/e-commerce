@@ -75,7 +75,7 @@ export function ProfileClient({ user, addresses }: ProfileClientProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
       {/* Left Column: Profile Form */}
-      <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 space-y-6">
+      <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 space-y-6">
         <div>
           <h2 className="font-bold text-base text-gray-900 dark:text-white flex items-center gap-2">
             <Store className="w-4 h-4 text-[#FCA311]" />
@@ -191,7 +191,7 @@ export function ProfileClient({ user, addresses }: ProfileClientProps) {
       </div>
 
       {/* Right Column: Saved Addresses */}
-      <div className="lg:col-span-5 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+      <div className="lg:col-span-5 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 space-y-4">
         <div>
           <h2 className="font-bold text-base text-gray-900 dark:text-white flex items-center gap-2">
             <MapPin className="w-4 h-4 text-[#FCA311]" />

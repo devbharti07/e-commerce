@@ -113,24 +113,24 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
         </div>
 
         {/* Quick Search inside catalog */}
-        <form method="GET" action="/catalog" className="flex items-center gap-2">
+        <form method="GET" action="/catalog" className="flex items-center gap-2 w-full sm:w-auto">
           {brandSlug && <input type="hidden" name="brand" value={brandSlug} />}
           {categorySlug && <input type="hidden" name="category" value={categorySlug} />}
           {sort && <input type="hidden" name="sort" value={sort} />}
           {inStockOnly && <input type="hidden" name="inStockOnly" value="true" />}
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-initial">
             <input
               type="text"
               name="q"
               defaultValue={q}
               placeholder="Search model, specs, SKU..."
-              className="bg-white dark:bg-slate-900 text-xs rounded-lg pl-8 pr-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-slate-400 shadow-2xs w-48 sm:w-60"
+              className="bg-white dark:bg-slate-900 text-xs rounded-lg pl-8 pr-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-slate-400 shadow-2xs w-full sm:w-60"
             />
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
           </div>
           <button
             type="submit"
-            className="px-3 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-semibold rounded-lg shadow-2xs transition"
+            className="px-3 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-semibold rounded-lg shadow-2xs transition shrink-0"
           >
             Search
           </button>
@@ -140,131 +140,145 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
         {/* Filters Sidebar */}
         <aside className="space-y-4">
-          <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-5 shadow-2xs">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-              <h3 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-                <Filter className="w-3.5 h-3.5 text-amber-500" />
-                Filter Catalog
-              </h3>
-              {(brandSlug || categorySlug || q || inStockOnly) && (
-                <Link
-                  href="/catalog"
-                  className="text-xs text-rose-600 hover:underline font-semibold"
-                >
-                  Reset All
-                </Link>
-              )}
-            </div>
-
-            {/* Brand Filter */}
-            <div>
-              <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-                Brands
-              </h4>
-              <div className="space-y-1 text-xs">
-                <Link
-                  href={`/catalog?${new URLSearchParams({
-                    ...(q ? { q } : {}),
-                    ...(categorySlug ? { category: categorySlug } : {}),
-                    ...(inStockOnly ? { inStockOnly: "true" } : {}),
-                    ...(sort ? { sort } : {}),
-                  }).toString()}`}
-                  className={`block px-2.5 py-1.5 rounded-md font-medium transition ${
-                    !brandSlug
-                      ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-semibold"
-                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  }`}
-                >
-                  All Brands
-                </Link>
-                {brands.map((b) => (
-                  <Link
-                    key={b.id}
-                    href={`/catalog?${new URLSearchParams({
-                      ...(q ? { q } : {}),
-                      brand: b.slug,
-                      ...(categorySlug ? { category: categorySlug } : {}),
-                      ...(inStockOnly ? { inStockOnly: "true" } : {}),
-                      ...(sort ? { sort } : {}),
-                    }).toString()}`}
-                    className={`block px-2.5 py-1.5 rounded-md font-medium transition ${
-                      brandSlug === b.slug
-                        ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-semibold"
-                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                    }`}
-                  >
-                    {b.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Category / Segment Filter */}
-            {categories.length > 0 && (
-              <div>
-                <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-                  Category
-                </h4>
-                <div className="space-y-1 text-xs">
-                  <Link
-                    href={`/catalog?${new URLSearchParams({
-                      ...(q ? { q } : {}),
-                      ...(brandSlug ? { brand: brandSlug } : {}),
-                      ...(inStockOnly ? { inStockOnly: "true" } : {}),
-                      ...(sort ? { sort } : {}),
-                    }).toString()}`}
-                    className={`block px-2.5 py-1.5 rounded-md font-medium transition ${
-                      !categorySlug
-                        ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-semibold"
-                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                    }`}
-                  >
-                    All Segments
-                  </Link>
-                  {categories.map((c) => (
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+            <details className="group lg:open" open>
+              <summary className="p-4 sm:p-5 flex items-center justify-between cursor-pointer list-none border-b border-slate-100 dark:border-slate-800 select-none">
+                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                  <Filter className="w-3.5 h-3.5 text-amber-500" />
+                  Filter Catalog
+                  {(brandSlug || categorySlug || q || inStockOnly) && (
+                    <span className="ml-1 px-1.5 py-0.5 text-[10px] font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 rounded-full">
+                      Active
+                    </span>
+                  )}
+                </h3>
+                <div className="flex items-center gap-2">
+                  {(brandSlug || categorySlug || q || inStockOnly) && (
                     <Link
-                      key={c.id}
+                      href="/catalog"
+                      className="text-xs text-rose-600 hover:underline font-semibold"
+                    >
+                      Reset All
+                    </Link>
+                  )}
+                  <span className="lg:hidden text-xs text-slate-400 group-open:rotate-180 transition-transform duration-200">
+                    ▼
+                  </span>
+                </div>
+              </summary>
+
+              <div className="p-4 sm:p-5 space-y-5">
+                {/* Brand Filter */}
+                <div>
+                  <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                    Brands
+                  </h4>
+                  <div className="space-y-1 text-xs">
+                    <Link
                       href={`/catalog?${new URLSearchParams({
                         ...(q ? { q } : {}),
-                        ...(brandSlug ? { brand: brandSlug } : {}),
-                        category: c.slug,
+                        ...(categorySlug ? { category: categorySlug } : {}),
                         ...(inStockOnly ? { inStockOnly: "true" } : {}),
                         ...(sort ? { sort } : {}),
                       }).toString()}`}
                       className={`block px-2.5 py-1.5 rounded-md font-medium transition ${
-                        categorySlug === c.slug
+                        !brandSlug
                           ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-semibold"
                           : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                       }`}
                     >
-                      {c.name}
+                      All Brands
                     </Link>
-                  ))}
+                    {brands.map((b) => (
+                      <Link
+                        key={b.id}
+                        href={`/catalog?${new URLSearchParams({
+                          ...(q ? { q } : {}),
+                          brand: b.slug,
+                          ...(categorySlug ? { category: categorySlug } : {}),
+                          ...(inStockOnly ? { inStockOnly: "true" } : {}),
+                          ...(sort ? { sort } : {}),
+                        }).toString()}`}
+                        className={`block px-2.5 py-1.5 rounded-md font-medium transition ${
+                          brandSlug === b.slug
+                            ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-semibold"
+                            : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        }`}
+                      >
+                        {b.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Category / Segment Filter */}
+                {categories.length > 0 && (
+                  <div>
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                      Category
+                    </h4>
+                    <div className="space-y-1 text-xs">
+                      <Link
+                        href={`/catalog?${new URLSearchParams({
+                          ...(q ? { q } : {}),
+                          ...(brandSlug ? { brand: brandSlug } : {}),
+                          ...(inStockOnly ? { inStockOnly: "true" } : {}),
+                          ...(sort ? { sort } : {}),
+                        }).toString()}`}
+                        className={`block px-2.5 py-1.5 rounded-md font-medium transition ${
+                          !categorySlug
+                            ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-semibold"
+                            : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        }`}
+                      >
+                        All Segments
+                      </Link>
+                      {categories.map((c) => (
+                        <Link
+                          key={c.id}
+                          href={`/catalog?${new URLSearchParams({
+                            ...(q ? { q } : {}),
+                            ...(brandSlug ? { brand: brandSlug } : {}),
+                            category: c.slug,
+                            ...(inStockOnly ? { inStockOnly: "true" } : {}),
+                            ...(sort ? { sort } : {}),
+                          }).toString()}`}
+                          className={`block px-2.5 py-1.5 rounded-md font-medium transition ${
+                            categorySlug === c.slug
+                              ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-semibold"
+                              : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                          }`}
+                        >
+                          {c.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Availability Checkbox */}
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <Link
+                    href={`/catalog?${new URLSearchParams({
+                      ...(q ? { q } : {}),
+                      ...(brandSlug ? { brand: brandSlug } : {}),
+                      ...(categorySlug ? { category: categorySlug } : {}),
+                      ...(sort ? { sort } : {}),
+                      inStockOnly: inStockOnly ? "false" : "true",
+                    }).toString()}`}
+                    className="flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={inStockOnly}
+                      readOnly
+                      className="rounded border-slate-300 dark:border-slate-700 text-slate-900 focus:ring-0"
+                    />
+                    <span>In-Stock Models Only</span>
+                  </Link>
                 </div>
               </div>
-            )}
-
-            {/* Availability Checkbox */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
-              <Link
-                href={`/catalog?${new URLSearchParams({
-                  ...(q ? { q } : {}),
-                  ...(brandSlug ? { brand: brandSlug } : {}),
-                  ...(categorySlug ? { category: categorySlug } : {}),
-                  ...(sort ? { sort } : {}),
-                  inStockOnly: inStockOnly ? "false" : "true",
-                }).toString()}`}
-                className="flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={inStockOnly}
-                  readOnly
-                  className="rounded border-slate-300 dark:border-slate-700 text-slate-900 focus:ring-0"
-                />
-                <span>In-Stock Models Only</span>
-              </Link>
-            </div>
+            </details>
           </div>
         </aside>
 

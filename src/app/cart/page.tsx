@@ -167,7 +167,7 @@ export default function CartAndCheckoutPage() {
         {/* Left: Basket Items & Delivery Address Form */}
         <div className="lg:col-span-7 space-y-6">
           {/* Basket Items List */}
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <h2 className="font-semibold text-sm text-slate-900 dark:text-white">
                 Selected Smartphones ({totalQuantity} units)
@@ -215,7 +215,7 @@ export default function CartAndCheckoutPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 self-end sm:self-center">
+                    <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto">
                       {/* Quantity Controls */}
                       <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
                         <button
@@ -271,7 +271,7 @@ export default function CartAndCheckoutPage() {
           </div>
 
           {/* Delivery Address & Maps Component */}
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <GoogleMapsAddressPicker
               initialData={address}
               onChange={(updated) => setAddress(updated)}
@@ -279,7 +279,7 @@ export default function CartAndCheckoutPage() {
           </div>
 
           {/* Special Customer Notes */}
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2 shadow-xs">
             <label className="font-medium text-xs text-slate-700 dark:text-slate-300 block">
               Dealer Notes / Specific Transit Requests (Optional)
             </label>
@@ -295,7 +295,7 @@ export default function CartAndCheckoutPage() {
 
         {/* Right: Commercial Terms, Live Totals, Submit */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-5 sticky top-24 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-5 sticky top-24 shadow-xs">
             <h3 className="font-semibold text-sm text-slate-900 dark:text-white pb-3 border-b border-slate-100 dark:border-slate-800">
               Commercial Order Summary
             </h3>

@@ -99,7 +99,7 @@ export function AdminInventoryClient({
 
       {/* Inventory Table */}
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-x-auto shadow-xs">
-        <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+        <table className="w-full min-w-[750px] text-left text-xs text-slate-600 dark:text-slate-300">
           <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 uppercase text-[11px] font-semibold tracking-wider border-b border-slate-200 dark:border-slate-800">
             <tr>
               <th className="px-5 py-3.5">Handset & SKU</th>

@@ -121,18 +121,18 @@ export default async function HomePage() {
               </div>
 
               {/* Trust Features */}
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-4 border-t border-slate-800 text-xs">
                 <div>
                   <p className="font-bold text-base sm:text-lg text-amber-400">100%</p>
-                  <p className="text-slate-400 text-[11px]">Brand Sealed Pack</p>
+                  <p className="text-slate-400 text-[10px] sm:text-[11px]">Brand Sealed Pack</p>
                 </div>
                 <div>
                   <p className="font-bold text-base sm:text-lg text-amber-400">18% GST</p>
-                  <p className="text-slate-400 text-[11px]">Input Credit Invoices</p>
+                  <p className="text-slate-400 text-[10px] sm:text-[11px]">Input Credit Invoices</p>
                 </div>
                 <div>
                   <p className="font-bold text-base sm:text-lg text-amber-400">7 Days</p>
-                  <p className="text-slate-400 text-[11px]">DOA Replacement</p>
+                  <p className="text-slate-400 text-[10px] sm:text-[11px]">DOA Replacement</p>
                 </div>
               </div>
             </div>
@@ -418,7 +418,7 @@ export default async function HomePage() {
 
       {/* 5. DEALER ADVANTAGES */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-slate-900 text-white rounded-xl p-6 lg:p-8 border border-slate-800">
+        <div className="bg-slate-900 text-white rounded-xl p-4 sm:p-6 lg:p-8 border border-slate-800">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div className="space-y-4">
               <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">
