@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireUser } from "@/lib/auth";
+import { requireUser, handleAuthError } from "@/lib/auth";
 
 const StatusUpdateSchema = z.object({
   status: z.enum([
@@ -164,6 +164,8 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, order: updatedOrder });
   } catch (error: any) {
+    const authRes = handleAuthError(error);
+    if (authRes) return authRes;
     console.error("Order status update error:", error);
     return NextResponse.json({ error: error.message || "Status update failed" }, { status: 400 });
   }

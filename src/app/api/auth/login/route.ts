@@ -40,6 +40,13 @@ export async function POST(req: Request) {
       );
     }
 
+    if (user.isSuspended) {
+      return NextResponse.json(
+        { error: "Your retailer account is currently suspended. Please contact Jagdamba Mobile administration." },
+        { status: 403 }
+      );
+    }
+
     const sessionPayload = {
       userId: user.id,
       email: user.email,

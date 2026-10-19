@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireUser } from "@/lib/auth";
+import { requireUser, handleAuthError } from "@/lib/auth";
 
 const MessageSchema = z.object({
   content: z.string().min(1).max(2000),
@@ -69,6 +69,8 @@ export async function POST(
       },
     });
   } catch (error) {
+    const authRes = handleAuthError(error);
+    if (authRes) return authRes;
     console.error("Message send error:", error);
     return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
   }

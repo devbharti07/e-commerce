@@ -1,13 +1,10 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency } from "@/lib/utils";
 import {
   Smartphone,
   ShieldCheck,
-  TrendingUp,
-  Percent,
   CheckCircle2,
   ArrowRight,
   Boxes,
@@ -15,6 +12,8 @@ import {
   PhoneCall,
   Clock,
   Layers,
+  Truck,
+  Sparkles,
 } from "lucide-react";
 
 export default async function HomePage() {
@@ -24,7 +23,7 @@ export default async function HomePage() {
     orderBy: { name: "asc" },
   });
 
-  // Fetch real published products with variants & pricing
+  // Fetch real published products with variants & pricing respecting featured and display order
   const products = await prisma.product.findMany({
     where: { isPublished: true, isArchived: false },
     include: {
@@ -43,100 +42,123 @@ export default async function HomePage() {
       },
     },
     take: 8,
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ isFeatured: "desc" }, { displayOrder: "asc" }, { createdAt: "desc" }],
   });
 
-  // Calculate live wholesale statistics
-  const totalVariantsCount = await prisma.productVariant.count({
-    where: { isAvailable: true },
+  // Calculate live wholesale statistics and site settings
+  const [totalVariantsCount, siteSettings] = await Promise.all([
+    prisma.productVariant.count({
+      where: { isAvailable: true },
+    }),
+    prisma.siteSetting.findMany(),
+  ]);
+
+  const settingsMap: Record<string, string> = {};
+  siteSettings.forEach((s) => {
+    settingsMap[s.key] = s.value;
   });
+
+  const announcementBanner = settingsMap["ANNOUNCEMENT_BANNER"];
+  const isAnnouncementActive = settingsMap["ANNOUNCEMENT_ACTIVE"] === "true";
+  const contactPhone = settingsMap["CONTACT_PHONE"] || "+91 98765 43210";
+  const minOrderValuePaise = parseInt(settingsMap["MIN_ORDER_VALUE"] || "2500000");
 
   return (
-    <div className="space-y-16 pb-20">
-      {/* 1. HERO SECTION */}
-      <section className="relative bg-gradient-to-br from-[#14213D] via-[#1a2d52] to-[#0c1527] text-white py-16 lg:py-24 overflow-hidden border-b border-[#FCA311]/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#FCA311] text-xs font-semibold uppercase tracking-wider backdrop-blur-sm">
-                <Zap className="w-3.5 h-3.5 text-[#FCA311]" />
-                India's Verified Wholesale Smartphone Hub
+    <div className="space-y-12 pb-16">
+      {/* Dynamic Announcement Banner */}
+      {isAnnouncementActive && announcementBanner && (
+        <div className="bg-amber-400 text-slate-900 px-4 py-2 text-center text-xs font-semibold tracking-wide flex items-center justify-center gap-2 shadow-2xs">
+          <Zap className="w-3.5 h-3.5 shrink-0" />
+          <span>{announcementBanner}</span>
+        </div>
+      )}
+
+      {/* 1. PROFESSIONAL HERO SECTION */}
+      <section className="bg-slate-900 text-white py-12 lg:py-16 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-7 space-y-4">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 text-amber-400 text-xs font-medium border border-slate-700">
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                <span>Verified B2B Wholesale Smartphone Hub</span>
               </div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
                 Direct Distributor Stock. <br />
-                <span className="text-[#FCA311]">Real Wholesale Tiers.</span>
+                <span className="text-amber-400">Transparent Volume Tiers.</span>
               </h1>
-              <p className="text-base sm:text-lg text-gray-300 max-w-xl leading-relaxed">
-                Empowering mobile retailers and telecom resellers with 100% genuine brand-sealed smartphones, live warehouse inventory, transparent volume tier pricing, and direct dealer confirmation.
+
+              <p className="text-sm sm:text-base text-slate-300 max-w-xl leading-relaxed">
+                Supplying mobile retailers and telecom dealers across India with 100% genuine brand-sealed smartphones, live warehouse inventory, GST input credit invoices, and direct dealer order confirmation.
               </p>
 
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-2">
                 <Link
                   href="/catalog"
-                  className="px-6 py-3.5 bg-[#FCA311] text-[#14213D] font-bold text-sm rounded-xl shadow-lg hover:bg-[#e5940f] hover:shadow-xl transition flex items-center gap-2"
+                  className="px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold text-xs sm:text-sm rounded-lg shadow-xs transition flex items-center gap-2"
                 >
-                  Browse Smartphone Catalog
+                  <span>Browse Handset Catalog</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/register"
-                  className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-semibold text-sm rounded-xl border border-white/20 backdrop-blur-sm transition"
+                  className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs sm:text-sm rounded-lg border border-slate-700 transition"
                 >
-                  Register as Retailer
+                  Register Retail Store
                 </Link>
               </div>
 
-              {/* Trust Badges */}
-              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 text-xs">
+              {/* Trust Features */}
+              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
                 <div>
-                  <p className="font-bold text-lg sm:text-2xl text-[#FCA311]">100%</p>
-                  <p className="text-gray-400">Brand Sealed Pack</p>
+                  <p className="font-bold text-base sm:text-lg text-amber-400">100%</p>
+                  <p className="text-slate-400 text-[11px]">Brand Sealed Pack</p>
                 </div>
                 <div>
-                  <p className="font-bold text-lg sm:text-2xl text-[#FCA311]">GST</p>
-                  <p className="text-gray-400">18% Input Credit</p>
+                  <p className="font-bold text-base sm:text-lg text-amber-400">18% GST</p>
+                  <p className="text-slate-400 text-[11px]">Input Credit Invoices</p>
                 </div>
                 <div>
-                  <p className="font-bold text-lg sm:text-2xl text-[#FCA311]">7 Days</p>
-                  <p className="text-gray-400">DOA Replacement</p>
+                  <p className="font-bold text-base sm:text-lg text-amber-400">7 Days</p>
+                  <p className="text-slate-400 text-[11px]">DOA Replacement</p>
                 </div>
               </div>
             </div>
 
-            {/* Quick Inquiry / Status Card */}
+            {/* Live Warehouse Desk Status Card */}
             <div className="lg:col-span-5">
-              <div className="bg-white/5 backdrop-blur-md border border-white/15 rounded-2xl p-6 lg:p-8 shadow-2xl space-y-6">
-                <div className="flex items-center justify-between pb-4 border-b border-white/10">
+              <div className="bg-slate-800/80 rounded-xl p-5 sm:p-6 border border-slate-700/80 shadow-sm space-y-4 text-xs">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-700">
                   <div>
-                    <h3 className="font-bold text-lg text-white">Live Warehouse Desk</h3>
-                    <p className="text-xs text-gray-400">Real-time dealer ordering & dispatch</p>
+                    <h3 className="font-bold text-sm text-white">Live Warehouse Desk</h3>
+                    <p className="text-[11px] text-slate-400">Central Delhi Distribution Terminal</p>
                   </div>
-                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold border border-emerald-500/30">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[11px] font-medium border border-emerald-500/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                     Open for Bookings
                   </span>
                 </div>
 
-                <div className="space-y-4 text-xs">
-                  <div className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
-                    <span className="text-gray-300">Active Handset SKUs</span>
-                    <span className="font-bold text-white text-sm">{totalVariantsCount}+ Models Ready</span>
+                <div className="space-y-2.5 text-xs">
+                  <div className="flex items-center justify-between bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+                    <span className="text-slate-400">Active Handset SKUs</span>
+                    <span className="font-semibold text-white tabular-nums">{totalVariantsCount}+ Models Ready</span>
                   </div>
-                  <div className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
-                    <span className="text-gray-300">Min. Order Requirement</span>
-                    <span className="font-bold text-white text-sm">₹25,000 / 2 Units Min</span>
+                  <div className="flex items-center justify-between bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+                    <span className="text-slate-400">Minimum Order Value</span>
+                    <span className="font-semibold text-white tabular-nums">{formatCurrency(minOrderValuePaise)} (2 pcs min)</span>
                   </div>
-                  <div className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
-                    <span className="text-gray-300">Direct Dealer Line</span>
-                    <span className="font-bold text-[#FCA311] text-sm">+91 98765 43210</span>
+                  <div className="flex items-center justify-between bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+                    <span className="text-slate-400">Wholesale Desk Line</span>
+                    <span className="font-bold text-amber-400">{contactPhone}</span>
                   </div>
                 </div>
 
                 <Link
                   href="/catalog"
-                  className="w-full block text-center py-3 bg-white text-[#14213D] font-bold text-xs rounded-xl hover:bg-gray-100 transition shadow"
+                  className="w-full block text-center py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-semibold text-xs rounded-lg transition"
                 >
-                  View Live Wholesale Inventory
+                  View Live Wholesale Inventory &rarr;
                 </Link>
               </div>
             </div>
@@ -144,41 +166,38 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 2. POPULAR SMARTPHONE BRANDS */}
+      {/* 2. BRAND QUICK DISCOVERY STRIP */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
-              Authorized Wholesale Brands
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+              Authorized Smartphone Brands
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Direct brand sealed inventory with manufacturer India warranty
             </p>
           </div>
           <Link
             href="/catalog"
-            className="text-sm font-semibold text-[#14213D] dark:text-[#FCA311] hover:underline flex items-center gap-1"
+            className="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1"
           >
-            All Brands <ArrowRight className="w-4 h-4" />
+            All Brands <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
           {brands.map((b) => (
             <Link
               key={b.id}
               href={`/catalog?brand=${encodeURIComponent(b.slug)}`}
-              className="group bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-[#FCA311] dark:hover:border-[#FCA311] shadow-sm hover:shadow-md transition text-center flex flex-col items-center justify-center space-y-2"
+              className="group bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 shadow-2xs hover:shadow-xs transition text-center flex flex-col items-center justify-center space-y-1.5"
             >
-              <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-700 group-hover:bg-[#14213D] group-hover:text-white flex items-center justify-center transition">
-                <Smartphone className="w-6 h-6 text-[#14213D] dark:text-[#FCA311] group-hover:text-[#FCA311]" />
+              <div className="w-8 h-8 rounded-md bg-slate-100 dark:bg-slate-800 group-hover:bg-slate-900 group-hover:text-white dark:group-hover:bg-slate-100 dark:group-hover:text-slate-900 flex items-center justify-center transition">
+                <Smartphone className="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-amber-400 dark:group-hover:text-amber-600" />
               </div>
-              <h3 className="font-bold text-base text-gray-900 dark:text-white">
+              <h3 className="font-semibold text-xs text-slate-800 dark:text-slate-200 truncate w-full">
                 {b.name}
               </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Bulk Wholesale Deals
-              </p>
             </Link>
           ))}
         </div>
@@ -186,31 +205,31 @@ export default async function HomePage() {
 
       {/* 3. FEATURED WHOLESALE PRODUCTS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight">
               Featured Smartphone Models
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Verified live on-hand stock ready for dealer bulk order request
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Verified warehouse on-hand stock ready for dealer bulk order requests
             </p>
           </div>
           <Link
             href="/catalog"
-            className="text-sm font-semibold text-[#14213D] dark:text-[#FCA311] hover:underline flex items-center gap-1"
+            className="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1"
           >
-            Explore Catalog <ArrowRight className="w-4 h-4" />
+            Explore Catalog <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         {products.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-12 text-center border border-gray-200 dark:border-gray-700">
-            <Boxes className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">No Products Published Yet</h3>
-            <p className="text-sm text-gray-500 mt-1">Check back soon or sign in as administrator to add models.</p>
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-8 text-center border border-slate-200 dark:border-slate-800 text-xs text-slate-500">
+            <Boxes className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+            <p className="font-semibold text-slate-700 dark:text-slate-300">No Products Published Yet</p>
+            <p className="mt-0.5">Check back soon or sign in as administrator to add models.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             {products.map((product) => {
               const primaryVariant = product.variants[0];
               const availableUnits = primaryVariant
@@ -223,66 +242,66 @@ export default async function HomePage() {
               return (
                 <div
                   key={product.id}
-                  className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col hover:border-[#FCA311] dark:hover:border-[#FCA311] shadow-sm hover:shadow-md transition"
+                  className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col hover:border-slate-400 dark:hover:border-slate-600 shadow-2xs hover:shadow-xs transition"
                 >
                   {/* Thumbnail */}
-                  <div className="relative h-48 bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4 overflow-hidden">
+                  <div className="relative h-44 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center p-3 overflow-hidden">
                     <img
                       src={imageUrl}
                       alt={product.name}
-                      className="max-h-full max-w-full object-contain hover:scale-105 transition duration-300"
+                      className="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-200"
                     />
-                    <div className="absolute top-3 left-3 bg-[#14213D] text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                    <div className="absolute top-2.5 left-2.5 bg-slate-900/80 text-white text-[9px] font-bold px-2 py-0.5 rounded">
                       {product.brand.name}
                     </div>
                     {availableUnits <= 0 ? (
-                      <div className="absolute top-3 right-3 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                      <div className="absolute top-2.5 right-2.5 bg-rose-600 text-white text-[9px] font-bold px-2 py-0.5 rounded">
                         SOLD OUT
                       </div>
                     ) : availableUnits <= (primaryVariant?.lowStockThreshold || 5) ? (
-                      <div className="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                      <div className="absolute top-2.5 right-2.5 bg-amber-500 text-slate-900 text-[9px] font-bold px-2 py-0.5 rounded">
                         LOW STOCK
                       </div>
                     ) : (
-                      <div className="absolute top-3 right-3 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                      <div className="absolute top-2.5 right-2.5 bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded">
                         IN STOCK
                       </div>
                     )}
                   </div>
 
                   {/* Body Content */}
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                     <div>
-                      <h3 className="font-bold text-base text-gray-900 dark:text-white line-clamp-1">
+                      <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 line-clamp-1">
                         {product.name}
                       </h3>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Model No: {product.modelNumber}
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        Model: {product.modelNumber}
                       </p>
 
                       {/* Variant Specs */}
                       {primaryVariant && (
-                        <div className="mt-3 flex flex-wrap gap-1.5">
-                          <span className="text-[11px] font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded">
+                        <div className="mt-2.5 flex flex-wrap gap-1">
+                          <span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1.5 py-0.5 rounded">
                             {primaryVariant.ramGb}GB RAM
                           </span>
-                          <span className="text-[11px] font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded">
+                          <span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1.5 py-0.5 rounded">
                             {primaryVariant.storageGb}GB Storage
                           </span>
-                          <span className="text-[11px] font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded">
+                          <span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1.5 py-0.5 rounded">
                             {primaryVariant.colorName}
                           </span>
                         </div>
                       )}
                     </div>
 
-                    <div className="pt-3 border-t border-gray-100 dark:border-gray-700/60">
+                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
                       <div className="flex items-baseline justify-between">
                         <div>
-                          <p className="text-[10px] uppercase font-bold text-gray-400">
+                          <p className="text-[9px] uppercase font-bold text-slate-400">
                             Base Wholesale Price
                           </p>
-                          <p className="text-lg font-black text-[#14213D] dark:text-[#FCA311]">
+                          <p className="text-base font-bold text-slate-900 dark:text-slate-100 tabular-nums">
                             {primaryVariant
                               ? formatCurrency(primaryVariant.baseWholesalePrice)
                               : "Price On Request"}
@@ -290,11 +309,11 @@ export default async function HomePage() {
                         </div>
                         {primaryVariant && (
                           <div className="text-right">
-                            <span className="text-[10px] font-bold text-gray-500 block">
-                              Min Qty: {primaryVariant.minOrderQty} pcs
+                            <span className="text-[10px] font-medium text-slate-500 block">
+                              Min: {primaryVariant.minOrderQty} pcs
                             </span>
-                            <span className="text-[10px] text-emerald-600 font-semibold block">
-                              {availableUnits} in stock
+                            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold block tabular-nums">
+                              {availableUnits} ready
                             </span>
                           </div>
                         )}
@@ -302,7 +321,7 @@ export default async function HomePage() {
 
                       <Link
                         href={`/products/${product.slug}`}
-                        className="mt-3 w-full block text-center py-2.5 bg-[#14213D] dark:bg-[#FCA311] text-white dark:text-[#14213D] font-bold text-xs rounded-xl hover:opacity-90 transition"
+                        className="mt-3 w-full block text-center py-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-semibold text-xs rounded-lg transition"
                       >
                         Inspect Specifications & Tiers
                       </Link>
@@ -316,114 +335,114 @@ export default async function HomePage() {
       </section>
 
       {/* 4. HOW WHOLESALE ORDERING WORKS */}
-      <section className="bg-gray-100 dark:bg-gray-800/60 py-16 border-y border-gray-200 dark:border-gray-800">
+      <section className="bg-slate-100 dark:bg-slate-900/60 py-12 border-y border-slate-200 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#FCA311]">
-              Transparent B2B Workflow
+          <div className="text-center max-w-xl mx-auto mb-8">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+              B2B Wholesale Workflow
             </span>
-            <h2 className="text-3xl font-black text-gray-900 dark:text-white mt-1">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 mt-0.5">
               How Wholesale Ordering Works
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              Unlike retail websites with instant checkout, wholesale distribution requires dealer confirmation, stock allocation, and dispatch schedule verification.
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Structured B2B order handling with dealer confirmation, physical stock allocation, and dispatch schedules.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-[#14213D] text-white flex items-center justify-center font-black">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+              <div className="w-8 h-8 rounded-lg bg-slate-900 text-amber-400 font-bold flex items-center justify-center text-xs">
                 1
               </div>
-              <h3 className="font-bold text-base text-gray-900 dark:text-white">Select Models & Tiers</h3>
-              <p className="text-xs text-gray-500 leading-relaxed">
-                Choose models, RAM/Storage configurations, and quantities. Unit prices dynamically adjust based on volume tiers.
+              <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100">Select Models & Tiers</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Choose storage/RAM variants and order quantities. Unit prices automatically apply wholesale volume discounts.
               </p>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-[#14213D] text-white flex items-center justify-center font-black">
+            <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+              <div className="w-8 h-8 rounded-lg bg-slate-900 text-amber-400 font-bold flex items-center justify-center text-xs">
                 2
               </div>
-              <h3 className="font-bold text-base text-gray-900 dark:text-white">Pin Delivery Address</h3>
-              <p className="text-xs text-gray-500 leading-relaxed">
-                Enter your retail shop address or select the exact location on Google Maps for freight transit calculation.
+              <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100">Pin Delivery Shop</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Provide your mobile shop delivery address or select the exact location on Google Maps for freight transit calculations.
               </p>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-[#14213D] text-white flex items-center justify-center font-black">
+            <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+              <div className="w-8 h-8 rounded-lg bg-slate-900 text-amber-400 font-bold flex items-center justify-center text-xs">
                 3
               </div>
-              <h3 className="font-bold text-base text-gray-900 dark:text-white">Submit Order Request</h3>
-              <p className="text-xs text-gray-500 leading-relaxed">
-                Generate your formal bulk request. An order conversation opens directly with Jagdamba Mobile distribution managers.
+              <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100">Submit Order Request</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Generate your formal bulk request. An order conversation opens directly with Jagdamba distribution managers.
               </p>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-[#14213D] text-white flex items-center justify-center font-black">
+            <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+              <div className="w-8 h-8 rounded-lg bg-slate-900 text-amber-400 font-bold flex items-center justify-center text-xs">
                 4
               </div>
-              <h3 className="font-bold text-base text-gray-900 dark:text-white">Dealer Confirmation</h3>
-              <p className="text-xs text-gray-500 leading-relaxed">
-                Align on delivery timeline and payment terms. Dealer confirms the order, reserves physical stock, and initiates dispatch.
+              <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100">Dealer Confirmation</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Confirm final pricing and payment terms. Stock is reserved atomically and dispatched via insured transit.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 5. WHOLESALE ADVANTAGES */}
+      {/* 5. DEALER ADVANTAGES */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-[#14213D] text-white rounded-3xl p-8 lg:p-12 shadow-xl border border-[#FCA311]/30">
+        <div className="bg-slate-900 text-white rounded-xl p-6 lg:p-8 border border-slate-800">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-[#FCA311]">
-                Dealer Partnership
+            <div className="space-y-4">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">
+                Dealer Partnership Guarantee
               </span>
-              <h2 className="text-3xl font-black mt-2 leading-tight">
-                Why Mobile Retailers Across India Trust Jagdamba Mobile
+              <h2 className="text-2xl font-bold leading-tight">
+                Why Mobile Retailers Across India Rely on Jagdamba Mobile
               </h2>
-              <div className="mt-6 space-y-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#FCA311] shrink-0 mt-0.5" />
-                  <p className="text-sm text-gray-300">
-                    <strong className="text-white">Verified IMEI & Genuine Invoices:</strong> Every unit is scanned before packing. Full 18% GST Input Tax Credit provided.
+              <div className="space-y-3 pt-1">
+                <div className="flex items-start gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    <strong className="text-white">Verified IMEI & Genuine Invoices:</strong> Every unit is verified before packing. Legitimate 18% GST Input Credit invoices provided.
                   </p>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#FCA311] shrink-0 mt-0.5" />
-                  <p className="text-sm text-gray-300">
-                    <strong className="text-white">Concurrency-Safe Stock:</strong> Real-time database inventory ensures zero overselling. What you see is available in warehouse.
+                <div className="flex items-start gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    <strong className="text-white">Concurrency-Safe Stock:</strong> Real-time PostgreSQL inventory prevents overselling. What is displayed is physically on-hand.
                   </p>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#FCA311] shrink-0 mt-0.5" />
-                  <p className="text-sm text-gray-300">
-                    <strong className="text-white">Direct Order Messaging:</strong> Propose revisions, negotiate volume pricing for 50+ units, and track dispatch status seamlessly.
+                <div className="flex items-start gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    <strong className="text-white">Direct Order Negotiations:</strong> Propose revisions, review revised terms, and communicate directly with the owner desk.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-md p-6 lg:p-8 rounded-2xl border border-white/15 text-center space-y-4">
-              <h3 className="text-xl font-bold">Ready to Elevate Your Mobile Store Inventory?</h3>
-              <p className="text-xs text-gray-300 leading-relaxed">
-                Register your retail business today to inspect tier pricing, download wholesale catalog sheets, and place priority order requests.
+            <div className="bg-slate-800/60 p-5 lg:p-6 rounded-lg border border-slate-700/60 text-center space-y-3">
+              <h3 className="text-base font-bold text-white">Ready to Source Handsets for Your Store?</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Register your retail business today to inspect volume tier discounts, request custom bulk quotes, and receive prioritized dispatch.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+              <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
                 <Link
                   href="/register"
-                  className="px-6 py-3 bg-[#FCA311] text-[#14213D] font-bold text-xs rounded-xl hover:bg-[#e5940f] transition shadow"
+                  className="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold text-xs rounded-lg transition shadow-2xs"
                 >
                   Create Retailer Account
                 </Link>
                 <Link
                   href="/catalog"
-                  className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold text-xs rounded-xl transition"
+                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-semibold text-xs rounded-lg transition"
                 >
-                  Explore All Models
+                  Explore All Handsets
                 </Link>
               </div>
             </div>

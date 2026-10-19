@@ -18,12 +18,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased flex flex-col min-h-screen">
+      <body className="antialiased flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
         <ThemeProvider>
           <AuthProvider>
             <CartProvider>
               <Header />
-              <main className="flex-1">{children}</main>
+              <div className="flex-1 flex flex-col">{children}</div>
               <Footer />
             </CartProvider>
           </AuthProvider>

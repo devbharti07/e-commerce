@@ -47,18 +47,45 @@ export async function getCurrentUser(): Promise<TokenPayload | null> {
   return verifySessionToken(token);
 }
 
+export class AuthError extends Error {
+  statusCode: number;
+  constructor(message: string, statusCode: number = 401) {
+    super(message);
+    this.name = "AuthError";
+    this.statusCode = statusCode;
+  }
+}
+
 export async function requireUser(): Promise<TokenPayload> {
   const user = await getCurrentUser();
   if (!user) {
-    throw new Error("UNAUTHORIZED");
+    throw new AuthError("Unauthorized", 401);
   }
   return user;
 }
 
 export async function requireOwner(): Promise<TokenPayload> {
   const user = await getCurrentUser();
-  if (!user || user.role !== "OWNER") {
-    throw new Error("FORBIDDEN");
+  if (!user) {
+    throw new AuthError("Unauthorized", 401);
+  }
+  if (user.role !== "OWNER") {
+    throw new AuthError("Forbidden: Owner access required", 403);
   }
   return user;
+}
+
+export function handleAuthError(error: unknown) {
+  if (error instanceof AuthError) {
+    return Response.json({ error: error.message }, { status: error.statusCode });
+  }
+  if (error instanceof Error) {
+    if (error.message === "UNAUTHORIZED" || error.message === "Unauthorized") {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (error.message === "FORBIDDEN" || error.message.includes("Forbidden")) {
+      return Response.json({ error: error.message }, { status: 403 });
+    }
+  }
+  return null;
 }

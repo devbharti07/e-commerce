@@ -8,7 +8,31 @@ async function main() {
 
   // 1. Seed Users (Idempotent upsert by unique email)
   const ownerPasswordHash = await bcrypt.hash("Owner@Jagdamba2026", 12);
+  const adminPasswordHash = await bcrypt.hash("admin@1234", 12);
   const retailerPasswordHash = await bcrypt.hash("Retailer@2026", 12);
+
+  const adminUser = await prisma.user.upsert({
+    where: { email: "admin@gmail.com" },
+    update: {
+      name: "Jagdamba Admin HQ",
+      phone: "+91 98765 00000",
+      businessName: "Jagdamba Mobile Distribution HQ",
+      passwordHash: adminPasswordHash,
+      role: "OWNER",
+      isVerified: true,
+      isSuspended: false,
+    },
+    create: {
+      name: "Jagdamba Admin HQ",
+      email: "admin@gmail.com",
+      passwordHash: adminPasswordHash,
+      phone: "+91 98765 00000",
+      businessName: "Jagdamba Mobile Distribution HQ",
+      role: "OWNER",
+      isVerified: true,
+      isSuspended: false,
+    },
+  });
 
   const owner = await prisma.user.upsert({
     where: { email: "owner@jagdambamobile.com" },

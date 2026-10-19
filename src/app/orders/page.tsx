@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
-import { Package, MessageSquare, ArrowRight, Clock, ShieldCheck } from "lucide-react";
+import { Package, MessageSquare, ArrowRight } from "lucide-react";
 
 export default async function OrdersListPage() {
   const user = await getCurrentUser();
@@ -24,91 +24,95 @@ export default async function OrdersListPage() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gray-200 dark:border-gray-800">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
             {user.role === "OWNER" ? "All Wholesale Orders" : "My Bulk Order Requests"}
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Track confirmation status, communicate with dealer, and review line items
           </p>
         </div>
 
         <Link
           href="/catalog"
-          className="px-4 py-2 bg-[#14213D] dark:bg-[#FCA311] text-white dark:text-[#14213D] font-bold text-xs rounded-xl hover:opacity-90 transition flex items-center gap-1.5 self-start"
+          className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-medium text-xs rounded-lg transition flex items-center gap-1.5 self-start shadow-xs"
         >
           Create New Order Request
         </Link>
       </div>
 
       {orders.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 p-16 text-center space-y-4">
-          <Package className="w-16 h-16 text-gray-400 mx-auto" />
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-12 text-center space-y-3 shadow-xs">
+          <div className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 mx-auto flex items-center justify-center">
+            <Package className="w-6 h-6" />
+          </div>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
             No Bulk Orders Found
           </h2>
-          <p className="text-xs text-gray-500 max-w-sm mx-auto">
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
             You haven't submitted any wholesale order requests yet. Browse our inventory to request models.
           </p>
-          <Link
-            href="/catalog"
-            className="inline-block px-5 py-2.5 bg-[#14213D] text-white text-xs font-bold rounded-xl"
-          >
-            Browse Smartphone Catalog
-          </Link>
+          <div className="pt-2">
+            <Link
+              href="/catalog"
+              className="inline-block px-4 py-2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-medium rounded-lg"
+            >
+              Browse Smartphone Catalog
+            </Link>
+          </div>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {orders.map((order) => {
             const totalUnits = order.items.reduce((acc, it) => acc + it.quantity, 0);
 
             return (
               <div
                 key={order.id}
-                className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-[#FCA311] transition flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm"
+                className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs"
               >
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono font-bold text-sm text-[#14213D] dark:text-[#FCA311]">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-mono font-semibold text-xs text-slate-900 dark:text-white">
                       #{order.orderNumber}
                     </span>
-                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
+                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                       {order.status}
                     </span>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-[11px] text-slate-400">
                       {formatDateTime(order.createdAt)}
                     </span>
                   </div>
 
-                  <p className="text-xs text-gray-600 dark:text-gray-300">
-                    <strong className="text-gray-900 dark:text-white">
+                  <p className="text-xs text-slate-600 dark:text-slate-300">
+                    <strong className="text-slate-900 dark:text-white">
                       {totalUnits} Units:
                     </strong>{" "}
                     {order.items.map((i) => `${i.productName} (${i.quantity} pcs)`).join(", ")}
                   </p>
 
                   {user.role === "OWNER" && (
-                    <p className="text-xs text-gray-400">
+                    <p className="text-[11px] text-slate-400">
                       Retailer: {order.customer.businessName || order.customer.name}
                     </p>
                   )}
                 </div>
 
-                <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-gray-100 dark:border-gray-700">
+                <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 dark:border-slate-800">
                   <div className="text-left md:text-right">
-                    <p className="text-[10px] uppercase font-bold text-gray-400">
+                    <p className="text-[10px] uppercase font-medium text-slate-400">
                       Estimated Total
                     </p>
-                    <p className="text-lg font-black text-gray-900 dark:text-white">
+                    <p className="text-sm font-semibold tabular-nums text-slate-900 dark:text-white">
                       {formatCurrency(order.totalAmount)}
                     </p>
                   </div>
 
                   <Link
                     href={`/orders/${order.id}`}
-                    className="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-[#14213D] hover:text-white text-gray-800 dark:text-gray-200 text-xs font-bold rounded-xl transition flex items-center gap-1.5"
+                    className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-medium rounded-lg transition flex items-center gap-1.5"
                   >
                     <MessageSquare className="w-3.5 h-3.5" />
                     Open Order & Chat

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireUser } from "@/lib/auth";
+import { requireUser, handleAuthError } from "@/lib/auth";
 
 export async function GET(
   req: Request,
@@ -13,6 +13,9 @@ export async function GET(
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
+        revisions: {
+          orderBy: { revisionNumber: "desc" },
+        },
         conversation: {
           include: {
             messages: {
@@ -36,6 +39,18 @@ export async function GET(
 
     return NextResponse.json({
       status: order.status,
+      totalAmount: order.totalAmount,
+      subtotal: order.subtotal,
+      revisions: order.revisions.map((r) => ({
+        id: r.id,
+        revisionNumber: r.revisionNumber,
+        proposedByRole: r.proposedByRole,
+        changesSummary: r.changesSummary,
+        previousTotal: r.previousTotal,
+        newTotal: r.newTotal,
+        status: r.status,
+        createdAt: r.createdAt.toISOString(),
+      })),
       messages:
         order.conversation?.messages.map((m) => ({
           id: m.id,
@@ -47,6 +62,8 @@ export async function GET(
         })) || [],
     });
   } catch (error) {
+    const authRes = handleAuthError(error);
+    if (authRes) return authRes;
     return NextResponse.json({ error: "Sync failed" }, { status: 500 });
   }
 }

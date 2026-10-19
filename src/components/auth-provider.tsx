@@ -8,6 +8,7 @@ export interface UserSession {
   name: string;
   role: "CUSTOMER" | "OWNER";
   businessName?: string;
+  phone?: string;
 }
 
 interface AuthContextType {
