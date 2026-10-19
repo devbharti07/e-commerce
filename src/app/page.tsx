@@ -72,7 +72,7 @@ export default async function HomePage() {
 
   const announcementBanner = settingsMap["ANNOUNCEMENT_BANNER"];
   const isAnnouncementActive = settingsMap["ANNOUNCEMENT_ACTIVE"] === "true";
-  const contactPhone = settingsMap["CONTACT_PHONE"] || "+91 98765 43210";
+  const contactPhone = settingsMap["CONTACT_PHONE"] || "**********";
   const minOrderValuePaise = parseInt(settingsMap["MIN_ORDER_VALUE"] || "2500000");
 
   return (

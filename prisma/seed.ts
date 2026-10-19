@@ -37,7 +37,7 @@ async function main() {
     where: { email: "owner@jagdambamobile.com" },
     update: {
       name: "Jagdamba Admin (Owner)",
-      phone: "+91 98765 43210",
+      phone: "**********",
       businessName: "Jagdamba Mobile Distribution HQ",
       gstNumber: "07AAAAA0000A1Z5",
       role: "OWNER",
@@ -47,7 +47,7 @@ async function main() {
       name: "Jagdamba Admin (Owner)",
       email: "owner@jagdambamobile.com",
       passwordHash: ownerPasswordHash,
-      phone: "+91 98765 43210",
+      phone: "**********",
       businessName: "Jagdamba Mobile Distribution HQ",
       gstNumber: "07AAAAA0000A1Z5",
       role: "OWNER",
@@ -567,73 +567,73 @@ async function main() {
     });
 
     if (!existingOrder) {
-    await prisma.order.create({
-      data: {
-        orderNumber: "JM-2026-0001",
-        customerId: retailer.id,
-        status: "REQUESTED",
-        subtotal: 26980000,
-        taxAmount: 0,
-        deliveryFee: 0,
-        totalAmount: 26980000,
-        customerNotes: "Please confirm dispatch date. Need delivery by Tuesday morning for retail weekend sale.",
-        shippingAddressSnapshot: JSON.stringify({
-          fullName: "Rajesh Sharma",
-          mobileNumber: "+91 98234 56789",
-          houseOrShop: "Shop No. 14, Ground Floor",
-          street: "Main Market Road, Near Clock Tower",
-          locality: "Laxmi Nagar",
-          city: "New Delhi",
-          state: "Delhi",
-          pinCode: "110092",
-          country: "India",
-          latitude: 28.6304,
-          longitude: 77.2773,
-        }),
-        items: {
-          create: [
-            {
-              variantId: p1v1.id,
-              productName: "Apple iPhone 16 Pro Max",
-              variantName: "8GB RAM / 256GB - Natural Titanium",
-              sku: "APL-IP16PM-256-NAT",
-              ramGb: 8,
-              storageGb: 256,
-              colorName: "Natural Titanium",
-              quantity: 2,
-              unitPrice: 13490000,
-              lineTotal: 26980000,
-            },
-          ],
-        },
-        conversation: {
-          create: {
-            customerId: retailer.id,
-            messages: {
-              create: [
-                {
-                  senderId: retailer.id,
-                  senderRole: "CUSTOMER",
-                  content: "Hello Jagdamba Mobile, I have submitted an order request for 2 units of iPhone 16 Pro Max 256GB Natural Titanium. Can you confirm if these are sealed Indian retail units with GST invoice?",
-                },
-                {
-                  senderId: owner.id,
-                  senderRole: "OWNER",
-                  content: "Hello Rajesh ji! Yes, 100% brand new sealed with official Apple 1-Year India Warranty and valid 18% GST input tax credit invoice. We have 16 units on hand. Ready to confirm once we align on the delivery schedule.",
-                },
-              ],
+      await prisma.order.create({
+        data: {
+          orderNumber: "JM-2026-0001",
+          customerId: retailer.id,
+          status: "REQUESTED",
+          subtotal: 26980000,
+          taxAmount: 0,
+          deliveryFee: 0,
+          totalAmount: 26980000,
+          customerNotes: "Please confirm dispatch date. Need delivery by Tuesday morning for retail weekend sale.",
+          shippingAddressSnapshot: JSON.stringify({
+            fullName: "Rajesh Sharma",
+            mobileNumber: "+91 98234 56789",
+            houseOrShop: "Shop No. 14, Ground Floor",
+            street: "Main Market Road, Near Clock Tower",
+            locality: "Laxmi Nagar",
+            city: "New Delhi",
+            state: "Delhi",
+            pinCode: "110092",
+            country: "India",
+            latitude: 28.6304,
+            longitude: 77.2773,
+          }),
+          items: {
+            create: [
+              {
+                variantId: p1v1.id,
+                productName: "Apple iPhone 16 Pro Max",
+                variantName: "8GB RAM / 256GB - Natural Titanium",
+                sku: "APL-IP16PM-256-NAT",
+                ramGb: 8,
+                storageGb: 256,
+                colorName: "Natural Titanium",
+                quantity: 2,
+                unitPrice: 13490000,
+                lineTotal: 26980000,
+              },
+            ],
+          },
+          conversation: {
+            create: {
+              customerId: retailer.id,
+              messages: {
+                create: [
+                  {
+                    senderId: retailer.id,
+                    senderRole: "CUSTOMER",
+                    content: "Hello Jagdamba Mobile, I have submitted an order request for 2 units of iPhone 16 Pro Max 256GB Natural Titanium. Can you confirm if these are sealed Indian retail units with GST invoice?",
+                  },
+                  {
+                    senderId: owner.id,
+                    senderRole: "OWNER",
+                    content: "Hello Rajesh ji! Yes, 100% brand new sealed with official Apple 1-Year India Warranty and valid 18% GST input tax credit invoice. We have 16 units on hand. Ready to confirm once we align on the delivery schedule.",
+                  },
+                ],
+              },
             },
           },
         },
-      },
-    });
+      });
+    }
   }
-}
 
   // 9. Site Settings (Idempotent upsert by unique key)
   const settings = [
     { key: "BUSINESS_NAME", value: "Jagdamba Mobile Distribution" },
-    { key: "CONTACT_PHONE", value: "+91 98765 43210" },
+    { key: "CONTACT_PHONE", value: "**********" },
     { key: "CONTACT_EMAIL", value: "orders@jagdambamobile.com" },
     { key: "WHOLESALE_TERMS", value: "All prices quoted are B2B wholesale exclusive of local transit insurance unless negotiated. Orders require dealer confirmation prior to dispatch." },
     { key: "MIN_ORDER_VALUE", value: "2500000" },

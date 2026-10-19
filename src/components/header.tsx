@@ -96,7 +96,7 @@ export function Header() {
             </span>
           </div>
           <div className="flex items-center justify-center space-x-2 sm:space-x-3 text-slate-400">
-            <span>Wholesale Desk: <strong className="text-slate-200">+91 98765 43210</strong></span>
+            <span>Wholesale Desk: <strong className="text-slate-200"></strong></span>
             {user?.role === "OWNER" && (
               <Link
                 href="/admin"
@@ -253,9 +253,8 @@ export function Header() {
                     <UserIcon className="w-3.5 h-3.5 text-slate-500" />
                     <span>Sign In</span>
                     <ChevronDown
-                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-150 ${
-                        loginDropdownOpen ? "rotate-180" : ""
-                      }`}
+                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-150 ${loginDropdownOpen ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
 

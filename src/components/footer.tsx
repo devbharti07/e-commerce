@@ -109,7 +109,7 @@ export function Footer() {
               Jagdamba Mobile Distribution Center<br />
               Commercial Electronics Hub, Central Plaza<br />
               New Delhi, Delhi - 110001, India<br />
-              Wholesale Desk: +91 98765 43210<br />
+              Wholesale Desk: <br />
               Email: orders@jagdambamobile.com
             </p>
           </div>

@@ -22,7 +22,7 @@ interface AdminSettingsClientProps {
 export function AdminSettingsClient({ initialSettings }: AdminSettingsClientProps) {
   const [formData, setFormData] = useState({
     BUSINESS_NAME: initialSettings["BUSINESS_NAME"] || "Jagdamba Mobile Distribution",
-    CONTACT_PHONE: initialSettings["CONTACT_PHONE"] || "+91 98765 43210",
+    CONTACT_PHONE: initialSettings["CONTACT_PHONE"] || "**********",
     CONTACT_EMAIL: initialSettings["CONTACT_EMAIL"] || "orders@jagdambamobile.com",
     STORE_ADDRESS:
       initialSettings["STORE_ADDRESS"] ||
