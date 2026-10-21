@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { formatCurrency } from "@/lib/utils";
 import { useCart } from "@/components/cart-provider";
 import {
@@ -214,13 +215,16 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         {/* Left: Product Gallery */}
         <div className="lg:col-span-6 space-y-4">
           <div className="relative bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 h-80 sm:h-96 lg:h-[420px] flex items-center justify-center p-6 shadow-2xs overflow-hidden">
-            <img
+            <Image
               src={
                 product.images[activeImageIndex]?.url ||
                 "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80"
               }
               alt={product.name}
-              className="max-h-full max-w-full object-contain"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-contain p-6"
+              priority
             />
             <div className="absolute top-3.5 left-3.5 bg-slate-900 text-white text-[10px] font-bold px-2.5 py-1 rounded">
               {product.brand.name} Sealed
@@ -239,16 +243,19 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 <button
                   key={img.id}
                   onClick={() => setActiveImageIndex(idx)}
-                  className={`w-16 h-16 rounded-lg bg-white dark:bg-slate-900 border p-1 shrink-0 transition ${
+                  className={`w-16 h-16 rounded-lg bg-white dark:bg-slate-900 border p-1 shrink-0 transition relative overflow-hidden ${
                     activeImageIndex === idx
                       ? "border-slate-900 dark:border-white ring-1 ring-slate-900 dark:ring-white"
                       : "border-slate-200 dark:border-slate-800 hover:border-slate-400"
                   }`}
                 >
-                  <img
+                  <Image
                     src={img.url}
-                    alt="thumbnail"
-                    className="w-full h-full object-contain"
+                    alt={`${product.name} thumbnail ${idx + 1}`}
+                    fill
+                    sizes="64px"
+                    className="object-contain p-1"
+                    loading="lazy"
                   />
                 </button>
               ))}

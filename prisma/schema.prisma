@@ -33,6 +33,9 @@ model User {
   messages      Message[]
   subscriptions NotificationSubscription[]
   auditLogs     AuditLog[]
+
+  @@index([role, approvalStatus])
+  @@index([createdAt])
 }
 
 model Address {
@@ -54,6 +57,8 @@ model Address {
   isDefault    Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Brand {
@@ -105,6 +110,11 @@ model Product {
   variants       ProductVariant[]
   images         ProductImage[]
   specifications ProductSpecification[]
+
+  @@index([brandId])
+  @@index([categoryId])
+  @@index([isPublished, isArchived])
+  @@index([createdAt])
 }
 
 model ProductVariant {
@@ -133,6 +143,10 @@ model ProductVariant {
   orderItems         OrderItem[]
   subscriptions      NotificationSubscription[]
   images             ProductImage[]
+
+  @@index([productId])
+  @@index([isAvailable])
+  @@index([baseWholesalePrice])
 }
 
 model ProductImage {
@@ -146,6 +160,9 @@ model ProductImage {
   displayOrder Int             @default(0)
   isPrimary    Boolean         @default(false)
   createdAt    DateTime        @default(now())
+
+  @@index([productId])
+  @@index([variantId])
 }
 
 model ProductSpecification {
@@ -208,6 +225,10 @@ model Order {
   items                   OrderItem[]
   revisions               OrderRevision[]
   conversation            Conversation?
+
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model OrderItem {
@@ -225,6 +246,9 @@ model OrderItem {
   quantity    Int
   unitPrice   Int // minor units snapshot
   lineTotal   Int // minor units snapshot
+
+  @@index([orderId])
+  @@index([variantId])
 }
 
 model OrderRevision {
@@ -252,6 +276,8 @@ model Conversation {
   updatedAt  DateTime  @updatedAt
 
   messages   Message[]
+
+  @@index([customerId])
 }
 
 model Message {
@@ -264,6 +290,9 @@ model Message {
   content        String
   isRead         Boolean      @default(false)
   createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+  @@index([createdAt])
 }
 
 model NotificationSubscription {
@@ -288,6 +317,11 @@ model NotificationDelivery {
   status    String   @default("PENDING") // PENDING, SENT, FAILED
   error     String?
   createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([recipient])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model AuditLog {
@@ -300,6 +334,10 @@ model AuditLog {
   detailsJson String?
   ipAddress   String?
   createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([entity, entityId])
+  @@index([createdAt])
 }
 
 model SiteSetting {

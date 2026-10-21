@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import Image from "next/image";
 import { formatCurrency } from "@/lib/utils";
 import {
   Smartphone,
@@ -17,7 +18,7 @@ import {
   Plus,
 } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function HomePage() {
   let brands: any[] = [];
@@ -29,23 +30,36 @@ export default async function HomePage() {
     const [fetchedBrands, fetchedProducts, count, settings] = await Promise.all([
       prisma.brand.findMany({
         where: { isActive: true },
+        select: { id: true, name: true, slug: true },
         orderBy: { name: "asc" },
       }),
       prisma.product.findMany({
         where: { isPublished: true, isArchived: false },
-        include: {
-          brand: true,
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          modelNumber: true,
+          brand: { select: { id: true, name: true } },
           variants: {
             where: { isAvailable: true },
-            include: {
-              pricingTiers: {
-                orderBy: { minQty: "asc" },
-              },
+            select: {
+              id: true,
+              ramGb: true,
+              storageGb: true,
+              colorName: true,
+              baseWholesalePrice: true,
+              minOrderQty: true,
+              onHandStock: true,
+              reservedStock: true,
+              lowStockThreshold: true,
             },
             orderBy: { baseWholesalePrice: "asc" },
           },
           images: {
+            select: { url: true },
             orderBy: { displayOrder: "asc" },
+            take: 1,
           },
         },
         take: 8,
@@ -54,7 +68,9 @@ export default async function HomePage() {
       prisma.productVariant.count({
         where: { isAvailable: true },
       }),
-      prisma.siteSetting.findMany(),
+      prisma.siteSetting.findMany({
+        select: { key: true, value: true },
+      }),
     ]);
 
     brands = fetchedBrands;
@@ -253,7 +269,7 @@ export default async function HomePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-            {products.map((product) => {
+            {products.map((product, index) => {
               const primaryVariant = product.variants[0];
               const availableUnits = primaryVariant
                 ? primaryVariant.onHandStock - primaryVariant.reservedStock
@@ -269,10 +285,14 @@ export default async function HomePage() {
                 >
                   {/* Thumbnail */}
                   <div className="relative h-44 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center p-3 overflow-hidden">
-                    <img
+                    <Image
                       src={imageUrl}
                       alt={product.name}
-                      className="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-200"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-contain p-3 group-hover:scale-105 transition duration-200"
+                      priority={index < 2}
+                      loading={index < 2 ? "eager" : "lazy"}
                     />
                     <div className="absolute top-2.5 left-2.5 bg-slate-900/80 text-white text-[9px] font-bold px-2 py-0.5 rounded">
                       {product.brand.name}

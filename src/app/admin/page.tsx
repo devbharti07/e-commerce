@@ -21,86 +21,83 @@ import {
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
-  // Query all real database metrics in parallel
+  // Query database metrics with parallel batching and targeted projections
   const [
     totalProducts,
     totalVariants,
-    pendingOrdersCount,
-    confirmedOrdersCount,
-    awaitingFulfillmentCount,
-    completedOrdersCount,
-    cancelledOrdersCount,
     registeredRetailersCount,
-    variantsWithInventory,
-    recentOrders,
-    recentMessages,
-    recentAuditLogs,
-    fulfilledRevenueAggregate,
-    confirmedOrdersValueAggregate,
-    pendingRequestsValueAggregate,
     pendingRegistrationsCount,
+    orderGroups,
+    inventoryAggregate,
+    attentionVariants,
+    recentOrders,
+    recentAuditLogs,
     recentRegistrations,
     recentLoginEvents,
   ] = await Promise.all([
     prisma.product.count({ where: { isPublished: true, isArchived: false } }),
     prisma.productVariant.count({ where: { isAvailable: true } }),
-    prisma.order.count({ where: { status: "REQUESTED" } }),
-    prisma.order.count({ where: { status: "CONFIRMED" } }),
-    prisma.order.count({
-      where: {
-        status: { in: ["PROCESSING", "READY_FOR_DISPATCH", "SHIPPED"] },
-      },
-    }),
-    prisma.order.count({ where: { status: "DELIVERED" } }),
-    prisma.order.count({ where: { status: { in: ["CANCELLED", "REJECTED"] } } }),
     prisma.user.count({ where: { role: "CUSTOMER" } }),
-    prisma.productVariant.findMany({
-      where: { isAvailable: true },
-      include: { product: true },
+    prisma.user.count({
+      where: { role: "CUSTOMER", approvalStatus: "PENDING" },
     }),
+    // Single consolidated aggregation for all order counts and financial metrics
+    prisma.order.groupBy({
+      by: ["status"],
+      _count: { id: true },
+      _sum: { totalAmount: true },
+    }),
+    // Stock totals without full table scan
+    prisma.productVariant.aggregate({
+      where: { isAvailable: true },
+      _sum: { onHandStock: true, reservedStock: true },
+    }),
+    // Targeted query for variants requiring stock attention
+    prisma.productVariant.findMany({
+      where: {
+        isAvailable: true,
+        OR: [
+          { onHandStock: { lte: 0 } },
+          { onHandStock: { lte: 5 } },
+        ],
+      },
+      select: {
+        id: true,
+        ramGb: true,
+        storageGb: true,
+        colorName: true,
+        onHandStock: true,
+        reservedStock: true,
+        lowStockThreshold: true,
+        product: { select: { name: true } },
+      },
+      take: 10,
+    }),
+    // Recent orders with pruned fields
     prisma.order.findMany({
       take: 6,
       orderBy: { createdAt: "desc" },
-      include: {
+      select: {
+        id: true,
+        orderNumber: true,
+        totalAmount: true,
+        status: true,
+        createdAt: true,
         customer: { select: { name: true, businessName: true, phone: true } },
-        items: true,
-      },
-    }),
-    prisma.message.findMany({
-      take: 5,
-      orderBy: { createdAt: "desc" },
-      include: {
-        sender: { select: { name: true, role: true } },
-        conversation: {
-          include: {
-            order: { select: { id: true, orderNumber: true } },
-          },
-        },
+        items: { select: { quantity: true } },
       },
     }),
     prisma.auditLog.findMany({
       take: 5,
       orderBy: { createdAt: "desc" },
-      include: {
+      select: {
+        id: true,
+        action: true,
+        entity: true,
+        entityId: true,
+        createdAt: true,
         user: { select: { name: true, email: true } },
       },
-    }),
-    prisma.order.aggregate({
-      where: { status: "DELIVERED" },
-      _sum: { totalAmount: true },
-    }),
-    prisma.order.aggregate({
-      where: {
-        status: { in: ["CONFIRMED", "PROCESSING", "READY_FOR_DISPATCH", "SHIPPED"] },
-      },
-      _sum: { totalAmount: true },
-    }),
-    prisma.order.aggregate({
-      where: { status: "REQUESTED" },
-      _sum: { totalAmount: true },
-    }),
-    prisma.user.count({
-      where: { role: "CUSTOMER", approvalStatus: "PENDING" },
     }),
     prisma.user.findMany({
       where: { role: "CUSTOMER" },
@@ -119,26 +116,58 @@ export default async function AdminDashboardPage() {
       where: { type: "USER_LOGIN" },
       take: 4,
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        body: true,
+        createdAt: true,
+      },
     }),
   ]);
 
+  // Aggregate metrics from single order.groupBy
+  let pendingOrdersCount = 0;
+  let confirmedOrdersCount = 0;
+  let awaitingFulfillmentCount = 0;
+  let completedOrdersCount = 0;
+  let cancelledOrdersCount = 0;
+  let collectedRevenue = 0;
+  let committedOrderValue = 0;
+  let pendingRequestsValue = 0;
+
+  for (const group of orderGroups) {
+    const count = group._count.id;
+    const amount = group._sum.totalAmount || 0;
+
+    if (group.status === "REQUESTED") {
+      pendingOrdersCount = count;
+      pendingRequestsValue = amount;
+    } else if (group.status === "CONFIRMED") {
+      confirmedOrdersCount = count;
+      committedOrderValue += amount;
+    } else if (["PROCESSING", "READY_FOR_DISPATCH", "SHIPPED"].includes(group.status)) {
+      awaitingFulfillmentCount += count;
+      committedOrderValue += amount;
+    } else if (group.status === "DELIVERED") {
+      completedOrdersCount = count;
+      collectedRevenue = amount;
+    } else if (["CANCELLED", "REJECTED"].includes(group.status)) {
+      cancelledOrdersCount += count;
+    }
+  }
+
   // Stock calculations
-  const outOfStockVariants = variantsWithInventory.filter(
+  const totalOnHand = inventoryAggregate._sum.onHandStock || 0;
+  const totalReserved = inventoryAggregate._sum.reservedStock || 0;
+  const totalAvailable = Math.max(0, totalOnHand - totalReserved);
+
+  const outOfStockVariants = attentionVariants.filter(
     (v) => v.onHandStock - v.reservedStock <= 0
   );
-  const lowStockVariants = variantsWithInventory.filter(
+  const lowStockVariants = attentionVariants.filter(
     (v) =>
       v.onHandStock - v.reservedStock > 0 &&
       v.onHandStock - v.reservedStock <= v.lowStockThreshold
   );
-
-  const totalOnHand = variantsWithInventory.reduce((s, v) => s + v.onHandStock, 0);
-  const totalReserved = variantsWithInventory.reduce((s, v) => s + v.reservedStock, 0);
-  const totalAvailable = Math.max(0, totalOnHand - totalReserved);
-
-  const collectedRevenue = fulfilledRevenueAggregate._sum.totalAmount || 0;
-  const committedOrderValue = confirmedOrdersValueAggregate._sum.totalAmount || 0;
-  const pendingRequestsValue = pendingRequestsValueAggregate._sum.totalAmount || 0;
 
   const getOrderStatusBadge = (status: string) => {
     switch (status) {

@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { formatCurrency } from "@/lib/utils";
 import { Smartphone, Filter, Search, CheckCircle2, SlidersHorizontal, ArrowUpDown } from "lucide-react";
 
+import Image from "next/image";
+
 interface CatalogPageProps {
   searchParams: Promise<{
     q?: string;
@@ -23,12 +25,6 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   const categorySlug = params.category || "";
   const sort = params.sort || "newest";
   const inStockOnly = params.inStockOnly === "true";
-
-  // Fetch all brands and categories for filter sidebar
-  const [brands, categories] = await Promise.all([
-    prisma.brand.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
-    prisma.category.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
-  ]);
 
   // Build query filter
   const whereClause: any = {
@@ -54,26 +50,54 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
     ];
   }
 
-  // Fetch products
-  const products = await prisma.product.findMany({
-    where: whereClause,
-    include: {
-      brand: true,
-      category: true,
-      variants: {
-        include: {
-          pricingTiers: {
-            orderBy: { minQty: "asc" },
+  // Fetch brands, categories, and products concurrently in a single batch
+  const [brands, categories, products] = await Promise.all([
+    prisma.brand.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true, slug: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.category.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true, slug: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.product.findMany({
+      where: whereClause,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        modelNumber: true,
+        createdAt: true,
+        brand: { select: { id: true, name: true, slug: true } },
+        category: { select: { id: true, name: true, slug: true } },
+        variants: {
+          where: { isAvailable: true },
+          select: {
+            id: true,
+            sku: true,
+            ramGb: true,
+            storageGb: true,
+            colorName: true,
+            baseWholesalePrice: true,
+            minOrderQty: true,
+            onHandStock: true,
+            reservedStock: true,
+            lowStockThreshold: true,
+            isAvailable: true,
           },
+          orderBy: { baseWholesalePrice: "asc" },
         },
-        orderBy: { baseWholesalePrice: "asc" },
+        images: {
+          select: { url: true },
+          orderBy: { displayOrder: "asc" },
+          take: 1,
+        },
       },
-      images: {
-        orderBy: { displayOrder: "asc" },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
 
   // Client filtering for stock if requested
   const filteredProducts = inStockOnly
@@ -357,11 +381,14 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
                     className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col hover:border-slate-400 dark:hover:border-slate-600 shadow-2xs hover:shadow-xs transition"
                   >
                     {/* Handset Image */}
-                    <div className="relative h-44 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center p-3">
-                      <img
+                    <div className="relative h-44 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center p-3 overflow-hidden">
+                      <Image
                         src={imageUrl}
                         alt={product.name}
-                        className="max-h-full max-w-full object-contain hover:scale-105 transition duration-200"
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-contain p-3 hover:scale-105 transition duration-200"
+                        loading="lazy"
                       />
                       <div className="absolute top-2.5 left-2.5 bg-slate-900/80 text-white text-[9px] font-bold px-2 py-0.5 rounded">
                         {product.brand.name}
