@@ -1,7 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
-
 interface VariantDefinition {
   sku: string;
   ramGb: number;
@@ -447,7 +445,7 @@ const REQUESTED_MODELS: ProductDefinition[] = [
   },
 ];
 
-async function main() {
+export async function add20SmartphoneModels(prisma: PrismaClient) {
   console.log("Starting addition of smartphone models...");
 
   // 1. Ensure required Brands exist
@@ -585,11 +583,14 @@ async function main() {
   console.log("==========================================\n");
 }
 
-main()
-  .catch((e) => {
-    console.error("Error executing smartphone expansion script:", e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (process.argv[1] && process.argv[1].replace(/\\/g, "/").includes("scripts/add-20-smartphones")) {
+  const cliPrisma = new PrismaClient();
+  add20SmartphoneModels(cliPrisma)
+    .catch((e) => {
+      console.error("Error executing smartphone expansion script:", e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await cliPrisma.$disconnect();
+    });
+}

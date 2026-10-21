@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { add20SmartphoneModels } from "../scripts/add-20-smartphones";
 
 const prisma = new PrismaClient();
 
@@ -646,6 +647,9 @@ async function main() {
       create: { key: s.key, value: s.value, isPublic: true },
     });
   }
+
+  // 10. Seed Smartphone Models Expansion (Idempotent 20 models)
+  await add20SmartphoneModels(prisma);
 
   console.log("Database seeded successfully and verified idempotent!");
 }
