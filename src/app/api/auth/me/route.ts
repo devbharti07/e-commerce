@@ -20,10 +20,12 @@ export async function GET() {
         businessName: true,
         gstNumber: true,
         isVerified: true,
+        isSuspended: true,
+        approvalStatus: true,
       },
     });
 
-    if (!user) {
+    if (!user || (user.role === "CUSTOMER" && (user.approvalStatus !== "APPROVED" || user.isSuspended))) {
       return NextResponse.json({ user: null }, { status: 401 });
     }
 
@@ -37,6 +39,7 @@ export async function GET() {
         businessName: user.businessName,
         gstNumber: user.gstNumber,
         isVerified: user.isVerified,
+        approvalStatus: user.approvalStatus,
       },
     });
   } catch (error) {

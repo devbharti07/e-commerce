@@ -37,7 +37,7 @@ export async function POST(req: Request) {
 
     if (!result.success) {
       return NextResponse.json(
-        { error: result.error.issues[0]?.message || "Validation failed" },
+        { success: false, error: result.error.issues[0]?.message || "Validation failed" },
         { status: 400 }
       );
     }
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
 
     if (existing) {
       return NextResponse.json(
-        { error: "An account with this email already exists. Please sign in instead." },
+        { success: false, error: "An account with this email already exists. Please sign in instead." },
         { status: 409 }
       );
     }
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     // Secure bcrypt hashing (12 rounds)
     const passwordHash = await hashPassword(password);
 
-    // Public signup is strictly locked to CUSTOMER role (privilege escalation prevented)
+    // Public signup is strictly locked to CUSTOMER role and starts in PENDING approval status
     const user = await prisma.user.create({
       data: {
         name: name.trim(),
@@ -70,41 +70,57 @@ export async function POST(req: Request) {
         gstNumber: gstNumber?.trim() || null,
         passwordHash,
         role: "CUSTOMER",
-        isVerified: false, // Accurately set to false until SMTP verification service is connected
+        approvalStatus: "PENDING",
+        isVerified: false,
       },
     });
 
-    const sessionPayload = {
-      userId: user.id,
-      email: user.email,
-      role: "CUSTOMER" as const,
-      name: user.name,
-    };
+    // Create persistent admin notification for the registration request
+    await prisma.notificationDelivery.create({
+      data: {
+        type: "NEW_REGISTRATION",
+        recipient: "ADMIN",
+        title: "New Retailer Registration Request",
+        body: `Applicant ${user.name} (${user.email}${user.businessName ? ` - ${user.businessName}` : ""}) has submitted a registration request awaiting approval.`,
+        status: "PENDING",
+      },
+    });
 
-    const token = await createSessionToken(sessionPayload);
-
-    const response = NextResponse.json({
-      success: true,
-      user: {
+    // Record audit log entry
+    await prisma.auditLog.create({
+      data: {
         userId: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        businessName: user.businessName,
+        action: "REGISTRATION_SUBMITTED",
+        entity: "User",
+        entityId: user.id,
+        detailsJson: JSON.stringify({
+          name: user.name,
+          email: user.email,
+          businessName: user.businessName,
+          phone: user.phone,
+          gstNumber: user.gstNumber,
+          approvalStatus: "PENDING",
+        }),
       },
     });
 
-    response.cookies.set({
-      name: AUTH_COOKIE_NAME,
-      value: token,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
-      path: "/",
-    });
-
-    return response;
+    // Return pending approval response - DO NOT create or issue an authenticated session cookie
+    return NextResponse.json(
+      {
+        success: true,
+        approvalStatus: "PENDING",
+        pendingApproval: true,
+        message:
+          "Your registration has been submitted successfully. Your account is awaiting admin approval. You will be able to log in after your account has been approved.",
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          approvalStatus: "PENDING",
+        },
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Register API error:", error);
     return NextResponse.json(

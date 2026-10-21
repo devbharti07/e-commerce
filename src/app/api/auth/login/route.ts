@@ -42,11 +42,68 @@ export async function POST(req: Request) {
       );
     }
 
-    if (user.isSuspended) {
-      return NextResponse.json(
-        { error: "Your retailer account is currently suspended. Please contact Jagdamba Mobile administration." },
-        { status: 403 }
-      );
+    if (user.role === "CUSTOMER") {
+      if (user.approvalStatus === "PENDING") {
+        return NextResponse.json(
+          {
+            error:
+              "Your account is awaiting admin approval. You will be able to log in after your account has been approved by Jagdamba Mobile administration.",
+            approvalStatus: "PENDING",
+          },
+          { status: 403 }
+        );
+      }
+
+      if (user.approvalStatus === "REJECTED") {
+        return NextResponse.json(
+          {
+            error:
+              "Your registration request has been rejected. Please contact Jagdamba Mobile administration for assistance.",
+            approvalStatus: "REJECTED",
+          },
+          { status: 403 }
+        );
+      }
+
+      if (user.approvalStatus === "SUSPENDED" || user.isSuspended) {
+        return NextResponse.json(
+          {
+            error:
+              "Your retailer account is currently suspended. Please contact Jagdamba Mobile administration.",
+            approvalStatus: "SUSPENDED",
+          },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Record login event in notification delivery (informational history)
+    try {
+      await prisma.notificationDelivery.create({
+        data: {
+          type: "USER_LOGIN",
+          recipient: "ADMIN",
+          title: `Successful Sign In: ${user.name}`,
+          body: `${user.name} (${user.email}) successfully logged in with role ${user.role}.`,
+          status: "SENT",
+        },
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          userId: user.id,
+          action: "USER_LOGIN",
+          entity: "User",
+          entityId: user.id,
+          detailsJson: JSON.stringify({
+            role: user.role,
+            email: user.email,
+            time: new Date().toISOString(),
+          }),
+        },
+      });
+    } catch (logErr) {
+      console.warn("Failed to record login audit log:", logErr);
     }
 
     const sessionPayload = {
@@ -66,6 +123,7 @@ export async function POST(req: Request) {
         name: user.name,
         role: user.role,
         businessName: user.businessName,
+        approvalStatus: user.approvalStatus || "APPROVED",
       },
     });
 

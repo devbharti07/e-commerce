@@ -35,20 +35,28 @@ export default async function AdminLayout({
   }
 
   // Fetch real-time live database counts for sidebar badges
-  const [pendingOrdersCount, unreadMessagesCount, lowStockCount, notificationsCount] =
-    await Promise.all([
-      prisma.order.count({ where: { status: "REQUESTED" } }),
-      prisma.message.count({ where: { senderRole: "CUSTOMER", isRead: false } }),
-      prisma.productVariant.count({
-        where: {
-          isAvailable: true,
-          onHandStock: { lte: 5 },
-        },
-      }),
-      prisma.notificationDelivery.count({
-        where: { status: "PENDING" },
-      }),
-    ]);
+  const [
+    pendingOrdersCount,
+    unreadMessagesCount,
+    lowStockCount,
+    notificationsCount,
+    pendingRegistrationsCount,
+  ] = await Promise.all([
+    prisma.order.count({ where: { status: "REQUESTED" } }),
+    prisma.message.count({ where: { senderRole: "CUSTOMER", isRead: false } }),
+    prisma.productVariant.count({
+      where: {
+        isAvailable: true,
+        onHandStock: { lte: 5 },
+      },
+    }),
+    prisma.notificationDelivery.count({
+      where: { status: "PENDING" },
+    }),
+    prisma.user.count({
+      where: { role: "CUSTOMER", approvalStatus: "PENDING" },
+    }),
+  ]);
 
   return (
     <AdminLayoutShell
@@ -62,6 +70,7 @@ export default async function AdminLayout({
         unreadMessagesCount,
         lowStockCount,
         notificationsCount,
+        pendingRegistrationsCount,
       }}
     >
       {children}

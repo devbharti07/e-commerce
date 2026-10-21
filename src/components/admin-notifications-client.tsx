@@ -14,6 +14,8 @@ import {
   AlertTriangle,
   RefreshCw,
   ExternalLink,
+  UserCheck,
+  ShieldCheck,
 } from "lucide-react";
 
 interface DeliveryItem {
@@ -96,6 +98,10 @@ export function AdminNotificationsClient({
 
   const getTypeIcon = (type: string) => {
     switch (type) {
+      case "NEW_REGISTRATION":
+        return <UserCheck className="w-4 h-4 text-amber-500" />;
+      case "USER_LOGIN":
+        return <ShieldCheck className="w-4 h-4 text-emerald-500" />;
       case "RESTOCK":
         return <Boxes className="w-4 h-4 text-emerald-500" />;
       case "ORDER_STATUS":
@@ -103,7 +109,7 @@ export function AdminNotificationsClient({
       case "DEALER_MESSAGE":
         return <MessageSquare className="w-4 h-4 text-amber-500" />;
       default:
-        return <Bell className="w-4 h-4 text-[#FCA311]" />;
+        return <Bell className="w-4 h-4 text-amber-500" />;
     }
   };
 
@@ -212,6 +218,15 @@ export function AdminNotificationsClient({
                 </div>
 
                 <div className="flex items-center gap-2 self-end sm:self-center">
+                  {item.type === "NEW_REGISTRATION" && (
+                    <Link
+                      href="/admin/registration-requests"
+                      className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 rounded font-medium text-[11px] transition inline-flex items-center gap-1 shadow-2xs"
+                    >
+                      <span>Review Request</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </Link>
+                  )}
                   {item.status === "PENDING" ? (
                     <button
                       onClick={() => handleMarkAsRead(item.id)}
@@ -221,7 +236,7 @@ export function AdminNotificationsClient({
                     </button>
                   ) : (
                     <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Dispatched
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Handled
                     </span>
                   )}
                 </div>

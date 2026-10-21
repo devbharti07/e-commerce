@@ -28,6 +28,7 @@ import {
   Moon,
   Search,
   User as UserIcon,
+  UserCheck,
 } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 
@@ -51,6 +52,7 @@ interface AdminLayoutShellProps {
     unreadMessagesCount: number;
     lowStockCount: number;
     notificationsCount: number;
+    pendingRegistrationsCount?: number;
   };
   children: React.ReactNode;
 }
@@ -157,6 +159,17 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
           href: "/admin/retailers",
           icon: Users,
           badge: null,
+        },
+        {
+          name: "Registration Requests",
+          href: "/admin/registration-requests",
+          icon: UserCheck,
+          badge:
+            (metrics.pendingRegistrationsCount ?? 0) > 0
+              ? `${metrics.pendingRegistrationsCount} pending`
+              : null,
+          badgeColor:
+            "bg-amber-500/10 text-amber-400 border border-amber-500/20",
         },
         {
           name: "Messages & Chat",

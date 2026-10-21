@@ -136,11 +136,12 @@ describe("Jagdamba Mobile Admin Panel Comprehensive Security & Functional Verifi
       }),
     });
 
-    assert.strictEqual(res.status, 200);
+    assert.ok(res.status === 200 || res.status === 201, `Expected 200 or 201, got ${res.status}`);
     const registeredUser = await prisma.user.findUnique({
       where: { email: testEmail },
     });
     assert.ok(registeredUser);
+    assert.strictEqual(registeredUser.approvalStatus, "PENDING", "New registration must be PENDING");
     assert.strictEqual(
       registeredUser.role,
       "CUSTOMER",

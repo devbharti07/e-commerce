@@ -16,6 +16,8 @@ import {
   ExternalLink,
   ShieldAlert,
   Plus,
+  UserCheck,
+  ShieldCheck,
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
@@ -36,6 +38,9 @@ export default async function AdminDashboardPage() {
     fulfilledRevenueAggregate,
     confirmedOrdersValueAggregate,
     pendingRequestsValueAggregate,
+    pendingRegistrationsCount,
+    recentRegistrations,
+    recentLoginEvents,
   ] = await Promise.all([
     prisma.product.count({ where: { isPublished: true, isArchived: false } }),
     prisma.productVariant.count({ where: { isAvailable: true } }),
@@ -93,6 +98,27 @@ export default async function AdminDashboardPage() {
     prisma.order.aggregate({
       where: { status: "REQUESTED" },
       _sum: { totalAmount: true },
+    }),
+    prisma.user.count({
+      where: { role: "CUSTOMER", approvalStatus: "PENDING" },
+    }),
+    prisma.user.findMany({
+      where: { role: "CUSTOMER" },
+      take: 4,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        businessName: true,
+        approvalStatus: true,
+        createdAt: true,
+      },
+    }),
+    prisma.notificationDelivery.findMany({
+      where: { type: "USER_LOGIN" },
+      take: 4,
+      orderBy: { createdAt: "desc" },
     }),
   ]);
 
@@ -174,8 +200,24 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Actionable Alerts (Shown only when genuine attention is required) */}
-      {(pendingOrdersCount > 0 || outOfStockVariants.length > 0 || lowStockVariants.length > 0) && (
+      {(pendingRegistrationsCount > 0 || pendingOrdersCount > 0 || outOfStockVariants.length > 0 || lowStockVariants.length > 0) && (
         <div className="space-y-2.5">
+          {pendingRegistrationsCount > 0 && (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 sm:p-3.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-xl text-xs text-amber-900 dark:text-amber-200">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <UserCheck className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <span>
+                  <strong>{pendingRegistrationsCount} new retail store registration{pendingRegistrationsCount > 1 ? "s" : ""}</strong> awaiting administrative approval.
+                </span>
+              </div>
+              <Link
+                href="/admin/registration-requests"
+                className="font-semibold underline hover:no-underline shrink-0 flex items-center gap-1 text-amber-700 dark:text-amber-400 self-end sm:self-auto"
+              >
+                Review Registrations &rarr;
+              </Link>
+            </div>
+          )}
           {pendingOrdersCount > 0 && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 sm:p-3.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-xl text-xs text-amber-900 dark:text-amber-200">
               <div className="flex items-center gap-2.5 min-w-0">
@@ -463,6 +505,78 @@ export default async function AdminDashboardPage() {
                     </div>
                   );
                 })
+              )}
+            </div>
+          </div>
+
+          {/* Recent Registrations & Login Events */}
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                <UserCheck className="w-3.5 h-3.5 text-slate-400" />
+                Registrations & Logins
+              </h3>
+              <Link
+                href="/admin/registration-requests"
+                className="text-[11px] font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white"
+              >
+                Requests ({pendingRegistrationsCount})
+              </Link>
+            </div>
+
+            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+              {recentRegistrations.length === 0 && recentLoginEvents.length === 0 ? (
+                <div className="p-6 text-center text-xs text-slate-500">
+                  <p>No registration or login activity yet.</p>
+                </div>
+              ) : (
+                <>
+                  {recentRegistrations.map((reg) => (
+                    <div key={`reg-${reg.id}`} className="p-3 text-xs flex items-center justify-between">
+                      <div className="min-w-0 pr-2">
+                        <div className="flex items-center gap-1.5">
+                          <p className="font-semibold text-slate-900 dark:text-slate-100 truncate">
+                            {reg.businessName || reg.name}
+                          </p>
+                          <span
+                            className={`px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider ${
+                              reg.approvalStatus === "PENDING"
+                                ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                                : reg.approvalStatus === "APPROVED"
+                                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                                : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
+                            }`}
+                          >
+                            {reg.approvalStatus}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                          {reg.email} • {formatDateTime(reg.createdAt)}
+                        </p>
+                      </div>
+                      {reg.approvalStatus === "PENDING" && (
+                        <Link
+                          href="/admin/registration-requests"
+                          className="shrink-0 px-2 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] font-semibold rounded transition"
+                        >
+                          Review
+                        </Link>
+                      )}
+                    </div>
+                  ))}
+
+                  {recentLoginEvents.slice(0, 3).map((login) => (
+                    <div key={`login-${login.id}`} className="p-2.5 bg-slate-50/50 dark:bg-slate-800/30 text-[11px] text-slate-600 dark:text-slate-400 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 min-w-0 pr-2 truncate">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                        <span className="truncate">{login.body}</span>
+                      </div>
+                      <span className="text-[9px] text-slate-400 tabular-nums shrink-0">
+                        {formatDateTime(login.createdAt)}
+                      </span>
+                    </div>
+                  ))}
+                </>
               )}
             </div>
           </div>
