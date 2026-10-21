@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { formatDateTime } from "@/lib/utils";
 import {
   UserCheck,
@@ -48,6 +49,7 @@ interface Props {
 }
 
 export function AdminRegistrationRequestsClient({ initialRequests, initialCounts }: Props) {
+  const router = useRouter();
   const [requests, setRequests] = useState<RegistrationRequestRow[]>(initialRequests);
   const [counts, setCounts] = useState<Counts>(initialCounts);
   const [search, setSearch] = useState("");
@@ -55,6 +57,7 @@ export function AdminRegistrationRequestsClient({ initialRequests, initialCounts
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<RegistrationRequestRow | null>(null);
+  const [approveModalRequest, setApproveModalRequest] = useState<RegistrationRequestRow | null>(null);
   const [rejectModalRequest, setRejectModalRequest] = useState<RegistrationRequestRow | null>(null);
   const [rejectionReasonInput, setRejectionReasonInput] = useState("");
   const [feedbackMessage, setFeedbackMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -93,11 +96,7 @@ export function AdminRegistrationRequestsClient({ initialRequests, initialCounts
     }
   };
 
-  const handleApprove = async (request: RegistrationRequestRow) => {
-    if (!confirm(`Are you sure you want to approve wholesale access for ${request.name} (${request.email})?`)) {
-      return;
-    }
-
+  const executeApprove = async (request: RegistrationRequestRow) => {
     setActionLoadingId(request.id);
     setFeedbackMessage(null);
 
@@ -114,20 +113,22 @@ export function AdminRegistrationRequestsClient({ initialRequests, initialCounts
       setRequests((prev) =>
         prev.map((r) =>
           r.id === request.id
-            ? { ...r, approvalStatus: "APPROVED", approvedAt: new Date().toISOString(), rejectionReason: null }
+            ? { ...r, approvalStatus: "APPROVED", isVerified: true, approvedAt: new Date().toISOString(), rejectionReason: null }
             : r
         )
       );
       setCounts((prev) => ({
         ...prev,
         pending: Math.max(0, prev.pending - (request.approvalStatus === "PENDING" ? 1 : 0)),
-        approved: prev.approved + 1,
+        approved: prev.approved + (request.approvalStatus !== "APPROVED" ? 1 : 0),
       }));
 
       setFeedbackMessage({
         type: "success",
-        text: `Successfully approved wholesale portal access for ${request.name}.`,
+        text: `Successfully approved wholesale portal access for ${request.name} (${request.email}).`,
       });
+      setApproveModalRequest(null);
+      router.refresh();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to approve request.";
       setFeedbackMessage({ type: "error", text: message });
@@ -181,6 +182,7 @@ export function AdminRegistrationRequestsClient({ initialRequests, initialCounts
       });
       setRejectModalRequest(null);
       setRejectionReasonInput("");
+      router.refresh();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to reject request.";
       setFeedbackMessage({ type: "error", text: message });
@@ -409,7 +411,7 @@ export function AdminRegistrationRequestsClient({ initialRequests, initialCounts
                         {req.approvalStatus === "PENDING" && (
                           <>
                             <button
-                              onClick={() => handleApprove(req)}
+                              onClick={() => setApproveModalRequest(req)}
                               disabled={actionLoadingId === req.id}
                               className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-medium text-[11px] transition disabled:opacity-50 flex items-center gap-1 shadow-2xs"
                               title="Approve Wholesale Access"
@@ -435,7 +437,7 @@ export function AdminRegistrationRequestsClient({ initialRequests, initialCounts
 
                         {req.approvalStatus === "REJECTED" && (
                           <button
-                            onClick={() => handleApprove(req)}
+                            onClick={() => setApproveModalRequest(req)}
                             disabled={actionLoadingId === req.id}
                             className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 rounded font-medium text-[11px] transition disabled:opacity-50"
                             title="Reconsider & Approve"
@@ -543,13 +545,95 @@ export function AdminRegistrationRequestsClient({ initialRequests, initialCounts
                   onClick={() => {
                     const req = selectedRequest;
                     setSelectedRequest(null);
-                    handleApprove(req);
+                    setApproveModalRequest(req);
                   }}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition shadow-2xs"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition shadow-2xs flex items-center gap-1.5"
                 >
+                  <CheckCircle2 className="w-4 h-4" />
                   Approve Wholesale Access
                 </button>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Approve Confirmation Modal */}
+      {approveModalRequest && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-xl border border-emerald-200 dark:border-emerald-900/50 p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-200 dark:border-emerald-800">
+                <CheckCircle2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                  Approve Dealer Registration
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Grant wholesale portal access for {approveModalRequest.name}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg text-xs space-y-2 border border-slate-200/80 dark:border-slate-700/60">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Applicant:</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{approveModalRequest.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Email:</span>
+                <span className="font-mono text-slate-800 dark:text-slate-200">{approveModalRequest.email}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Business / Store:</span>
+                <span className="text-slate-800 dark:text-slate-200">{approveModalRequest.businessName || "Independent Retailer"}</span>
+              </div>
+              {approveModalRequest.phone && (
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Phone:</span>
+                  <span className="text-slate-800 dark:text-slate-200">{approveModalRequest.phone}</span>
+                </div>
+              )}
+              {approveModalRequest.gstNumber && (
+                <div className="flex justify-between">
+                  <span className="text-slate-500">GSTIN:</span>
+                  <span className="font-mono text-slate-800 dark:text-slate-200">{approveModalRequest.gstNumber}</span>
+                </div>
+              )}
+            </div>
+
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              Approving this application will immediately activate verified dealer status, enable wholesale pricing tiers, and allow this customer to log in to Jagdamba Mobile.
+            </p>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setApproveModalRequest(null)}
+                disabled={actionLoadingId === approveModalRequest.id}
+                className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => executeApprove(approveModalRequest)}
+                disabled={actionLoadingId === approveModalRequest.id}
+                className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition shadow-2xs disabled:opacity-50 flex items-center gap-1.5"
+              >
+                {actionLoadingId === approveModalRequest.id ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Approving...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Confirm & Approve Access</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>

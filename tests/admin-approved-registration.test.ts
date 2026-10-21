@@ -486,4 +486,60 @@ describe("Admin-Approved Registration, Login Gating & Storefront Protection Veri
     assert.ok(productCount >= 20, `Expected at least 20 products, found ${productCount}`);
     assert.ok(variantCount >= 10, `Expected at least 10 variants, found ${variantCount}`);
   });
+
+  // TEST 9: Nonexistent request ID returns 404 Not Found
+  test("REGRESSION TEST 9. Nonexistent registration request ID returns 404 Not Found", async () => {
+    const res = await fetch(`${BASE_URL}/api/admin/registration-requests/nonexistent_id_999999`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `${AUTH_COOKIE_NAME}=${ownerToken}`,
+      },
+      body: JSON.stringify({ action: "APPROVE" }),
+    });
+
+    assert.strictEqual(res.status, 404);
+    const data = await res.json();
+    assert.ok(data.error.includes("not found"));
+  });
+
+  // TEST 10: Repeated approval does not create duplicate profiles
+  test("REGRESSION TEST 10. Repeated approval on already approved account succeeds cleanly without duplicate profiles", async () => {
+    const res = await fetch(`${BASE_URL}/api/admin/registration-requests/${testPendingUserId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `${AUTH_COOKIE_NAME}=${ownerToken}`,
+      },
+      body: JSON.stringify({ action: "APPROVE" }),
+    });
+
+    assert.strictEqual(res.status, 200);
+    const data = await res.json();
+    assert.strictEqual(data.success, true);
+    assert.ok(data.message.includes("approved"));
+
+    // Verify exactly 1 user record exists for this email
+    const usersWithEmail = await prisma.user.findMany({
+      where: { email: testPendingUserEmail },
+    });
+    assert.strictEqual(usersWithEmail.length, 1, "Must never create duplicate user profiles");
+  });
+
+  // TEST 14 & 15: Admin UI / list API reflects actual database result after refresh
+  test("REGRESSION TEST 14 & 15. Admin registration list reflects actual DB status and counts after refresh", async () => {
+    const res = await fetch(`${BASE_URL}/api/admin/registration-requests`, {
+      headers: { Cookie: `${AUTH_COOKIE_NAME}=${ownerToken}` },
+    });
+
+    assert.strictEqual(res.status, 200);
+    const data = await res.json();
+    assert.strictEqual(data.success, true);
+    assert.ok(data.counts.approved >= 1);
+
+    const approvedRow = data.requests.find((r: any) => r.id === testPendingUserId);
+    assert.ok(approvedRow);
+    assert.strictEqual(approvedRow.approvalStatus, "APPROVED");
+    assert.strictEqual(approvedRow.isVerified, true);
+  });
 });
