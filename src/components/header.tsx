@@ -109,18 +109,18 @@ export function Header() {
       </div>
 
       {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
           {/* Brand Logo */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="w-9 h-9 rounded-lg bg-slate-900 dark:bg-slate-800 text-white flex items-center justify-center shadow-xs border border-slate-800 dark:border-slate-700">
-              <Smartphone className="w-5 h-5 text-amber-400" />
+          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink min-w-0 group">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-slate-900 dark:bg-slate-800 text-white flex items-center justify-center shadow-xs border border-slate-800 dark:border-slate-700 shrink-0">
+              <Smartphone className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
             </div>
-            <div>
-              <div className="text-lg font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1">
+            <div className="min-w-0">
+              <div className="text-sm sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1 truncate">
                 JAGDAMBA <span className="text-amber-500 font-semibold">MOBILE</span>
               </div>
-              <p className="text-[10px] font-medium tracking-wider text-slate-500 dark:text-slate-400 uppercase -mt-0.5">
+              <p className="text-[9px] sm:text-[10px] font-medium tracking-wider text-slate-500 dark:text-slate-400 uppercase -mt-0.5 truncate">
                 Wholesale Distribution
               </p>
             </div>
@@ -148,7 +148,7 @@ export function Header() {
           </form>
 
           {/* Right Action Icons */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {/* Catalog Link */}
             <Link
               href="/catalog"
@@ -161,7 +161,7 @@ export function Header() {
             <button
               onClick={toggleTheme}
               aria-label="Toggle Theme"
-              className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              className="p-1.5 sm:p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
               {theme === "light" ? (
                 <Moon className="w-4 h-4" />
@@ -173,7 +173,7 @@ export function Header() {
             {/* Wholesale Cart Link */}
             <Link
               href="/cart"
-              className="relative p-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center"
+              className="relative p-1.5 sm:p-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center"
               aria-label="Shopping Cart"
             >
               <ShoppingCart className="w-5 h-5" />
@@ -188,7 +188,7 @@ export function Header() {
             {user ? (
               <div className="relative group">
                 <button
-                  className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-medium transition"
+                  className="flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-medium transition"
                   aria-label="User Account Menu"
                 >
                   <div className="w-7 h-7 rounded-full bg-slate-900 dark:bg-slate-800 text-white flex items-center justify-center text-xs font-bold border border-slate-700">
@@ -238,9 +238,19 @@ export function Header() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                {/* Login Dropdown Menu with Admin and User options */}
-                <div className="relative" ref={loginDropdownRef}>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                {/* Compact Mobile Sign In Icon Button */}
+                <Link
+                  href="/login"
+                  className="sm:hidden p-1.5 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
+                  aria-label="User Sign In"
+                  title="Sign In"
+                >
+                  <UserIcon className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+                </Link>
+
+                {/* Login Dropdown Menu with Admin and User options (Tablet & Desktop) */}
+                <div className="relative hidden sm:block" ref={loginDropdownRef}>
                   <button
                     type="button"
                     onClick={() => setLoginDropdownOpen((prev) => !prev)}
@@ -252,8 +262,9 @@ export function Header() {
                     <UserIcon className="w-3.5 h-3.5 text-slate-500" />
                     <span>Sign In</span>
                     <ChevronDown
-                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-150 ${loginDropdownOpen ? "rotate-180" : ""
-                        }`}
+                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-150 ${
+                        loginDropdownOpen ? "rotate-180" : ""
+                      }`}
                     />
                   </button>
 

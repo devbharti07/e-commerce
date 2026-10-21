@@ -1,6 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { ProductDetailClient } from "@/components/product-detail-client";
 
 interface ProductPageProps {
@@ -11,6 +12,8 @@ interface ProductPageProps {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
+  const user = await getCurrentUser();
+  const isOwner = user?.role === "OWNER";
 
   const product = await prisma.product.findUnique({
     where: { slug },
@@ -34,7 +37,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     },
   });
 
-  if (!product || !product.isPublished || product.isArchived) {
+  if (!product || (!product.isPublished && !isOwner) || product.isArchived) {
     notFound();
   }
 

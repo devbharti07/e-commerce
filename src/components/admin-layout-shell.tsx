@@ -528,7 +528,7 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 p-3 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto">{children}</div>
+        <div className="flex-1 p-3 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto min-w-0 overflow-x-hidden">{children}</div>
       </main>
     </div>
   );
