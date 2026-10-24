@@ -1,11 +1,38 @@
-import { describe, it } from "node:test";
+import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { prisma } from "../src/lib/prisma";
-import { verifyPassword, createSessionToken, verifySessionToken, AUTH_COOKIE_NAME } from "../src/lib/auth";
+import { hashPassword, verifyPassword, createSessionToken, verifySessionToken, AUTH_COOKIE_NAME } from "../src/lib/auth";
 
-const BASE_URL = process.env.TEST_BASE_URL || "http://localhost:3000";
+const BASE_URL = process.env.TEST_BASE_URL || (process.env.PORT ? `http://localhost:${process.env.PORT}` : "http://localhost:3001");
 
 describe("Separate Admin Sign In and User Sign In Verification", () => {
+  let testCustomerEmail: string;
+  let testCustomerId: string;
+  const testCustomerPassword = "TestRetailer@2026";
+
+  before(async () => {
+    testCustomerEmail = `ephemeral.customer.${Date.now()}@example.com`;
+    const hash = await hashPassword(testCustomerPassword);
+    const created = await prisma.user.create({
+      data: {
+        email: testCustomerEmail,
+        name: "Ephemeral Test Retailer",
+        phone: "+91 99999 11111",
+        passwordHash: hash,
+        role: "CUSTOMER",
+        approvalStatus: "APPROVED",
+        isVerified: true,
+      },
+    });
+    testCustomerId = created.id;
+  });
+
+  after(async () => {
+    if (testCustomerId) {
+      await prisma.auditLog.deleteMany({ where: { userId: testCustomerId } }).catch(() => {});
+      await prisma.user.delete({ where: { id: testCustomerId } }).catch(() => {});
+    }
+  });
   it("1. Dedicated admin login page /admin/login is accessible and does not redirect in a loop", async () => {
     const res = await fetch(`${BASE_URL}/admin/login`, {
       redirect: "manual",
@@ -96,7 +123,7 @@ describe("Separate Admin Sign In and User Sign In Verification", () => {
 
   it("5. Retailer (CUSTOMER) account cannot sign in with admin privileges", async () => {
     const retailer = await prisma.user.findUnique({
-      where: { email: "rajesh.mobile@gmail.com" },
+      where: { id: testCustomerId },
     });
     assert.ok(retailer, "Retailer account must exist");
     assert.strictEqual(retailer.role, "CUSTOMER");
@@ -106,8 +133,8 @@ describe("Separate Admin Sign In and User Sign In Verification", () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: "rajesh.mobile@gmail.com",
-        password: "Retailer@2026",
+        email: testCustomerEmail,
+        password: testCustomerPassword,
       }),
     });
 
@@ -155,7 +182,7 @@ describe("Separate Admin Sign In and User Sign In Verification", () => {
   it("7. Direct API calls to /api/admin/* with customer cookie return 403 Forbidden", async () => {
     // Generate customer token
     const customer = await prisma.user.findUnique({
-      where: { email: "rajesh.mobile@gmail.com" },
+      where: { id: testCustomerId },
     });
     assert.ok(customer);
 
