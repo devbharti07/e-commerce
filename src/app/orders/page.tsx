@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
-import { Package, MessageSquare, ArrowRight } from "lucide-react";
+import { Package, MessageSquare, ArrowRight, ShieldCheck, Clock } from "lucide-react";
 
 export default async function OrdersListPage() {
   const user = await getCurrentUser();
@@ -24,98 +24,110 @@ export default async function OrdersListPage() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 bg-[#F6F5F0] dark:bg-[#111916] text-[#17231E] dark:text-[#E8EFEA] min-h-[85vh] transition-colors">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#DDE3DC] dark:border-[#212E28]">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#B3853E] dark:text-[#D8AB64]">
+              Trade Dashboard
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#17231E] dark:text-[#E8EFEA] tracking-tight">
             {user.role === "OWNER" ? "All Wholesale Orders" : "My Bulk Order Requests"}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Track confirmation status, communicate with dealer, and review line items
+          <p className="text-xs sm:text-sm text-[#69736D] dark:text-[#9BA59E] mt-1">
+            Track confirmation status, communicate with dealer desk, and review line items
           </p>
         </div>
 
         <Link
           href="/catalog"
-          className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-medium text-xs rounded-lg transition flex items-center gap-1.5 self-start shadow-xs"
+          className="px-4 py-2.5 bg-[#B3853E] hover:bg-[#9E7332] text-white font-bold text-xs rounded-xl transition flex items-center gap-2 self-start shadow-2xs cursor-pointer"
         >
-          Create New Order Request
+          <span>Create New Order Request</span>
+          <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>
 
       {orders.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-12 text-center space-y-3 shadow-xs">
-          <div className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 mx-auto flex items-center justify-center">
-            <Package className="w-6 h-6" />
+        <div className="bg-white dark:bg-[#18221D] rounded-2xl border border-[#DDE3DC] dark:border-[#212E28] p-12 text-center space-y-4 shadow-2xs">
+          <div className="w-14 h-14 rounded-2xl bg-[#173B35]/10 text-[#173B35] dark:text-[#D8AB64] mx-auto flex items-center justify-center border border-[#173B35]/20">
+            <Package className="w-7 h-7" />
           </div>
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+          <h2 className="text-lg font-bold text-[#17231E] dark:text-[#E8EFEA]">
             No Bulk Orders Found
           </h2>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
-            You haven&apos;t submitted any wholesale order requests yet. Browse our inventory to request models.
+          <p className="text-xs text-[#69736D] dark:text-[#9BA59E] max-w-sm mx-auto leading-relaxed">
+            You haven&apos;t submitted any wholesale order requests yet. Browse our inventory of genuine smartphones to request bulk quotes.
           </p>
           <div className="pt-2">
             <Link
               href="/catalog"
-              className="inline-block px-4 py-2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-medium rounded-lg"
+              className="inline-block px-5 py-2.5 bg-[#173B35] hover:bg-[#285C4D] text-white text-xs font-semibold rounded-xl transition shadow-2xs"
             >
               Browse Smartphone Catalog
             </Link>
           </div>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {orders.map((order) => {
             const totalUnits = order.items.reduce((acc, it) => acc + it.quantity, 0);
 
             return (
               <div
                 key={order.id}
-                className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs"
+                className="bg-white dark:bg-[#18221D] p-5 sm:p-6 rounded-2xl border border-[#DDE3DC] dark:border-[#212E28] hover:border-[#173B35] dark:hover:border-[#B3853E] transition flex flex-col md:flex-row md:items-center justify-between gap-5 shadow-2xs"
               >
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2.5">
-                    <span className="font-mono font-semibold text-xs text-slate-900 dark:text-white">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono font-bold text-xs sm:text-sm text-[#17231E] dark:text-[#E8EFEA]">
                       #{order.orderNumber}
                     </span>
-                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                      order.status === "CONFIRMED" || order.status === "DELIVERED"
+                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                        : order.status === "CANCELLED"
+                        ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
+                        : "bg-[#B3853E]/10 text-[#B3853E] dark:text-[#D8AB64] border-[#B3853E]/30"
+                    }`}>
                       {order.status}
                     </span>
-                    <span className="text-[11px] text-slate-400">
+                    <span className="text-[11px] text-[#69736D] dark:text-[#9BA59E]">
                       {formatDateTime(order.createdAt)}
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-600 dark:text-slate-300">
-                    <strong className="text-slate-900 dark:text-white">
+                  <p className="text-xs text-[#69736D] dark:text-[#9BA59E] leading-relaxed">
+                    <strong className="text-[#17231E] dark:text-[#E8EFEA] font-bold">
                       {totalUnits} Units:
                     </strong>{" "}
                     {order.items.map((i) => `${i.productName} (${i.quantity} pcs)`).join(", ")}
                   </p>
 
                   {user.role === "OWNER" && (
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-[#B3853E] dark:text-[#D8AB64] font-medium">
                       Retailer: {order.customer.businessName || order.customer.name}
                     </p>
                   )}
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between md:justify-end gap-3 sm:gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 dark:border-slate-800">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between md:justify-end gap-3 sm:gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-[#DDE3DC] dark:border-[#212E28]">
                   <div className="text-left md:text-right">
-                    <p className="text-[10px] uppercase font-medium text-slate-400">
+                    <p className="text-[10px] uppercase font-bold text-[#69736D] dark:text-[#9BA59E]">
                       Estimated Total
                     </p>
-                    <p className="text-sm font-semibold tabular-nums text-slate-900 dark:text-white">
+                    <p className="text-base sm:text-lg font-bold tabular-nums font-mono text-[#17231E] dark:text-[#E8EFEA]">
                       {formatCurrency(order.totalAmount)}
                     </p>
                   </div>
 
                   <Link
                     href={`/orders/${order.id}`}
-                    className="px-3.5 py-2.5 sm:py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-medium rounded-lg transition flex items-center justify-center gap-1.5 text-center"
+                    className="px-4 py-2.5 bg-[#173B35] hover:bg-[#285C4D] text-white text-xs font-semibold rounded-xl transition flex items-center justify-center gap-2 text-center shadow-2xs cursor-pointer"
                   >
                     <MessageSquare className="w-3.5 h-3.5" />
-                    Open Order & Chat
+                    <span>Open Order & Chat</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

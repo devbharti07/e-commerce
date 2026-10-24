@@ -193,37 +193,41 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       {/* Page Title & Operational Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-border/80 dark:border-border-dark/80">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-            Dashboard
+          <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-forest/10 dark:bg-forest-muted/30 border border-forest/20 dark:border-forest-border/40 text-[11px] font-semibold text-primary dark:text-emerald-400 uppercase tracking-widest mb-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent-brass animate-pulse" />
+            Executive Wholesale Hub
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-text-primary dark:text-text-primary-dark tracking-tight">
+            HQ Operations & Distribution
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            Real-time operations summary for Jagdamba Mobile wholesale distribution
+          <p className="text-xs sm:text-sm text-text-muted dark:text-text-muted-dark mt-0.5">
+            Real-time warehouse metrics, dealer order pipeline, and catalog fulfillment
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/admin/orders"
-            className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-semibold rounded-lg shadow-xs transition flex items-center gap-1.5"
+            className="px-3.5 py-2 bg-primary hover:bg-forest-light text-white text-xs font-semibold rounded-lg shadow-sm transition flex items-center gap-1.5"
           >
-            <Clock className="w-3.5 h-3.5" />
+            <Clock className="w-3.5 h-3.5 text-accent-brass" />
             <span>Orders ({pendingOrdersCount})</span>
           </Link>
           <Link
             href="/admin/inventory"
-            className="px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-semibold rounded-lg transition flex items-center gap-1.5"
+            className="px-3.5 py-2 bg-surface dark:bg-surface-dark hover:bg-ivory dark:hover:bg-forest-muted text-text-primary dark:text-text-primary-dark border border-border dark:border-border-dark text-xs font-semibold rounded-lg transition flex items-center gap-1.5"
           >
-            <Boxes className="w-3.5 h-3.5 text-slate-500" />
+            <Boxes className="w-3.5 h-3.5 text-text-muted dark:text-text-muted-dark" />
             <span>Inventory</span>
           </Link>
           <Link
             href="/admin/products"
-            className="px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-semibold rounded-lg transition flex items-center gap-1.5"
+            className="px-3.5 py-2 bg-surface dark:bg-surface-dark hover:bg-ivory dark:hover:bg-forest-muted text-text-primary dark:text-text-primary-dark border border-border dark:border-border-dark text-xs font-semibold rounded-lg transition flex items-center gap-1.5"
           >
-            <Plus className="w-3.5 h-3.5 text-slate-500" />
-            <span>New Model</span>
+            <Plus className="w-3.5 h-3.5 text-text-muted dark:text-text-muted-dark" />
+            <span>New Handset</span>
           </Link>
         </div>
       </div>
@@ -232,7 +236,7 @@ export default async function AdminDashboardPage() {
       {(pendingRegistrationsCount > 0 || pendingOrdersCount > 0 || outOfStockVariants.length > 0 || lowStockVariants.length > 0) && (
         <div className="space-y-2.5">
           {pendingRegistrationsCount > 0 && (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 sm:p-3.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-xl text-xs text-amber-900 dark:text-amber-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3.5 bg-amber-500/10 dark:bg-amber-950/20 border border-amber-500/20 dark:border-amber-900/40 rounded-xl text-xs text-amber-900 dark:text-amber-200">
               <div className="flex items-center gap-2.5 min-w-0">
                 <UserCheck className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                 <span>
@@ -248,7 +252,7 @@ export default async function AdminDashboardPage() {
             </div>
           )}
           {pendingOrdersCount > 0 && (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 sm:p-3.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-xl text-xs text-amber-900 dark:text-amber-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3.5 bg-amber-500/10 dark:bg-amber-950/20 border border-amber-500/20 dark:border-amber-900/40 rounded-xl text-xs text-amber-900 dark:text-amber-200">
               <div className="flex items-center gap-2.5 min-w-0">
                 <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                 <span>
@@ -266,7 +270,7 @@ export default async function AdminDashboardPage() {
           )}
 
           {(outOfStockVariants.length > 0 || lowStockVariants.length > 0) && (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 sm:p-3.5 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 rounded-xl text-xs text-rose-900 dark:text-rose-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3.5 bg-rose-500/10 dark:bg-rose-950/20 border border-rose-500/20 dark:border-rose-900/40 rounded-xl text-xs text-rose-900 dark:text-rose-200">
               <div className="flex items-center gap-2.5 min-w-0">
                 <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
                 <span>
@@ -287,49 +291,55 @@ export default async function AdminDashboardPage() {
       {/* Primary Financial & Pipeline Metrics (3 Core Pillars) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Fulfilled Revenue */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+        <div className="bg-card dark:bg-card-dark p-5 rounded-xl border border-border dark:border-border-dark shadow-xs relative overflow-hidden group">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400 opacity-80" />
+          <div className="flex items-center justify-between text-xs font-semibold text-text-muted dark:text-text-muted-dark uppercase tracking-wider">
             <span>Delivered Revenue</span>
-            <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
               <CreditCard className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-2 tabular-nums">
+          <p className="text-2xl sm:text-3xl font-bold text-text-primary dark:text-text-primary-dark mt-2.5 tabular-nums tracking-tight">
             {formatCurrency(collectedRevenue)}
           </p>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs text-text-muted dark:text-text-muted-dark mt-1 flex items-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
             {completedOrdersCount} orders successfully fulfilled & invoiced
           </p>
         </div>
 
         {/* Confirmed Pipeline */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+        <div className="bg-card dark:bg-card-dark p-5 rounded-xl border border-border dark:border-border-dark shadow-xs relative overflow-hidden group">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-forest-light opacity-80" />
+          <div className="flex items-center justify-between text-xs font-semibold text-text-muted dark:text-text-muted-dark uppercase tracking-wider">
             <span>Confirmed Pipeline</span>
-            <div className="p-1.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <div className="p-1.5 rounded-md bg-forest/10 dark:bg-forest-muted text-primary dark:text-emerald-400 border border-forest/20 dark:border-forest-border/40">
               <Truck className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-2 tabular-nums">
+          <p className="text-2xl sm:text-3xl font-bold text-text-primary dark:text-text-primary-dark mt-2.5 tabular-nums tracking-tight">
             {formatCurrency(committedOrderValue)}
           </p>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs text-text-muted dark:text-text-muted-dark mt-1 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
             {confirmedOrdersCount + awaitingFulfillmentCount} orders confirmed / in dispatch
           </p>
         </div>
 
         {/* Pending Requests */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+        <div className="bg-card dark:bg-card-dark p-5 rounded-xl border border-border dark:border-border-dark shadow-xs relative overflow-hidden group">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent-brass to-amber-500 opacity-80" />
+          <div className="flex items-center justify-between text-xs font-semibold text-text-muted dark:text-text-muted-dark uppercase tracking-wider">
             <span>Pending Inquiries</span>
-            <div className="p-1.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400">
+            <div className="p-1.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
               <Clock className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-2 tabular-nums">
+          <p className="text-2xl sm:text-3xl font-bold text-text-primary dark:text-text-primary-dark mt-2.5 tabular-nums tracking-tight">
             {formatCurrency(pendingRequestsValue)}
           </p>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs text-text-muted dark:text-text-muted-dark mt-1 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent-brass" />
             {pendingOrdersCount} dealer requests awaiting price verification
           </p>
         </div>
@@ -337,54 +347,54 @@ export default async function AdminDashboardPage() {
 
       {/* Operational Stats Strip (4 Compact Cards) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-            <span>Available Inventory</span>
-            <Boxes className="w-4 h-4 text-slate-400" />
+        <div className="bg-card dark:bg-card-dark p-4 rounded-xl border border-border dark:border-border-dark shadow-xs">
+          <div className="flex items-center justify-between text-xs text-text-muted dark:text-text-muted-dark">
+            <span className="font-medium">Available Inventory</span>
+            <Boxes className="w-4 h-4 text-text-muted dark:text-text-muted-dark" />
           </div>
-          <p className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1.5 tabular-nums">
+          <p className="text-xl font-bold text-text-primary dark:text-text-primary-dark mt-1.5 tabular-nums">
             {totalAvailable} units
           </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-[11px] text-text-muted dark:text-text-muted-dark mt-0.5">
             {totalOnHand} on-hand • {totalReserved} reserved
           </p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-            <span>Catalog Models</span>
-            <Smartphone className="w-4 h-4 text-slate-400" />
+        <div className="bg-card dark:bg-card-dark p-4 rounded-xl border border-border dark:border-border-dark shadow-xs">
+          <div className="flex items-center justify-between text-xs text-text-muted dark:text-text-muted-dark">
+            <span className="font-medium">Catalog Models</span>
+            <Smartphone className="w-4 h-4 text-text-muted dark:text-text-muted-dark" />
           </div>
-          <p className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1.5 tabular-nums">
+          <p className="text-xl font-bold text-text-primary dark:text-text-primary-dark mt-1.5 tabular-nums">
             {totalProducts} Handsets
           </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-[11px] text-text-muted dark:text-text-muted-dark mt-0.5">
             {totalVariants} active storage/color SKUs
           </p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-            <span>Active Retailers</span>
-            <Users className="w-4 h-4 text-slate-400" />
+        <div className="bg-card dark:bg-card-dark p-4 rounded-xl border border-border dark:border-border-dark shadow-xs">
+          <div className="flex items-center justify-between text-xs text-text-muted dark:text-text-muted-dark">
+            <span className="font-medium">Active Retailers</span>
+            <Users className="w-4 h-4 text-text-muted dark:text-text-muted-dark" />
           </div>
-          <p className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1.5 tabular-nums">
+          <p className="text-xl font-bold text-text-primary dark:text-text-primary-dark mt-1.5 tabular-nums">
             {registeredRetailersCount} Retailers
           </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-[11px] text-text-muted dark:text-text-muted-dark mt-0.5">
             Verified B2B dealer accounts
           </p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-            <span>In Fulfillment</span>
-            <Truck className="w-4 h-4 text-slate-400" />
+        <div className="bg-card dark:bg-card-dark p-4 rounded-xl border border-border dark:border-border-dark shadow-xs">
+          <div className="flex items-center justify-between text-xs text-text-muted dark:text-text-muted-dark">
+            <span className="font-medium">In Fulfillment</span>
+            <Truck className="w-4 h-4 text-text-muted dark:text-text-muted-dark" />
           </div>
-          <p className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1.5 tabular-nums">
+          <p className="text-xl font-bold text-text-primary dark:text-text-primary-dark mt-1.5 tabular-nums">
             {awaitingFulfillmentCount} Orders
           </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-[11px] text-text-muted dark:text-text-muted-dark mt-0.5">
             Processing or in dispatch
           </p>
         </div>
@@ -393,85 +403,85 @@ export default async function AdminDashboardPage() {
       {/* Main Two-Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column (8 cols): Recent Orders Table */}
-        <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="lg:col-span-8 bg-card dark:bg-card-dark rounded-xl border border-border dark:border-border-dark shadow-xs overflow-hidden">
+          <div className="p-4 sm:p-5 border-b border-border dark:border-border-dark flex items-center justify-between">
             <div>
-              <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="text-sm sm:text-base font-serif font-bold text-text-primary dark:text-text-primary-dark">
                 Recent Wholesale Orders
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-text-muted dark:text-text-muted-dark">
                 Live dealer order submissions and status transitions
               </p>
             </div>
             <Link
               href="/admin/orders"
-              className="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1 transition"
+              className="text-xs font-semibold text-primary dark:text-accent-brass hover:underline flex items-center gap-1 transition"
             >
               View All Orders <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
           {recentOrders.length === 0 ? (
-            <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-xs">
-              <Clock className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
-              <p className="font-semibold text-slate-700 dark:text-slate-300">No orders placed yet</p>
+            <div className="p-12 text-center text-text-muted dark:text-text-muted-dark text-xs">
+              <Clock className="w-8 h-8 text-border dark:text-border-dark mx-auto mb-2" />
+              <p className="font-semibold text-text-primary dark:text-text-primary-dark">No orders placed yet</p>
               <p className="mt-0.5">Dealer requests will appear here once submitted.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-[640px] w-full text-left text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-200 dark:border-slate-800">
+                <thead className="bg-ivory/60 dark:bg-forest-dark/40 text-text-muted dark:text-text-muted-dark font-semibold uppercase text-[10px] tracking-wider border-b border-border dark:border-border-dark">
                   <tr>
-                    <th className="py-2.5 px-4">Order #</th>
-                    <th className="py-2.5 px-4">Retailer</th>
-                    <th className="py-2.5 px-4 text-center">Items</th>
-                    <th className="py-2.5 px-4 text-right">Amount</th>
-                    <th className="py-2.5 px-4 text-center">Status</th>
-                    <th className="py-2.5 px-4 text-right">Action</th>
+                    <th className="py-3 px-4">Order #</th>
+                    <th className="py-3 px-4">Retailer</th>
+                    <th className="py-3 px-4 text-center">Items</th>
+                    <th className="py-3 px-4 text-right">Amount</th>
+                    <th className="py-3 px-4 text-center">Status</th>
+                    <th className="py-3 px-4 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-border/60 dark:divide-border-dark/60">
                   {recentOrders.map((order) => {
                     const totalQty = order.items.reduce((s, it) => s + it.quantity, 0);
 
                     return (
                       <tr
                         key={order.id}
-                        className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
+                        className="hover:bg-ivory/40 dark:hover:bg-forest-muted/20 transition-colors"
                       >
-                        <td className="py-3 px-4 font-semibold text-slate-800 dark:text-slate-200">
+                        <td className="py-3.5 px-4 font-semibold text-text-primary dark:text-text-primary-dark">
                           {order.orderNumber}
-                          <p className="text-[10px] font-normal text-slate-400">
+                          <p className="text-[10px] font-normal text-text-muted dark:text-text-muted-dark">
                             {formatDateTime(order.createdAt)}
                           </p>
                         </td>
-                        <td className="py-3 px-4">
-                          <p className="font-medium text-slate-900 dark:text-slate-100">
+                        <td className="py-3.5 px-4">
+                          <p className="font-medium text-text-primary dark:text-text-primary-dark">
                             {order.customer.businessName || order.customer.name}
                           </p>
-                          <p className="text-[10px] text-slate-400">{order.customer.phone}</p>
+                          <p className="text-[10px] text-text-muted dark:text-text-muted-dark">{order.customer.phone}</p>
                         </td>
-                        <td className="py-3 px-4 text-center font-medium tabular-nums text-slate-600 dark:text-slate-300">
+                        <td className="py-3.5 px-4 text-center font-medium tabular-nums text-text-muted dark:text-text-muted-dark">
                           {totalQty} pcs
                         </td>
-                        <td className="py-3 px-4 text-right font-bold text-slate-900 dark:text-slate-100 tabular-nums">
+                        <td className="py-3.5 px-4 text-right font-bold text-text-primary dark:text-text-primary-dark tabular-nums">
                           {formatCurrency(order.totalAmount)}
                         </td>
-                        <td className="py-3 px-4 text-center">
+                        <td className="py-3.5 px-4 text-center">
                           <span
-                            className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase ${getOrderStatusBadge(
+                            className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase ${getOrderStatusBadge(
                               order.status
                             )}`}
                           >
                             {order.status.replace(/_/g, " ")}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-right">
+                        <td className="py-3.5 px-4 text-right">
                           <Link
                             href={`/admin/orders/${order.id}`}
-                            className="font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:underline text-xs"
+                            className="font-semibold text-primary dark:text-accent-brass hover:underline text-xs"
                           >
-                            View
+                            View &rarr;
                           </Link>
                         </td>
                       </tr>
@@ -486,25 +496,25 @@ export default async function AdminDashboardPage() {
         {/* Right Column (4 cols): Low Inventory & Audit Trail */}
         <div className="lg:col-span-4 space-y-6">
           {/* Low Stock Warning Card */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+          <div className="bg-card dark:bg-card-dark rounded-xl border border-border dark:border-border-dark shadow-xs overflow-hidden">
+            <div className="p-4 border-b border-border dark:border-border-dark flex items-center justify-between">
+              <h3 className="text-sm font-serif font-bold text-text-primary dark:text-text-primary-dark flex items-center gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
                 Stock Attention List
               </h3>
               <Link
                 href="/admin/inventory"
-                className="text-[11px] font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                className="text-[11px] font-semibold text-text-muted dark:text-text-muted-dark hover:text-primary dark:hover:text-accent-brass"
               >
                 Manage
               </Link>
             </div>
 
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-border/60 dark:divide-border-dark/60">
               {outOfStockVariants.length === 0 && lowStockVariants.length === 0 ? (
-                <div className="p-6 text-center text-xs text-slate-500 dark:text-slate-400">
+                <div className="p-6 text-center text-xs text-text-muted dark:text-text-muted-dark">
                   <CheckCircle2 className="w-5 h-5 text-emerald-500 mx-auto mb-1.5" />
-                  <p className="font-semibold text-slate-700 dark:text-slate-300">All SKUs in stock</p>
+                  <p className="font-semibold text-text-primary dark:text-text-primary-dark">All SKUs in stock</p>
                   <p className="text-[11px] mt-0.5">No critical shortages at this time.</p>
                 </div>
               ) : (
@@ -515,10 +525,10 @@ export default async function AdminDashboardPage() {
                   return (
                     <div key={v.id} className="p-3 flex items-center justify-between text-xs">
                       <div className="min-w-0 pr-2">
-                        <p className="font-semibold text-slate-900 dark:text-slate-100 truncate">
+                        <p className="font-semibold text-text-primary dark:text-text-primary-dark truncate">
                           {v.product.name}
                         </p>
-                        <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                        <p className="text-[10px] text-text-muted dark:text-text-muted-dark truncate">
                           {v.ramGb}GB / {v.storageGb}GB • {v.colorName}
                         </p>
                       </div>
@@ -539,23 +549,23 @@ export default async function AdminDashboardPage() {
           </div>
 
           {/* Recent Registrations & Login Events */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-                <UserCheck className="w-3.5 h-3.5 text-slate-400" />
+          <div className="bg-card dark:bg-card-dark rounded-xl border border-border dark:border-border-dark shadow-xs overflow-hidden">
+            <div className="p-4 border-b border-border dark:border-border-dark flex items-center justify-between">
+              <h3 className="text-sm font-serif font-bold text-text-primary dark:text-text-primary-dark flex items-center gap-1.5">
+                <UserCheck className="w-3.5 h-3.5 text-text-muted dark:text-text-muted-dark" />
                 Registrations & Logins
               </h3>
               <Link
                 href="/admin/registration-requests"
-                className="text-[11px] font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                className="text-[11px] font-semibold text-text-muted dark:text-text-muted-dark hover:text-primary dark:hover:text-accent-brass"
               >
                 Requests ({pendingRegistrationsCount})
               </Link>
             </div>
 
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-border/60 dark:divide-border-dark/60">
               {recentRegistrations.length === 0 && recentLoginEvents.length === 0 ? (
-                <div className="p-6 text-center text-xs text-slate-500">
+                <div className="p-6 text-center text-xs text-text-muted dark:text-text-muted-dark">
                   <p>No registration or login activity yet.</p>
                 </div>
               ) : (
@@ -564,7 +574,7 @@ export default async function AdminDashboardPage() {
                     <div key={`reg-${reg.id}`} className="p-3 text-xs flex items-center justify-between">
                       <div className="min-w-0 pr-2">
                         <div className="flex items-center gap-1.5">
-                          <p className="font-semibold text-slate-900 dark:text-slate-100 truncate">
+                          <p className="font-semibold text-text-primary dark:text-text-primary-dark truncate">
                             {reg.businessName || reg.name}
                           </p>
                           <span
@@ -579,7 +589,7 @@ export default async function AdminDashboardPage() {
                             {reg.approvalStatus}
                           </span>
                         </div>
-                        <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                        <p className="text-[10px] text-text-muted dark:text-text-muted-dark truncate">
                           {reg.email} • {formatDateTime(reg.createdAt)}
                         </p>
                       </div>
@@ -595,12 +605,12 @@ export default async function AdminDashboardPage() {
                   ))}
 
                   {recentLoginEvents.slice(0, 3).map((login) => (
-                    <div key={`login-${login.id}`} className="p-2.5 bg-slate-50/50 dark:bg-slate-800/30 text-[11px] text-slate-600 dark:text-slate-400 flex items-center justify-between">
+                    <div key={`login-${login.id}`} className="p-2.5 bg-ivory/40 dark:bg-forest-muted/20 text-[11px] text-text-muted dark:text-text-muted-dark flex items-center justify-between">
                       <div className="flex items-center gap-1.5 min-w-0 pr-2 truncate">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                         <span className="truncate">{login.body}</span>
                       </div>
-                      <span className="text-[9px] text-slate-400 tabular-nums shrink-0">
+                      <span className="text-[9px] text-text-muted dark:text-text-muted-dark tabular-nums shrink-0">
                         {formatDateTime(login.createdAt)}
                       </span>
                     </div>
@@ -611,37 +621,37 @@ export default async function AdminDashboardPage() {
           </div>
 
           {/* Recent Audit Activity */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-                <ShieldAlert className="w-3.5 h-3.5 text-slate-400" />
+          <div className="bg-card dark:bg-card-dark rounded-xl border border-border dark:border-border-dark shadow-xs overflow-hidden">
+            <div className="p-4 border-b border-border dark:border-border-dark flex items-center justify-between">
+              <h3 className="text-sm font-serif font-bold text-text-primary dark:text-text-primary-dark flex items-center gap-1.5">
+                <ShieldAlert className="w-3.5 h-3.5 text-text-muted dark:text-text-muted-dark" />
                 Audit Trail
               </h3>
               <Link
                 href="/admin/audit-logs"
-                className="text-[11px] font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                className="text-[11px] font-semibold text-text-muted dark:text-text-muted-dark hover:text-primary dark:hover:text-accent-brass"
               >
                 Logs
               </Link>
             </div>
 
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-border/60 dark:divide-border-dark/60">
               {recentAuditLogs.length === 0 ? (
-                <div className="p-6 text-center text-xs text-slate-500">
+                <div className="p-6 text-center text-xs text-text-muted dark:text-text-muted-dark">
                   <p>No audit events recorded.</p>
                 </div>
               ) : (
                 recentAuditLogs.map((log) => (
                   <div key={log.id} className="p-3 text-xs">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-semibold text-[11px] text-slate-800 dark:text-slate-200 uppercase">
+                      <span className="font-semibold text-[11px] text-text-primary dark:text-text-primary-dark uppercase">
                         {log.action.replace(/_/g, " ")}
                       </span>
-                      <span className="text-[10px] text-slate-400">
+                      <span className="text-[10px] text-text-muted dark:text-text-muted-dark">
                         {formatDateTime(log.createdAt)}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                    <p className="text-[11px] text-text-muted dark:text-text-muted-dark truncate">
                       by {log.user?.name || "System"} • {log.entity} {log.entityId ? `#${log.entityId.slice(-6)}` : ""}
                     </p>
                   </div>

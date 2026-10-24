@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { getStoreAvailability } from "@/lib/store-availability";
 
 const OrderRequestSchema = z.object({
   items: z.array(
@@ -30,6 +32,39 @@ const OrderRequestSchema = z.object({
 export async function POST(req: Request) {
   try {
     const user = await requireUser();
+
+    // Critical Requirement: Server-side Store Availability & Schedule Check
+    const availability = await getStoreAvailability();
+    if (!availability.isOpen) {
+      return NextResponse.json(
+        {
+          error: availability.closureMessage,
+          code: "ORDERING_UNAVAILABLE",
+          availability: {
+            isOpen: false,
+            status: availability.status,
+            reason: availability.reason,
+            scheduleMode: availability.scheduleMode,
+            nextOpenTime: availability.nextOpenTime,
+            openTime: availability.openTime,
+            closeTime: availability.closeTime,
+            timeZone: availability.timeZone,
+          },
+        },
+        { status: 503 }
+      );
+    }
+
+    // Rate limiting (max 15 order creation requests per minute per IP)
+    const clientIp = getClientIp(req);
+    const orderLimit = checkRateLimit(`order:ip:${clientIp}`, 15, 60 * 1000);
+    if (!orderLimit.allowed) {
+      return NextResponse.json(
+        { error: "Too many order requests. Please wait a moment before trying again." },
+        { status: 429, headers: { "Retry-After": orderLimit.retryAfterSeconds.toString() } }
+      );
+    }
+
     const body = await req.json();
 
     const result = OrderRequestSchema.safeParse(body);

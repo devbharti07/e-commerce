@@ -49,6 +49,22 @@ describe("E2E Wholesale Order Lifecycle & Security Verification", () => {
       data: { onHandStock: 25, reservedStock: 0 },
     });
 
+    // Ensure store is open for order placement testing
+    await prisma.storeSchedule.upsert({
+      where: { id: "default" },
+      update: { scheduleMode: "FORCE_OPEN", acceptOrders: true },
+      create: {
+        id: "default",
+        acceptOrders: true,
+        scheduleMode: "FORCE_OPEN",
+        openTime: "09:00",
+        closeTime: "23:00",
+        timeZone: "Asia/Kolkata",
+        closureMessage: "Our ordering service is currently unavailable. Please check back during our service hours.",
+        version: 1,
+      },
+    });
+
     // Find test variant (Samsung Galaxy S24 Ultra 256GB Gray)
     testVariant = await prisma.productVariant.findFirst({
       where: { sku: "SAM-S24U-12-256-GRY" },
@@ -460,5 +476,11 @@ describe("E2E Wholesale Order Lifecycle & Security Verification", () => {
       await prisma.orderItem.deleteMany({ where: { orderId: oid } }).catch(() => {});
       await prisma.order.delete({ where: { id: oid } }).catch(() => {});
     }
+
+    // Restore store availability to FOLLOW_SCHEDULE
+    await prisma.storeSchedule.updateMany({
+      where: { id: "default" },
+      data: { scheduleMode: "FOLLOW_SCHEDULE", acceptOrders: true },
+    }).catch(() => {});
   });
 });

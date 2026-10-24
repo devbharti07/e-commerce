@@ -4,19 +4,19 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   Smartphone,
-  Lock,
-  Mail,
-  ShieldAlert,
-  ArrowRight,
   User,
-  Phone,
+  Mail,
+  Lock,
+  Building2,
   Store,
+  Phone,
+  ShieldCheck,
+  Clock,
+  ArrowRight,
   Eye,
   EyeOff,
   CheckCircle2,
-  Clock,
-  ArrowLeft,
-  ShieldCheck,
+  AlertCircle,
 } from "lucide-react";
 
 export default function RegisterPage() {
@@ -29,39 +29,36 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [submittedData, setSubmittedData] = useState<{
+  const [submittedUser, setSubmittedUser] = useState<{
     name: string;
     email: string;
+    phone: string;
     businessName?: string;
   } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
+
     setError(null);
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email.trim())) {
-      setError("Please provide a valid email address (e.g. yourname@gmail.com)");
-      return;
-    }
-
-    // Validate password match
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match. Please verify your password.");
+      setError("Passwords do not match. Please verify both password entries.");
       return;
     }
 
     if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+      setError("Password must be at least 6 characters in length.");
       return;
     }
 
@@ -71,104 +68,91 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          email: formData.email.trim().toLowerCase(),
-          phone: formData.phone.trim(),
-          businessName: formData.businessName.trim() || undefined,
-          gstNumber: formData.gstNumber.trim() || undefined,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-        }),
+        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Registration failed. Please check your details.");
+        setError(data.error || "Failed to submit registration. Please try again.");
         setLoading(false);
         return;
       }
 
-      // Success: Do NOT grant session or redirect to catalog
-      setSubmittedData({
-        name: formData.name.trim(),
-        email: formData.email.trim().toLowerCase(),
-        businessName: formData.businessName.trim() || undefined,
+      setSubmittedUser({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        businessName: formData.businessName || undefined,
       });
       setLoading(false);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to register account";
-      setError(msg);
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred. Please try again.");
       setLoading(false);
     }
   };
 
-  // Submitted view awaiting admin approval
-  if (submittedData) {
+  // If application was submitted, show confirmation screen
+  if (submittedUser) {
     return (
-      <div className="min-h-[85vh] flex items-center justify-center px-3 sm:px-4 py-8 sm:py-14">
-        <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-6 text-center animate-in fade-in zoom-in-95 duration-200">
-          <div className="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto border border-amber-200 dark:border-amber-800 shadow-2xs">
-            <Clock className="w-7 h-7 text-amber-500 animate-pulse" />
+      <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 sm:py-16 bg-[#F6F5F0] dark:bg-[#111916] text-[#17231E] dark:text-[#E8EFEA] transition-colors">
+        <div className="w-full max-w-lg bg-white dark:bg-[#18221D] rounded-2xl border border-[#DDE3DC] dark:border-[#212E28] p-6 sm:p-10 shadow-sm space-y-6 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center mx-auto shadow-xs">
+            <CheckCircle2 className="w-8 h-8" />
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#B3853E]/10 text-[#B3853E] dark:text-[#D8AB64] border border-[#B3853E]/30">
+              <Clock className="w-3.5 h-3.5" />
+              Application Under Review
+            </span>
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#17231E] dark:text-[#E8EFEA]">
               Registration Submitted
             </h1>
-            <p className="text-xs text-amber-700 dark:text-amber-300 font-medium bg-amber-50 dark:bg-amber-950/40 p-3 rounded-xl border border-amber-200/80 dark:border-amber-900/50 leading-relaxed">
-              Your registration has been submitted successfully. Your account is awaiting admin approval. You will be able to log in after your account has been approved.
+            <p className="text-xs text-[#69736D] dark:text-[#9BA59E] max-w-md mx-auto leading-relaxed">
+              Thank you for applying for a wholesale dealer account with Jagdamba Mobile. Your dealer application has been placed in our priority review queue.
             </p>
           </div>
 
-          <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700/60 text-xs text-left space-y-2">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-              Submitted Details
-            </span>
-            <div className="grid grid-cols-2 gap-2 text-slate-700 dark:text-slate-300">
-              <div>
-                <span className="text-[10px] text-slate-400 block">Applicant</span>
-                <span className="font-semibold text-slate-900 dark:text-white truncate block">
-                  {submittedData.name}
-                </span>
+          <div className="p-4 bg-[#EAECE8]/60 dark:bg-[#111916]/60 rounded-xl border border-[#DDE3DC] dark:border-[#212E28] text-left text-xs space-y-2">
+            <div className="flex justify-between py-1 border-b border-[#DDE3DC]/60 dark:border-[#212E28]/60">
+              <span className="text-[#69736D]">Applicant Name:</span>
+              <span className="font-semibold text-[#17231E] dark:text-[#E8EFEA]">{submittedUser.name}</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-[#DDE3DC]/60 dark:border-[#212E28]/60">
+              <span className="text-[#69736D]">Business Email:</span>
+              <span className="font-semibold text-[#17231E] dark:text-[#E8EFEA]">{submittedUser.email}</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-[#DDE3DC]/60 dark:border-[#212E28]/60">
+              <span className="text-[#69736D]">Contact Phone:</span>
+              <span className="font-semibold text-[#17231E] dark:text-[#E8EFEA]">{submittedUser.phone}</span>
+            </div>
+            {submittedUser.businessName && (
+              <div className="flex justify-between py-1 border-b border-[#DDE3DC]/60 dark:border-[#212E28]/60">
+                <span className="text-[#69736D]">Retail Shop:</span>
+                <span className="font-semibold text-[#17231E] dark:text-[#E8EFEA]">{submittedUser.businessName}</span>
               </div>
-              <div>
-                <span className="text-[10px] text-slate-400 block">Email Address</span>
-                <span className="font-semibold text-slate-900 dark:text-white truncate block">
-                  {submittedData.email}
-                </span>
-              </div>
-              {submittedData.businessName && (
-                <div className="col-span-2">
-                  <span className="text-[10px] text-slate-400 block">Retail Business</span>
-                  <span className="font-semibold text-slate-900 dark:text-white truncate block">
-                    {submittedData.businessName}
-                  </span>
-                </div>
-              )}
+            )}
+            <div className="flex justify-between py-1">
+              <span className="text-[#69736D]">Status:</span>
+              <span className="font-bold text-[#B3853E] dark:text-[#D8AB64]">Pending Administrator Approval</span>
             </div>
           </div>
 
-          <p className="text-[11px] text-slate-400">
-            Jagdamba Mobile operations team verifies telecom store credentials and GST registrations before activating dealer volume tier discounts.
-          </p>
+          <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 rounded-xl text-xs text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50 text-left flex items-start gap-2.5">
+            <Clock className="w-4 h-4 text-[#B3853E] shrink-0 mt-0.5" />
+            <p className="text-[11px] leading-relaxed">
+              Our administration reviews applications during business hours (Mon-Sat, 09:00 - 20:00 IST). You will be able to sign in once your dealer status has been verified.
+            </p>
+          </div>
 
-          <div className="space-y-2 pt-2">
+          <div className="pt-2">
             <Link
               href="/login"
-              className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-medium text-xs rounded-lg transition shadow-xs flex items-center justify-center gap-2"
+              className="w-full py-3 bg-[#173B35] hover:bg-[#1F4D45] text-white font-semibold text-xs rounded-xl transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>Return to Login Portal</span>
+              Return to Sign In Screen
               <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Storefront Overview
             </Link>
           </div>
         </div>
@@ -177,31 +161,39 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-3 sm:px-4 py-6 sm:py-12">
-      <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-8 shadow-xs space-y-6">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 sm:py-16 bg-[#F6F5F0] dark:bg-[#111916] text-[#17231E] dark:text-[#E8EFEA] transition-colors">
+      <div className="w-full max-w-lg bg-white dark:bg-[#18221D] rounded-2xl border border-[#DDE3DC] dark:border-[#212E28] p-6 sm:p-10 shadow-sm space-y-6">
+        {/* Branding & Header */}
         <div className="text-center space-y-2">
-          <div className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-slate-800 text-white flex items-center justify-center mx-auto border border-slate-800 dark:border-slate-700 shadow-2xs">
-            <Smartphone className="w-5 h-5 text-amber-400" />
+          <div className="w-12 h-12 rounded-xl bg-[#173B35] dark:bg-[#212E28] text-white flex items-center justify-center mx-auto shadow-xs border border-[#285C4D]">
+            <Smartphone className="w-6 h-6 text-[#B3853E] dark:text-[#D8AB64]" />
           </div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-            Register Retail Store Account
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Submit your retail store application for B2B wholesale smartphone catalog access and volume tier pricing
+          <div>
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#17231E] dark:text-[#E8EFEA]">
+              Register Wholesale Account
+            </h1>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-[#69736D] dark:text-[#9BA59E] mt-0.5">
+              Jagdamba Mobile B2B Distribution Platform
+            </p>
+          </div>
+          <p className="text-xs text-[#69736D] dark:text-[#9BA59E] max-w-sm mx-auto leading-relaxed pt-1">
+            Apply for commercial dealer access to unlock tiered wholesale pricing, inventory reservation, and priority delivery.
           </p>
         </div>
 
+        {/* Error Alert */}
         {error && (
-          <div className="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 rounded-xl text-xs text-rose-700 dark:text-rose-300 flex items-center gap-2 animate-in fade-in duration-150">
-            <ShieldAlert className="w-4 h-4 shrink-0" />
-            <span>{error}</span>
+          <div className="p-3.5 bg-rose-50 dark:bg-rose-950/40 rounded-xl text-xs text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+            <span className="leading-relaxed font-medium">{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleRegister} className="space-y-4">
+        {/* Registration Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#17231E] dark:text-[#E8EFEA] mb-1.5">
                 Full Name *
               </label>
               <div className="relative">
@@ -212,14 +204,14 @@ export default function RegisterPage() {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="e.g. Ramesh Kumar"
-                  className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500 transition"
+                  className="w-full bg-[#EAECE8]/50 dark:bg-[#111916]/50 border border-[#DDE3DC] dark:border-[#212E28] rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-[#17231E] dark:text-[#E8EFEA] focus:outline-none focus:ring-1 focus:ring-[#173B35] transition placeholder:text-[#69736D]"
                 />
-                <User className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <User className="w-4 h-4 text-[#69736D] absolute left-3 top-3 pointer-events-none" />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#17231E] dark:text-[#E8EFEA] mb-1.5">
                 Mobile Number *
               </label>
               <div className="relative">
@@ -230,15 +222,15 @@ export default function RegisterPage() {
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="+91 98234 56789"
-                  className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500 transition"
+                  className="w-full bg-[#EAECE8]/50 dark:bg-[#111916]/50 border border-[#DDE3DC] dark:border-[#212E28] rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-[#17231E] dark:text-[#E8EFEA] focus:outline-none focus:ring-1 focus:ring-[#173B35] transition placeholder:text-[#69736D]"
                 />
-                <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Phone className="w-4 h-4 text-[#69736D] absolute left-3 top-3 pointer-events-none" />
               </div>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-[#17231E] dark:text-[#E8EFEA] mb-1.5">
               Gmail / Business Email Address *
             </label>
             <div className="relative">
@@ -249,15 +241,15 @@ export default function RegisterPage() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="yourname@gmail.com"
-                className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500 transition"
+                className="w-full bg-[#EAECE8]/50 dark:bg-[#111916]/50 border border-[#DDE3DC] dark:border-[#212E28] rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-[#17231E] dark:text-[#E8EFEA] focus:outline-none focus:ring-1 focus:ring-[#173B35] transition placeholder:text-[#69736D]"
               />
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <Mail className="w-4 h-4 text-[#69736D] absolute left-3 top-3 pointer-events-none" />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#17231E] dark:text-[#E8EFEA] mb-1.5">
                 Retail Shop Name
               </label>
               <div className="relative">
@@ -267,14 +259,14 @@ export default function RegisterPage() {
                   value={formData.businessName}
                   onChange={handleChange}
                   placeholder="e.g. Sharma Telecom"
-                  className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500 transition"
+                  className="w-full bg-[#EAECE8]/50 dark:bg-[#111916]/50 border border-[#DDE3DC] dark:border-[#212E28] rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-[#17231E] dark:text-[#E8EFEA] focus:outline-none focus:ring-1 focus:ring-[#173B35] transition placeholder:text-[#69736D]"
                 />
-                <Store className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Store className="w-4 h-4 text-[#69736D] absolute left-3 top-3 pointer-events-none" />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#17231E] dark:text-[#E8EFEA] mb-1.5">
                 GSTIN Number (Optional)
               </label>
               <input
@@ -283,14 +275,14 @@ export default function RegisterPage() {
                 value={formData.gstNumber}
                 onChange={handleChange}
                 placeholder="07AAAAA0000A1Z5"
-                className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500 transition"
+                className="w-full bg-[#EAECE8]/50 dark:bg-[#111916]/50 border border-[#DDE3DC] dark:border-[#212E28] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#17231E] dark:text-[#E8EFEA] focus:outline-none focus:ring-1 focus:ring-[#173B35] transition placeholder:text-[#69736D]"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#17231E] dark:text-[#E8EFEA] mb-1.5">
                 Create Password *
               </label>
               <div className="relative">
@@ -301,13 +293,13 @@ export default function RegisterPage() {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="At least 6 chars"
-                  className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-10 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500 transition"
+                  className="w-full bg-[#EAECE8]/50 dark:bg-[#111916]/50 border border-[#DDE3DC] dark:border-[#212E28] rounded-xl pl-10 pr-10 py-2.5 text-xs text-[#17231E] dark:text-[#E8EFEA] focus:outline-none focus:ring-1 focus:ring-[#173B35] transition placeholder:text-[#69736D]"
                 />
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Lock className="w-4 h-4 text-[#69736D] absolute left-3 top-3 pointer-events-none" />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
+                  className="absolute right-3 top-2.5 text-[#69736D] hover:text-[#173B35] dark:hover:text-white transition cursor-pointer"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -316,7 +308,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#17231E] dark:text-[#E8EFEA] mb-1.5">
                 Confirm Password *
               </label>
               <div className="relative">
@@ -327,13 +319,13 @@ export default function RegisterPage() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Repeat password"
-                  className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-10 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500 transition"
+                  className="w-full bg-[#EAECE8]/50 dark:bg-[#111916]/50 border border-[#DDE3DC] dark:border-[#212E28] rounded-xl pl-10 pr-10 py-2.5 text-xs text-[#17231E] dark:text-[#E8EFEA] focus:outline-none focus:ring-1 focus:ring-[#173B35] transition placeholder:text-[#69736D]"
                 />
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Lock className="w-4 h-4 text-[#69736D] absolute left-3 top-3 pointer-events-none" />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
+                  className="absolute right-3 top-2.5 text-[#69736D] hover:text-[#173B35] dark:hover:text-white transition cursor-pointer"
                   aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                 >
                   {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -342,8 +334,8 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <div className="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-xl text-xs text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-900/50 flex items-start gap-2">
-            <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 rounded-xl text-xs text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50 flex items-start gap-2.5">
+            <Clock className="w-4 h-4 text-[#B3853E] shrink-0 mt-0.5" />
             <span className="text-[11px] leading-relaxed">
               <strong>Approval Policy:</strong> All new retail accounts require administrative review. You will receive an approval notification once your telecom dealer credentials have been verified.
             </span>
@@ -352,18 +344,18 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-medium text-xs rounded-lg transition shadow-xs flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full py-3 bg-[#173B35] hover:bg-[#1F4D45] text-white font-semibold text-xs rounded-xl transition shadow-xs flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Submitting Application..." : "Submit Registration for Admin Approval"}
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </form>
 
-        <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-          <span className="text-slate-500">Already registered?</span>
+        <div className="pt-4 border-t border-[#DDE3DC] dark:border-[#212E28] flex items-center justify-between text-xs">
+          <span className="text-[#69736D]">Already registered?</span>
           <Link
             href="/login"
-            className="font-semibold text-slate-900 dark:text-white hover:text-amber-500 dark:hover:text-amber-400 transition"
+            className="font-bold text-[#173B35] dark:text-[#D8AB64] hover:underline transition"
           >
             Sign In Here &rarr;
           </Link>

@@ -347,3 +347,18 @@ model SiteSetting {
   isPublic  Boolean  @default(false)
   updatedAt DateTime @updatedAt
 }
+
+model StoreSchedule {
+  id             String   @id @default("default")
+  acceptOrders   Boolean  @default(true)
+  scheduleMode   String   @default("FOLLOW_SCHEDULE") // "FOLLOW_SCHEDULE" | "FORCE_OPEN" | "FORCE_CLOSED"
+  openTime       String   @default("09:00")
+  closeTime      String   @default("23:00")
+  timeZone       String   @default("Asia/Kolkata")
+  closureMessage String   @default("Our ordering service is currently unavailable. Please check back during our service hours.")
+  version        Int      @default(1)
+  updatedAt      DateTime @updatedAt
+  updatedBy      String?
+
+  @@index([scheduleMode])
+}

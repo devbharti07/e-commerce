@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
 import {
   Send,
@@ -25,6 +26,7 @@ import {
   Package,
   Layers,
   Copy,
+  Loader2,
 } from "lucide-react";
 
 interface AdminOrderDetailClientProps {
@@ -88,11 +90,26 @@ export function AdminOrderDetailClient({
   const [messages, setMessages] = useState(order.conversation?.messages || []);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const router = useRouter();
   const [status, setStatus] = useState(order.status);
   const [totalAmount, setTotalAmount] = useState(order.totalAmount);
   const [revisions, setRevisions] = useState(order.revisions || []);
   const [statusActionLoading, setStatusActionLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Modal and feedback states
+  const [activeModal, setActiveModal] = useState<"ACCEPT" | "DECLINE" | "STATUS_TRANSITION" | null>(null);
+  const [pendingTargetStatus, setPendingTargetStatus] = useState<string | null>(null);
+  const [declineReason, setDeclineReason] = useState("");
+  const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);
+  const [actionErrorMessage, setActionErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (actionSuccessMessage) {
+      const timer = setTimeout(() => setActionSuccessMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [actionSuccessMessage]);
 
   // Propose Revision Modal / Form state for Owner
   const [showRevisionForm, setShowRevisionForm] = useState(false);
@@ -167,39 +184,50 @@ export function AdminOrderDetailClient({
     }
   };
 
-  const handleUpdateStatus = async (newStatus: string) => {
-    const label =
-      newStatus === "CONFIRMED"
-        ? "confirm this order and allocate stock"
-        : newStatus === "REJECTED"
-        ? "reject this wholesale order request"
-        : newStatus === "PROCESSING"
-        ? "move order to warehouse processing"
-        : newStatus === "READY_FOR_DISPATCH"
-        ? "mark order ready for dispatch"
-        : newStatus === "DELIVERED"
-        ? "confirm final delivered status"
-        : `transition order to ${newStatus}`;
-
-    if (!confirm(`Are you sure you want to ${label}?`)) return;
-
+  const handleConfirmStatusUpdate = async (newStatus: string, reason?: string) => {
     setStatusActionLoading(true);
+    setActionErrorMessage(null);
     try {
       const res = await fetch(`/api/orders/${order.id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({
+          status: newStatus,
+          reason: reason?.trim() || undefined,
+        }),
       });
 
+      const data = await res.json();
       if (res.ok) {
         setStatus(newStatus);
+        setActiveModal(null);
+        setPendingTargetStatus(null);
+        setDeclineReason("");
+        setActionSuccessMessage(
+          data.message ||
+            (newStatus === "CONFIRMED"
+              ? "Order accepted and stock allocated successfully."
+              : newStatus === "REJECTED"
+              ? "Order declined successfully."
+              : `Order status updated to ${newStatus}.`)
+        );
+        router.refresh();
       } else {
-        const err = await res.json();
-        alert(err.error || "Failed to update order status");
+        setActionErrorMessage(data.error || "Failed to update order status");
       }
+    } catch (err: unknown) {
+      setActionErrorMessage(
+        err instanceof Error ? err.message : "Network error while updating status"
+      );
     } finally {
       setStatusActionLoading(false);
     }
+  };
+
+  const openStatusTransitionModal = (targetStatus: string) => {
+    setActionErrorMessage(null);
+    setPendingTargetStatus(targetStatus);
+    setActiveModal("STATUS_TRANSITION");
   };
 
   // Owner submits a proposed revision
@@ -322,6 +350,37 @@ export function AdminOrderDetailClient({
 
   return (
     <div className="w-full space-y-6">
+      {/* Action Success / Error Notifications */}
+      {actionSuccessMessage && (
+        <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-medium flex items-center justify-between shadow-2xs animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span>{actionSuccessMessage}</span>
+          </div>
+          <button
+            onClick={() => setActionSuccessMessage(null)}
+            className="text-emerald-600 dark:text-emerald-400 hover:opacity-75 p-1"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {actionErrorMessage && (
+        <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs font-medium flex items-center justify-between shadow-2xs animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
+            <span>{actionErrorMessage}</span>
+          </div>
+          <button
+            onClick={() => setActionErrorMessage(null)}
+            className="text-rose-600 dark:text-rose-400 hover:opacity-75 p-1"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Top Header Card */}
       <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -379,54 +438,68 @@ export function AdminOrderDetailClient({
                   {showRevisionForm ? "Hide Revision Form" : "Propose Price Revision"}
                 </button>
                 <button
-                  onClick={() => handleUpdateStatus("CONFIRMED")}
+                  onClick={() => {
+                    setActionErrorMessage(null);
+                    setActiveModal("ACCEPT");
+                  }}
                   disabled={statusActionLoading}
-                  className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs rounded-lg shadow-xs transition flex items-center gap-1.5"
+                  className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs rounded-lg shadow-xs transition flex items-center gap-1.5 disabled:opacity-50"
                 >
-                  <Check className="w-3.5 h-3.5" />
-                  Accept & Allocate Stock
+                  {statusActionLoading && activeModal === "ACCEPT" ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Check className="w-3.5 h-3.5" />
+                  )}
+                  <span>Accept Order</span>
                 </button>
                 <button
-                  onClick={() => handleUpdateStatus("REJECTED")}
+                  onClick={() => {
+                    setActionErrorMessage(null);
+                    setActiveModal("DECLINE");
+                  }}
                   disabled={statusActionLoading}
-                  className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs rounded-lg shadow-xs transition flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs rounded-lg shadow-xs transition flex items-center gap-1.5 disabled:opacity-50"
                 >
-                  <X className="w-3.5 h-3.5" />
-                  Reject Request
+                  {statusActionLoading && activeModal === "DECLINE" ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <X className="w-3.5 h-3.5" />
+                  )}
+                  <span>Decline Order</span>
                 </button>
               </>
             )}
 
             {status === "CONFIRMED" && (
               <button
-                onClick={() => handleUpdateStatus("PROCESSING")}
+                onClick={() => openStatusTransitionModal("PROCESSING")}
                 disabled={statusActionLoading}
-                className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs rounded-lg shadow-xs transition flex items-center gap-1.5"
+                className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs rounded-lg shadow-xs transition flex items-center gap-1.5 disabled:opacity-50"
               >
                 <Package className="w-3.5 h-3.5" />
-                Move to Warehouse Processing
+                <span>Move to Warehouse Processing</span>
               </button>
             )}
 
             {status === "PROCESSING" && (
               <button
-                onClick={() => handleUpdateStatus("READY_FOR_DISPATCH")}
+                onClick={() => openStatusTransitionModal("READY_FOR_DISPATCH")}
                 disabled={statusActionLoading}
-                className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 font-medium text-xs rounded-lg shadow-xs transition flex items-center gap-1.5"
+                className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 font-medium text-xs rounded-lg shadow-xs transition flex items-center gap-1.5 disabled:opacity-50"
               >
                 <Truck className="w-3.5 h-3.5" />
-                Mark Ready for Dispatch
+                <span>Mark Ready for Dispatch</span>
               </button>
             )}
 
             {status === "READY_FOR_DISPATCH" && (
               <button
-                onClick={() => handleUpdateStatus("DELIVERED")}
+                onClick={() => openStatusTransitionModal("DELIVERED")}
                 disabled={statusActionLoading}
-                className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs rounded-lg shadow-xs transition flex items-center gap-1.5"
+                className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs rounded-lg shadow-xs transition flex items-center gap-1.5 disabled:opacity-50"
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                Confirm Verified Delivery
+                <span>Confirm Verified Delivery</span>
               </button>
             )}
           </div>
@@ -883,6 +956,220 @@ export function AdminOrderDetailClient({
           </div>
         </div>
       </div>
+
+      {/* Accept Order Confirmation Modal */}
+      {activeModal === "ACCEPT" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-950/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                <Check className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-bold text-base text-slate-900 dark:text-white">
+                  Accept Order #{order.orderNumber}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Allocate inventory and confirm retailer order
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              Confirming this purchase request will allocate live warehouse stock for:
+            </p>
+
+            <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 text-xs space-y-1.5 border border-slate-200/60 dark:border-slate-700/60">
+              {order.items.map((it) => (
+                <div key={it.id} className="flex justify-between items-center text-slate-700 dark:text-slate-300">
+                  <span className="font-medium truncate max-w-[240px]">
+                    {it.productName} ({it.variantName})
+                  </span>
+                  <span className="font-mono font-semibold shrink-0">
+                    {it.quantity} units
+                  </span>
+                </div>
+              ))}
+              <div className="pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between font-bold text-slate-900 dark:text-white">
+                <span>Order Total:</span>
+                <span>{formatCurrency(totalAmount)}</span>
+              </div>
+            </div>
+
+            {actionErrorMessage && (
+              <div className="p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{actionErrorMessage}</span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveModal(null);
+                  setActionErrorMessage(null);
+                }}
+                disabled={statusActionLoading}
+                className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleConfirmStatusUpdate("CONFIRMED")}
+                disabled={statusActionLoading}
+                className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition flex items-center gap-1.5 disabled:opacity-50"
+              >
+                {statusActionLoading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Check className="w-3.5 h-3.5" />
+                )}
+                <span>Confirm & Accept Order</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Decline Order Confirmation Modal */}
+      {activeModal === "DECLINE" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-950/60 flex items-center justify-center text-rose-600 dark:text-rose-400 shrink-0">
+                <X className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-bold text-base text-slate-900 dark:text-white">
+                  Decline Order #{order.orderNumber}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Reject this wholesale request
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              Are you sure you want to decline this order request? The order status will be permanently marked as <strong>REJECTED</strong> and the retailer will be notified.
+            </p>
+
+            <div>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Decline Reason / Dealer Note <span className="text-slate-400 font-normal">(Optional)</span>
+              </label>
+              <textarea
+                value={declineReason}
+                onChange={(e) => setDeclineReason(e.target.value)}
+                placeholder="e.g. Model currently out of stock, awaiting next shipment from distributor..."
+                rows={3}
+                className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-rose-500"
+                maxLength={500}
+              />
+              <span className="text-[10px] text-slate-400 block mt-1 text-right">
+                {declineReason.length}/500
+              </span>
+            </div>
+
+            {actionErrorMessage && (
+              <div className="p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{actionErrorMessage}</span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveModal(null);
+                  setActionErrorMessage(null);
+                  setDeclineReason("");
+                }}
+                disabled={statusActionLoading}
+                className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold transition"
+              >
+                Keep Order
+              </button>
+              <button
+                type="button"
+                onClick={() => handleConfirmStatusUpdate("REJECTED", declineReason)}
+                disabled={statusActionLoading}
+                className="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-xs transition flex items-center gap-1.5 disabled:opacity-50"
+              >
+                {statusActionLoading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <X className="w-3.5 h-3.5" />
+                )}
+                <span>Confirm Decline Order</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* General Status Transition Confirmation Modal */}
+      {activeModal === "STATUS_TRANSITION" && pendingTargetStatus && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+                <Package className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-bold text-base text-slate-900 dark:text-white">
+                  Update Order #{order.orderNumber}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Transition to {pendingTargetStatus.replace(/_/g, " ")}
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              Are you sure you want to update this order status to{" "}
+              <strong>{pendingTargetStatus.replace(/_/g, " ")}</strong>?
+            </p>
+
+            {actionErrorMessage && (
+              <div className="p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{actionErrorMessage}</span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveModal(null);
+                  setPendingTargetStatus(null);
+                  setActionErrorMessage(null);
+                }}
+                disabled={statusActionLoading}
+                className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleConfirmStatusUpdate(pendingTargetStatus)}
+                disabled={statusActionLoading}
+                className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition flex items-center gap-1.5 disabled:opacity-50"
+              >
+                {statusActionLoading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Check className="w-3.5 h-3.5" />
+                )}
+                <span>Update Status</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

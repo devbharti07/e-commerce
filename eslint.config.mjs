@@ -2,6 +2,18 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
+// Disable overly aggressive React 19 canary rules in eslint-config-next
+for (const conf of nextVitals) {
+  if (conf.rules) {
+    if (conf.rules["react-hooks/set-state-in-effect"]) {
+      conf.rules["react-hooks/set-state-in-effect"] = "off";
+    }
+    if (conf.rules["react-hooks/purity"]) {
+      conf.rules["react-hooks/purity"] = "off";
+    }
+  }
+}
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
@@ -15,12 +27,11 @@ const eslintConfig = defineConfig([
     "tests/**",
     "scripts/**",
     "scratch/**",
+    ".agents/**",
   ]),
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "warn",
-      "react-hooks/set-state-in-effect": "warn",
-      "react-hooks/purity": "warn",
     },
   },
 ]);

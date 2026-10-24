@@ -71,36 +71,36 @@ export function AdminLoginClient() {
   };
 
   return (
-    <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 sm:p-8 shadow-xs space-y-6">
+    <div className="w-full max-w-md bg-card dark:bg-card-dark rounded-xl border border-border dark:border-border-dark p-6 sm:p-8 shadow-xs space-y-6">
       {/* Top Branding */}
       <div className="text-center space-y-2">
-        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 flex items-center justify-center mx-auto border border-slate-200 dark:border-slate-700">
-          <Smartphone className="w-5 h-5" />
+        <div className="w-12 h-12 rounded-xl bg-forest/10 dark:bg-forest-muted text-primary dark:text-emerald-400 flex items-center justify-center mx-auto border border-forest/20 dark:border-forest-border/40 shadow-xs">
+          <Smartphone className="w-6 h-6" />
         </div>
-        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-semibold uppercase tracking-wider border border-slate-200 dark:border-slate-700">
-          <ShieldCheck className="w-3 h-3 text-slate-500" />
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-forest/10 dark:bg-forest-muted/40 text-primary dark:text-accent-brass text-[10px] font-semibold uppercase tracking-wider border border-forest/20 dark:border-forest-border/40">
+          <ShieldCheck className="w-3 h-3 text-accent-brass" />
           Jagdamba Mobile HQ
         </div>
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
+        <h1 className="text-xl sm:text-2xl font-serif font-bold text-text-primary dark:text-text-primary-dark">
           Admin Sign In
         </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+        <p className="text-xs text-text-muted dark:text-text-muted-dark">
           Sign in to manage your business.
         </p>
       </div>
 
       {/* Unauthorized Notice */}
       {unauthorizedError && !error && (
-        <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg text-xs text-amber-700 dark:text-amber-300 flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 shrink-0" />
+        <div className="p-3 bg-amber-500/10 dark:bg-amber-950/30 border border-amber-500/20 dark:border-amber-800 rounded-lg text-xs text-amber-700 dark:text-amber-300 flex items-center gap-2">
+          <ShieldAlert className="w-4 h-4 shrink-0 text-amber-600" />
           <span>Owner/Administrator credentials are required to access Admin HQ.</span>
         </div>
       )}
 
       {/* Error Banner */}
       {error && (
-        <div className="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 rounded-lg text-xs text-rose-700 dark:text-rose-300 flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 shrink-0" />
+        <div className="p-3 bg-rose-500/10 dark:bg-rose-950/30 border border-rose-500/20 dark:border-rose-800 rounded-lg text-xs text-rose-700 dark:text-rose-300 flex items-center gap-2">
+          <ShieldAlert className="w-4 h-4 shrink-0 text-rose-600" />
           <span>{error}</span>
         </div>
       )}
@@ -108,7 +108,7 @@ export function AdminLoginClient() {
       {/* Form */}
       <form onSubmit={handleAdminLogin} className="space-y-4">
         <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+          <label className="block text-xs font-medium text-text-primary dark:text-text-primary-dark mb-1">
             Administrator Email
           </label>
           <div className="relative">
@@ -119,14 +119,14 @@ export function AdminLoginClient() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@gmail.com"
               autoComplete="username"
-              className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-400"
+              className="w-full bg-ivory/60 dark:bg-forest-muted/30 border border-border dark:border-border-dark rounded-lg pl-9 pr-3 py-2 text-xs text-text-primary dark:text-text-primary-dark focus:outline-none focus:ring-1 focus:ring-primary dark:focus:ring-accent-brass"
             />
-            <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <Mail className="w-4 h-4 text-text-muted dark:text-text-muted-dark absolute left-3 top-2.5" />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+          <label className="block text-xs font-medium text-text-primary dark:text-text-primary-dark mb-1">
             Password
           </label>
           <div className="relative">
@@ -137,13 +137,13 @@ export function AdminLoginClient() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               autoComplete="current-password"
-              className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-10 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-400"
+              className="w-full bg-ivory/60 dark:bg-forest-muted/30 border border-border dark:border-border-dark rounded-lg pl-9 pr-10 py-2 text-xs text-text-primary dark:text-text-primary-dark focus:outline-none focus:ring-1 focus:ring-primary dark:focus:ring-accent-brass"
             />
-            <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <Lock className="w-4 h-4 text-text-muted dark:text-text-muted-dark absolute left-3 top-2.5" />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className="absolute right-3 top-2 text-text-muted dark:text-text-muted-dark hover:text-text-primary dark:hover:text-text-primary-dark"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -154,7 +154,7 @@ export function AdminLoginClient() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-medium text-xs rounded-lg transition shadow-xs flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-2.5 bg-primary hover:bg-forest-light text-white font-medium text-xs rounded-lg transition shadow-xs flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {loading ? (
             <span>Verifying Credentials...</span>
@@ -168,10 +168,10 @@ export function AdminLoginClient() {
       </form>
 
       {/* Navigation Links */}
-      <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+      <div className="pt-3 border-t border-border dark:border-border-dark flex items-center justify-between text-xs text-text-muted dark:text-text-muted-dark">
         <Link
           href="/"
-          className="hover:text-slate-900 dark:hover:text-white flex items-center gap-1 transition"
+          className="hover:text-primary dark:hover:text-accent-brass flex items-center gap-1 transition"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to Website
@@ -179,7 +179,7 @@ export function AdminLoginClient() {
 
         <Link
           href="/login"
-          className="font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
+          className="font-medium text-primary dark:text-accent-brass hover:underline transition"
         >
           Retailer Sign In &rarr;
         </Link>

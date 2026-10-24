@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireUser } from "@/lib/auth";
+import { requireUser, handleAuthError } from "@/lib/auth";
 
 const ProfileUpdateSchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
-  businessName: z.string().optional(),
-  gstNumber: z.string().optional(),
+  name: z.string().trim().min(2, "Name is required").max(100, "Name cannot exceed 100 characters"),
+  phone: z.string().trim().min(10, "Phone number must be at least 10 digits").max(16, "Phone number cannot exceed 16 characters"),
+  businessName: z.string().trim().max(120).optional(),
+  gstNumber: z.string().trim().max(20).optional(),
 });
 
 export async function GET() {
@@ -41,6 +41,8 @@ export async function GET() {
       },
     });
   } catch (error) {
+    const authRes = handleAuthError(error);
+    if (authRes) return authRes;
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 }
@@ -83,6 +85,8 @@ export async function PATCH(req: Request) {
       },
     });
   } catch (error: any) {
+    const authRes = handleAuthError(error);
+    if (authRes) return authRes;
     return NextResponse.json({ error: error.message || "Update failed" }, { status: 400 });
   }
 }

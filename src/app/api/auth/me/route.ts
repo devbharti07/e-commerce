@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   try {
     const session = await getCurrentUser();
-    if (!session) {
+    if (!session || !session.userId) {
       return NextResponse.json({ user: null }, { status: 401 });
     }
 

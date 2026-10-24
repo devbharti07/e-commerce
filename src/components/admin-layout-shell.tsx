@@ -18,6 +18,7 @@ import {
   BarChart3,
   ShieldAlert,
   Settings,
+  Clock,
   Menu,
   X,
   ExternalLink,
@@ -152,7 +153,7 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
               ? `${metrics.pendingOrdersCount} new`
               : null,
           badgeColor:
-            "bg-amber-500/10 text-amber-400 border border-amber-500/20",
+            "bg-[#B3853E]/20 text-[#D8AB64] border border-[#B3853E]/40",
         },
         {
           name: "Retailers",
@@ -169,7 +170,7 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
               ? `${metrics.pendingRegistrationsCount} pending`
               : null,
           badgeColor:
-            "bg-amber-500/10 text-amber-400 border border-amber-500/20",
+            "bg-[#B3853E]/20 text-[#D8AB64] border border-[#B3853E]/40",
         },
         {
           name: "Messages & Chat",
@@ -180,7 +181,7 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
               ? `${metrics.unreadMessagesCount} unread`
               : null,
           badgeColor:
-            "bg-blue-500/10 text-blue-400 border border-blue-500/20",
+            "bg-[#173B35] text-white border border-[#285C4D]",
         },
       ],
     },
@@ -196,7 +197,7 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
               ? `${metrics.notificationsCount}`
               : null,
           badgeColor:
-            "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20",
+            "bg-[#B3853E]/20 text-[#D8AB64] border border-[#B3853E]/30",
         },
         {
           name: "Reports & Analytics",
@@ -225,6 +226,12 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
           name: "Store Settings",
           href: "/admin/settings",
           icon: SlidersHorizontal,
+          badge: null,
+        },
+        {
+          name: "Store Availability",
+          href: "/admin/availability",
+          icon: Clock,
           badge: null,
         },
         {
@@ -271,22 +278,22 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col lg:flex-row text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-[#F6F5F0] dark:bg-[#111916] flex flex-col lg:flex-row text-[#17231E] dark:text-[#E8EFEA] transition-colors">
       {/* Mobile Header Bar */}
-      <div className="lg:hidden bg-slate-900 text-white p-4 flex items-center justify-between sticky top-0 z-40 border-b border-slate-800 shadow-xs">
+      <div className="lg:hidden bg-[#0F1A17] text-white p-4 flex items-center justify-between sticky top-0 z-40 border-b border-[#212E28] shadow-xs">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded-lg bg-slate-800 text-slate-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-700"
+            className="p-2 rounded-xl bg-[#18221D] text-[#E8EFEA] hover:text-white focus:outline-none border border-[#2B3B33] cursor-pointer"
             aria-label="Toggle Navigation Menu"
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
           <div>
-            <span className="font-bold text-sm tracking-tight text-white flex items-center gap-1.5">
-              JAGDAMBA <span className="text-amber-400 font-semibold">ADMIN</span>
+            <span className="font-bold text-sm tracking-tight text-white flex items-center gap-1.5 font-serif-heading">
+              JAGDAMBA <span className="text-[#B3853E] font-semibold">ADMIN</span>
             </span>
-            <p className="text-[10px] text-slate-400">Wholesale Console</p>
+            <p className="text-[10px] text-[#9BA59E]">Wholesale Console</p>
           </div>
         </div>
 
@@ -294,43 +301,43 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
           <button
             onClick={toggleTheme}
             aria-label="Toggle Theme"
-            className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
+            className="p-2 rounded-xl bg-[#18221D] text-[#9BA59E] hover:text-white border border-[#2B3B33] cursor-pointer"
           >
-            {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-amber-400" />}
+            {theme === "light" ? <Moon className="w-4 h-4 text-[#D8AB64]" /> : <Sun className="w-4 h-4 text-[#D8AB64]" />}
           </button>
           <Link
             href="/catalog"
             target="_blank"
-            className="px-2.5 py-1 text-[11px] font-semibold bg-slate-800 text-slate-200 hover:text-white rounded-lg flex items-center gap-1"
+            className="px-3 py-1.5 text-[11px] font-semibold bg-[#173B35] text-white hover:bg-[#285C4D] rounded-xl flex items-center gap-1 shadow-2xs"
           >
-            Store <ExternalLink className="w-3 h-3 text-slate-400" />
+            Store <ExternalLink className="w-3 h-3 text-[#D8AB64]" />
           </Link>
         </div>
       </div>
 
       {/* Sidebar Navigation */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 shrink-0 bg-slate-900 text-slate-200 flex flex-col transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:h-screen lg:sticky lg:top-0 border-r border-slate-800 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 shrink-0 bg-[#0F1A17] text-[#D5DDD7] flex flex-col transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:h-screen lg:sticky lg:top-0 border-r border-[#212E28] ${
           mobileOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
         }`}
       >
         {/* Brand Header */}
-        <div className="p-5 border-b border-slate-800/80 flex items-center justify-between">
+        <div className="p-5 border-b border-[#212E28] flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-base font-bold tracking-tight text-white">
-                JAGDAMBA <span className="text-amber-400">HQ</span>
+              <span className="text-base font-bold tracking-tight text-white font-serif-heading">
+                JAGDAMBA <span className="text-[#B3853E]">HQ</span>
               </span>
-              <span className="px-2 py-0.5 text-[10px] font-semibold uppercase bg-slate-800 text-amber-400 rounded border border-slate-700">
+              <span className="px-2 py-0.5 text-[10px] font-bold uppercase bg-[#18221D] text-[#D8AB64] rounded border border-[#2B3B33]">
                 Owner
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-0.5">Wholesale Distribution Console</p>
+            <p className="text-[11px] text-[#9BA59E] mt-0.5">Wholesale Distribution Console</p>
           </div>
 
           <button
             onClick={() => setMobileOpen(false)}
-            className="lg:hidden p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white"
+            className="lg:hidden p-1.5 rounded-lg bg-[#18221D] text-[#9BA59E] hover:text-white"
             aria-label="Close Sidebar"
           >
             <X className="w-4 h-4" />
@@ -341,7 +348,7 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
           {navigationGroups.map((group) => (
             <div key={group.title} className="space-y-1">
-              <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400/80">
+              <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-[#9BA59E]/70">
                 {group.title}
               </p>
               <div className="space-y-0.5 pt-1">
@@ -354,18 +361,18 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
                       key={item.name}
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors group ${
+                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors group cursor-pointer ${
                         active
-                          ? "bg-slate-800 text-white font-semibold shadow-xs"
-                          : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-200"
+                          ? "bg-[#173B35] text-white shadow-xs"
+                          : "text-[#9BA59E] hover:bg-[#18221D] hover:text-white"
                       }`}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <Icon
                           className={`w-4 h-4 shrink-0 transition-colors ${
                             active
-                              ? "text-amber-400"
-                              : "text-slate-400 group-hover:text-slate-200"
+                              ? "text-[#D8AB64]"
+                              : "text-[#69736D] group-hover:text-white"
                           }`}
                         />
                         <span className="truncate">{item.name}</span>
@@ -373,8 +380,8 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
 
                       {item.badge && (
                         <span
-                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                            item.badgeColor || "bg-slate-800 text-slate-300"
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                            item.badgeColor || "bg-[#18221D] text-[#D5DDD7]"
                           }`}
                         >
                           {item.badge}
@@ -389,24 +396,24 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
         </nav>
 
         {/* User Footer Card */}
-        <div className="p-3.5 border-t border-slate-800 bg-slate-900/90">
-          <div className="flex items-center justify-between p-2 rounded-lg bg-slate-800/50 border border-slate-800">
+        <div className="p-3.5 border-t border-[#212E28] bg-[#0F1A17]">
+          <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#18221D] border border-[#2B3B33]">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 rounded-md bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center text-xs shrink-0 border border-amber-500/30">
+              <div className="w-8 h-8 rounded-lg bg-[#173B35] text-[#D8AB64] font-bold flex items-center justify-center text-xs shrink-0 border border-[#285C4D]">
                 {user.name.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0 truncate">
-                <p className="text-xs font-semibold text-white truncate">{user.name}</p>
-                <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
+                <p className="text-xs font-bold text-white truncate">{user.name}</p>
+                <p className="text-[10px] text-[#9BA59E] truncate">{user.email}</p>
               </div>
             </div>
             <button
               onClick={handleLogout}
               disabled={loggingOut}
               title="Sign Out"
-              className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded transition"
+              className="p-1.5 text-[#9BA59E] hover:text-rose-400 hover:bg-[#212E28] rounded-lg transition cursor-pointer"
             >
-              <LogOut className="w-3.5 h-3.5" />
+              <LogOut className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -423,16 +430,16 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
       {/* Main Content Area */}
       <main className="flex-1 min-w-0 flex flex-col">
         {/* Compact Desktop Top Header */}
-        <header className="hidden lg:flex items-center justify-between px-8 py-3 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xs border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-xs">
+        <header className="hidden lg:flex items-center justify-between px-8 py-3.5 bg-[#F6F5F0]/95 dark:bg-[#111916]/95 backdrop-blur-xs border-b border-[#DDE3DC] dark:border-[#212E28] sticky top-0 z-30 shadow-2xs">
           {/* Breadcrumb Navigation */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-[#69736D] dark:text-[#9BA59E]">
             {breadcrumbs.map((b, idx) => (
               <React.Fragment key={b.href}>
-                {idx > 0 && <span className="text-slate-300 dark:text-slate-600">/</span>}
+                {idx > 0 && <span className="text-[#69736D]/50">/</span>}
                 {b.isLast ? (
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">{b.label}</span>
+                  <span className="font-bold text-[#17231E] dark:text-[#E8EFEA]">{b.label}</span>
                 ) : (
-                  <Link href={b.href} className="hover:text-slate-900 dark:hover:text-white transition">
+                  <Link href={b.href} className="hover:text-[#173B35] dark:hover:text-white transition">
                     {b.label}
                   </Link>
                 )}
@@ -446,22 +453,22 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
             <Link
               href="/catalog"
               target="_blank"
-              className="px-2.5 py-1.5 rounded-md text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[#17231E] dark:text-[#E8EFEA] hover:bg-[#EAECE8] dark:hover:bg-[#18221D] transition flex items-center gap-1.5 border border-[#DDE3DC] dark:border-[#212E28]"
             >
               <span>View Storefront</span>
-              <ExternalLink className="w-3 h-3 text-slate-400" />
+              <ExternalLink className="w-3.5 h-3.5 text-[#B3853E]" />
             </Link>
 
             {/* Notifications Button */}
             <Link
               href="/admin/notifications"
-              className="relative p-2 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              className="relative p-2 rounded-xl text-[#69736D] hover:text-[#17231E] dark:text-[#9BA59E] dark:hover:text-white hover:bg-[#EAECE8] dark:hover:bg-[#18221D] transition"
               title="Notifications"
               aria-label="View notifications"
             >
               <Bell className="w-4 h-4" />
               {metrics.notificationsCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white dark:ring-slate-900" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white dark:ring-[#111916]" />
               )}
             </Link>
 
@@ -469,35 +476,35 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
             <button
               onClick={toggleTheme}
               aria-label="Toggle Color Theme"
-              className="p-2 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              className="p-2 rounded-xl text-[#69736D] hover:text-[#17231E] dark:text-[#9BA59E] dark:hover:text-white hover:bg-[#EAECE8] dark:hover:bg-[#18221D] transition cursor-pointer"
             >
               {theme === "light" ? (
-                <Moon className="w-4 h-4" />
+                <Moon className="w-4 h-4 text-[#173B35]" />
               ) : (
-                <Sun className="w-4 h-4 text-amber-400" />
+                <Sun className="w-4 h-4 text-[#D8AB64]" />
               )}
             </button>
 
             {/* Vertical Divider */}
-            <div className="h-4 w-px bg-slate-200 dark:bg-slate-800" />
+            <div className="h-4 w-px bg-[#DDE3DC] dark:border-[#212E28]" />
 
             {/* Admin Profile Dropdown */}
             <div className="relative" ref={profileRef}>
               <button
                 type="button"
                 onClick={() => setProfileDropdownOpen((prev) => !prev)}
-                className="flex items-center gap-2 p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition focus:outline-none"
+                className="flex items-center gap-2 p-1 rounded-xl hover:bg-[#EAECE8] dark:hover:bg-[#18221D] transition focus:outline-none cursor-pointer"
                 aria-expanded={profileDropdownOpen}
                 aria-haspopup="menu"
               >
-                <div className="w-7 h-7 rounded-md bg-slate-900 dark:bg-slate-800 text-white font-bold flex items-center justify-center text-xs border border-slate-200 dark:border-slate-700">
+                <div className="w-7 h-7 rounded-lg bg-[#173B35] text-[#D8AB64] font-bold flex items-center justify-center text-xs border border-[#285C4D]">
                   {user.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="text-left hidden xl:block">
-                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-tight">
+                  <p className="text-xs font-bold text-[#17231E] dark:text-[#E8EFEA] leading-tight">
                     {user.name}
                   </p>
-                  <p className="text-[10px] text-slate-400 leading-tight">
+                  <p className="text-[10px] text-[#69736D] dark:text-[#9BA59E] leading-tight">
                     {user.role}
                   </p>
                 </div>
@@ -506,13 +513,13 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
               {profileDropdownOpen && (
                 <div
                   role="menu"
-                  className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 p-1.5 z-50 text-xs"
+                  className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#18221D] rounded-2xl shadow-xl border border-[#DDE3DC] dark:border-[#212E28] p-2 z-50 text-xs"
                 >
-                  <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-800 mb-1">
-                    <p className="font-semibold text-slate-800 dark:text-slate-200 truncate">
+                  <div className="px-3 py-2 border-b border-[#EAECE8] dark:border-[#212E28] mb-1">
+                    <p className="font-bold text-[#17231E] dark:text-white truncate">
                       {user.name}
                     </p>
-                    <p className="text-[11px] text-slate-400 truncate">
+                    <p className="text-[11px] text-[#69736D] truncate">
                       {user.email}
                     </p>
                   </div>
@@ -520,16 +527,16 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
                   <Link
                     href="/admin/admin-settings"
                     onClick={() => setProfileDropdownOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-[#17231E] dark:text-[#E8EFEA] hover:bg-[#EAECE8] dark:hover:bg-[#212E28] transition font-medium"
                   >
-                    <Settings className="w-3.5 h-3.5 text-slate-400" />
+                    <Settings className="w-3.5 h-3.5 text-[#69736D]" />
                     <span>Account Settings</span>
                   </Link>
 
                   <button
                     onClick={handleLogout}
                     disabled={loggingOut}
-                    className="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition mt-1 border-t border-slate-100 dark:border-slate-800"
+                    className="w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition mt-1 border-t border-[#EAECE8] dark:border-[#212E28] cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>{loggingOut ? "Signing out..." : "Sign Out"}</span>
@@ -541,7 +548,7 @@ export function AdminLayoutShell({ user, metrics, children }: AdminLayoutShellPr
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 p-3 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto min-w-0 overflow-x-hidden">{children}</div>
+        <div className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto min-w-0 overflow-x-hidden">{children}</div>
       </main>
     </div>
   );

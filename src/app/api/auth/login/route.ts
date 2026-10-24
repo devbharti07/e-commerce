@@ -2,15 +2,30 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword, createSessionToken, AUTH_COOKIE_NAME } from "@/lib/auth";
+import { checkRateLimit, resetRateLimit, getClientIp } from "@/lib/rate-limit";
+import { normalizeIndianPhoneNumber } from "@/lib/phone";
 
-const LoginSchema = z.object({
-  email: z.string().trim().email("Please enter a valid email address"),
-  password: z.string().min(1, "Password is required"),
-});
+const LoginSchema = z
+  .object({
+    email: z.string().trim().optional(),
+    identifier: z.string().trim().optional(),
+    phone: z.string().trim().optional(),
+    password: z.string().min(1, "Password is required"),
+  })
+  .refine((data) => Boolean((data.identifier || data.email || data.phone)?.trim()), {
+    message: "Please enter your registered email address or mobile number",
+    path: ["identifier"],
+  });
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON request body" }, { status: 400 });
+    }
+
     const result = LoginSchema.safeParse(body);
 
     if (!result.success) {
@@ -20,12 +35,64 @@ export async function POST(req: Request) {
       );
     }
 
-    const { email, password } = result.data;
-    const normalizedEmail = email.trim().toLowerCase();
+    const { password } = result.data;
+    const rawIdentifier = (
+      result.data.identifier ||
+      result.data.email ||
+      result.data.phone ||
+      ""
+    ).trim();
+    const clientIp = getClientIp(req);
 
-    const user = await prisma.user.findUnique({
-      where: { email: normalizedEmail },
-    });
+    // 1. IP-level brute force protection (max 60 attempts per 15 min per IP)
+    const ipRate = checkRateLimit(`login:ip:${clientIp}`, 60, 15 * 60 * 1000);
+    if (!ipRate.allowed) {
+      return NextResponse.json(
+        {
+          error: `Too many login attempts from this network. Please wait ${ipRate.retryAfterSeconds} seconds before trying again.`,
+        },
+        { status: 429, headers: { "Retry-After": ipRate.retryAfterSeconds.toString() } }
+      );
+    }
+
+    // 2. Account-level brute force protection (max 6 attempts per 15 min per account)
+    const rateLimitKey = `login:id:${rawIdentifier.toLowerCase()}`;
+    const accountRate = checkRateLimit(rateLimitKey, 6, 15 * 60 * 1000);
+    if (!accountRate.allowed) {
+      return NextResponse.json(
+        {
+          error: `Too many failed login attempts for this account. Please wait ${accountRate.retryAfterSeconds} seconds before trying again.`,
+        },
+        { status: 429, headers: { "Retry-After": accountRate.retryAfterSeconds.toString() } }
+      );
+    }
+
+    let user = null;
+    if (rawIdentifier.includes("@")) {
+      user = await prisma.user.findUnique({
+        where: { email: rawIdentifier.toLowerCase() },
+      });
+    } else {
+      const phoneNorm = normalizeIndianPhoneNumber(rawIdentifier);
+      const digitsOnly = rawIdentifier.replace(/\D/g, "");
+      const last10 = digitsOnly.slice(-10);
+      const normalizedE164 = phoneNorm.valid ? phoneNorm.normalized : rawIdentifier;
+      const formattedWithSpaces =
+        last10.length === 10 ? `+91 ${last10.slice(0, 5)} ${last10.slice(5)}` : rawIdentifier;
+
+      user = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { phone: normalizedE164 },
+            { phone: formattedWithSpaces },
+            { phone: last10 },
+            { phone: rawIdentifier },
+            ...(last10.length === 10 ? [{ phone: { endsWith: last10 } }] : []),
+            { email: rawIdentifier.toLowerCase() },
+          ],
+        },
+      });
+    }
 
     if (!user) {
       return NextResponse.json(
@@ -41,6 +108,11 @@ export async function POST(req: Request) {
         { status: 401 }
       );
     }
+
+    // Clear failed attempt counter on successful password verification
+    resetRateLimit(rateLimitKey);
+    resetRateLimit(`login:id:${user.email.toLowerCase()}`);
+    resetRateLimit(`login:email:${user.email.toLowerCase()}`);
 
     if (user.role === "CUSTOMER") {
       if (user.approvalStatus === "PENDING") {

@@ -16,7 +16,14 @@ const CreateProductSchema = z.object({
   returnDays: z.number().int().min(0).default(7),
   isPublished: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
-  imageUrl: z.string().optional(),
+  imageUrl: z
+    .string()
+    .trim()
+    .refine(
+      (url) => !url || url.startsWith("https://") || url.startsWith("http://"),
+      { message: "Image URL must start with http:// or https://" }
+    )
+    .optional(),
   specifications: z
     .array(
       z.object({

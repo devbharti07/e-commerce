@@ -17,7 +17,14 @@ const UpdateProductSchema = z.object({
   isFeatured: z.boolean().optional(),
   isArchived: z.boolean().optional(),
   displayOrder: z.number().int().optional(),
-  imageUrl: z.string().optional(),
+  imageUrl: z
+    .string()
+    .trim()
+    .refine(
+      (url) => !url || url.startsWith("https://") || url.startsWith("http://"),
+      { message: "Image URL must start with http:// or https://" }
+    )
+    .optional(),
 });
 
 export async function GET(

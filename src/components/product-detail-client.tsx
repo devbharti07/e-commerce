@@ -14,7 +14,9 @@ import {
   ShoppingCart,
   ChevronRight,
   Info,
+  Clock,
 } from "lucide-react";
+import { useStoreAvailability } from "@/hooks/use-store-availability";
 
 interface Variant {
   id: string;
@@ -55,6 +57,7 @@ interface ProductDetailClientProps {
 
 export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const { addItem } = useCart();
+  const { availability, isOpen } = useStoreAvailability();
   const [selectedVariantId, setSelectedVariantId] = useState<string>(
     product.variants[0]?.id || ""
   );
@@ -188,33 +191,33 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   }, {} as Record<string, typeof product.specifications>);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10 bg-[#F6F5F0] dark:bg-[#111916] text-[#17231E] dark:text-[#E8EFEA] min-h-[85vh] transition-colors">
       {/* Breadcrumbs */}
-      <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-xs text-slate-500">
-        <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition">
+      <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-xs text-[#69736D] dark:text-[#9BA59E]">
+        <Link href="/" className="hover:text-[#173B35] dark:hover:text-white transition">
           Home
         </Link>
-        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <Link href="/catalog" className="hover:text-slate-900 dark:hover:text-white transition">
+        <ChevronRight className="w-3.5 h-3.5 text-[#69736D]" />
+        <Link href="/catalog" className="hover:text-[#173B35] dark:hover:text-white transition">
           Catalog
         </Link>
-        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+        <ChevronRight className="w-3.5 h-3.5 text-[#69736D]" />
         <Link
           href={`/catalog?brand=${product.brand.slug}`}
-          className="hover:text-slate-900 dark:hover:text-white font-medium transition"
+          className="hover:text-[#173B35] dark:hover:text-white font-medium transition"
         >
           {product.brand.name}
         </Link>
-        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <span className="text-slate-900 dark:text-slate-100 font-semibold truncate max-w-xs">
+        <ChevronRight className="w-3.5 h-3.5 text-[#69736D]" />
+        <span className="text-[#17231E] dark:text-[#E8EFEA] font-semibold truncate max-w-xs">
           {product.name}
         </span>
       </nav>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
         {/* Left: Product Gallery */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="relative bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 h-80 sm:h-96 lg:h-[420px] flex items-center justify-center p-6 shadow-2xs overflow-hidden">
+          <div className="relative bg-white dark:bg-[#18221D] rounded-2xl border border-[#DDE3DC] dark:border-[#212E28] h-80 sm:h-96 lg:h-[420px] flex items-center justify-center p-6 shadow-2xs overflow-hidden">
             <Image
               src={
                 product.images[activeImageIndex]?.url ||
@@ -226,11 +229,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               className="object-contain p-6"
               priority
             />
-            <div className="absolute top-3.5 left-3.5 bg-slate-900 text-white text-[10px] font-bold px-2.5 py-1 rounded">
+            <div className="absolute top-3.5 left-3.5 bg-[#173B35] text-white text-[10px] font-bold px-3 py-1 rounded-full border border-[#285C4D]">
               {product.brand.name} Sealed
             </div>
             {availableUnits <= 0 && (
-              <div className="absolute top-3.5 right-3.5 bg-rose-600 text-white text-[10px] font-bold px-2.5 py-1 rounded">
+              <div className="absolute top-3.5 right-3.5 bg-rose-600 text-white text-[10px] font-bold px-3 py-1 rounded-full">
                 SOLD OUT
               </div>
             )}
@@ -243,10 +246,10 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 <button
                   key={img.id}
                   onClick={() => setActiveImageIndex(idx)}
-                  className={`w-16 h-16 rounded-lg bg-white dark:bg-slate-900 border p-1 shrink-0 transition relative overflow-hidden ${
+                  className={`w-16 h-16 rounded-xl bg-white dark:bg-[#18221D] border p-1 shrink-0 transition relative overflow-hidden ${
                     activeImageIndex === idx
-                      ? "border-slate-900 dark:border-white ring-1 ring-slate-900 dark:ring-white"
-                      : "border-slate-200 dark:border-slate-800 hover:border-slate-400"
+                      ? "border-[#173B35] dark:border-[#B3853E] ring-1 ring-[#173B35] dark:ring-[#B3853E]"
+                      : "border-[#DDE3DC] dark:border-[#212E28] hover:border-[#173B35]"
                   }`}
                 >
                   <Image
@@ -263,51 +266,53 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           )}
 
           {/* Trust Guarantees */}
-          <div className="grid grid-cols-3 gap-2.5 pt-2 text-center text-xs">
-            <div className="p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs">
-              <ShieldCheck className="w-4 h-4 text-amber-500 mx-auto mb-1" />
-              <p className="font-bold text-slate-900 dark:text-slate-100">
+          <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs">
+            <div className="p-3.5 bg-white dark:bg-[#18221D] rounded-xl border border-[#DDE3DC] dark:border-[#212E28] shadow-2xs">
+              <ShieldCheck className="w-5 h-5 text-[#B3853E] dark:text-[#D8AB64] mx-auto mb-1" />
+              <p className="font-bold text-[#17231E] dark:text-[#E8EFEA]">
                 {product.warrantyMonths} Mo Warranty
               </p>
-              <p className="text-[10px] text-slate-400">Official Brand Care</p>
+              <p className="text-[10px] text-[#69736D] dark:text-[#9BA59E]">Official Brand Care</p>
             </div>
-            <div className="p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs">
-              <RotateCcw className="w-4 h-4 text-amber-500 mx-auto mb-1" />
-              <p className="font-bold text-slate-900 dark:text-slate-100">
+            <div className="p-3.5 bg-white dark:bg-[#18221D] rounded-xl border border-[#DDE3DC] dark:border-[#212E28] shadow-2xs">
+              <RotateCcw className="w-5 h-5 text-[#B3853E] dark:text-[#D8AB64] mx-auto mb-1" />
+              <p className="font-bold text-[#17231E] dark:text-[#E8EFEA]">
                 {product.returnDays} Days DOA
               </p>
-              <p className="text-[10px] text-slate-400">Dealer Replacement</p>
+              <p className="text-[10px] text-[#69736D] dark:text-[#9BA59E]">Dealer Replacement</p>
             </div>
-            <div className="p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs">
-              <Truck className="w-4 h-4 text-amber-500 mx-auto mb-1" />
-              <p className="font-bold text-slate-900 dark:text-slate-100">
+            <div className="p-3.5 bg-white dark:bg-[#18221D] rounded-xl border border-[#DDE3DC] dark:border-[#212E28] shadow-2xs">
+              <Truck className="w-5 h-5 text-[#B3853E] dark:text-[#D8AB64] mx-auto mb-1" />
+              <p className="font-bold text-[#17231E] dark:text-[#E8EFEA]">
                 Insured Transit
               </p>
-              <p className="text-[10px] text-slate-400">Safe Shop Delivery</p>
+              <p className="text-[10px] text-[#69736D] dark:text-[#9BA59E]">Direct Shop Delivery</p>
             </div>
           </div>
         </div>
 
         {/* Right: Product Details, Variant Selection, Pricing Tiers */}
-        <div className="lg:col-span-6 space-y-5">
+        <div className="lg:col-span-6 space-y-6">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-              {product.brand.name} • Model: {product.modelNumber}
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight mt-1">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#173B35]/10 dark:bg-[#173B35]/30 text-[#173B35] dark:text-[#D8AB64] text-[11px] font-bold uppercase tracking-wider mb-2">
+              <span>{product.brand.name}</span>
+              <span>•</span>
+              <span>Model: {product.modelNumber}</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#17231E] dark:text-[#E8EFEA] tracking-tight">
               {product.name}
             </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#69736D] dark:text-[#9BA59E] mt-2.5 leading-relaxed">
               {product.description}
             </p>
           </div>
 
           {/* 1. VARIANT SELECTOR */}
-          <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3.5 shadow-2xs">
-            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-slate-100">
+          <div className="bg-white dark:bg-[#18221D] p-5 rounded-2xl border border-[#DDE3DC] dark:border-[#212E28] space-y-4 shadow-2xs">
+            <h3 className="font-bold text-xs uppercase tracking-wider text-[#17231E] dark:text-[#E8EFEA]">
               Choose Configuration & Color
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {product.variants.map((v) => {
                 const isSelected = v.id === selectedVariant.id;
                 const vStock = v.onHandStock - v.reservedStock;
@@ -315,15 +320,15 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   <button
                     key={v.id}
                     onClick={() => handleVariantSelect(v.id)}
-                    className={`text-left p-3 rounded-lg border transition flex flex-col justify-between ${
+                    className={`text-left p-3.5 rounded-xl border transition flex flex-col justify-between cursor-pointer ${
                       isSelected
-                        ? "border-slate-900 dark:border-white bg-slate-50 dark:bg-slate-800/80 ring-1 ring-slate-900 dark:ring-white"
-                        : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                        ? "border-[#173B35] dark:border-[#B3853E] bg-[#EAECE8]/70 dark:bg-[#212E28] ring-1 ring-[#173B35] dark:ring-[#B3853E]"
+                        : "border-[#DDE3DC] dark:border-[#212E28] hover:border-[#173B35]"
                     }`}
                   >
                     <div>
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-xs text-slate-900 dark:text-slate-100">
+                        <span className="font-bold text-xs text-[#17231E] dark:text-[#E8EFEA]">
                           {v.ramGb}GB / {v.storageGb}GB
                         </span>
                         <div
@@ -332,11 +337,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                           title={v.colorName}
                         />
                       </div>
-                      <p className="text-[11px] text-slate-500 mt-0.5">{v.colorName}</p>
+                      <p className="text-[11px] text-[#69736D] dark:text-[#9BA59E] mt-0.5">{v.colorName}</p>
                     </div>
 
-                    <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                      <span className="font-bold text-slate-900 dark:text-slate-100 tabular-nums">
+                    <div className="mt-3 pt-2.5 border-t border-[#DDE3DC] dark:border-[#212E28] flex items-center justify-between text-xs">
+                      <span className="font-bold text-[#17231E] dark:text-[#E8EFEA] tabular-nums font-mono">
                         {formatCurrency(v.baseWholesalePrice)}
                       </span>
                       {vStock <= 0 ? (
@@ -344,7 +349,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                           Sold Out
                         </span>
                       ) : (
-                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-[10px] tabular-nums">
+                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-[10px] tabular-nums font-mono">
                           {vStock} ready
                         </span>
                       )}
@@ -354,25 +359,25 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               })}
             </div>
 
-            <div className="text-[11px] text-slate-500 flex items-center gap-1.5 pt-0.5">
-              <span className="font-semibold text-slate-700 dark:text-slate-300">
+            <div className="text-[11px] text-[#69736D] dark:text-[#9BA59E] flex items-center gap-1.5 pt-1">
+              <span className="font-semibold text-[#17231E] dark:text-[#E8EFEA]">
                 Active SKU:
               </span>
-              <code className="text-slate-600 dark:text-slate-400">{selectedVariant.sku}</code>
+              <code className="text-[#173B35] dark:text-[#D8AB64] font-mono">{selectedVariant.sku}</code>
             </div>
           </div>
 
           {/* 2. VOLUME PRICING TIERS */}
           {selectedVariant.pricingTiers && selectedVariant.pricingTiers.length > 0 && (
-            <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-2xs">
+            <div className="bg-white dark:bg-[#18221D] p-5 rounded-2xl border border-[#DDE3DC] dark:border-[#212E28] space-y-3.5 shadow-2xs">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-                  <Info className="w-3.5 h-3.5 text-amber-500" />
+                <h3 className="font-bold text-xs uppercase tracking-wider text-[#17231E] dark:text-[#E8EFEA] flex items-center gap-1.5">
+                  <Info className="w-3.5 h-3.5 text-[#B3853E] dark:text-[#D8AB64]" />
                   Volume Tier Wholesale Pricing
                 </h3>
-                <span className="text-[11px] text-slate-400">Live Tier Auto-Calculation</span>
+                <span className="text-[11px] text-[#69736D] dark:text-[#9BA59E]">Live Tier Auto-Calculation</span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-center">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
                 {selectedVariant.pricingTiers.map((tier) => {
                   const isActive =
                     quantity >= tier.minQty &&
@@ -380,22 +385,22 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   return (
                     <div
                       key={tier.id}
-                      className={`p-2.5 rounded-lg border text-xs transition ${
+                      className={`p-3 rounded-xl border text-xs transition ${
                         isActive
-                          ? "border-amber-400 bg-amber-50 dark:bg-amber-950/20 font-bold"
-                          : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900"
+                          ? "border-[#B3853E] bg-[#B3853E]/10 dark:bg-[#B3853E]/20 font-bold"
+                          : "border-[#DDE3DC] dark:border-[#212E28] bg-[#EAECE8]/50 dark:bg-[#111916]/50"
                       }`}
                     >
-                      <p className="text-slate-500 dark:text-slate-400 text-[11px] font-medium">
+                      <p className="text-[#69736D] dark:text-[#9BA59E] text-[11px] font-medium">
                         {tier.minQty}
                         {tier.maxQty ? ` - ${tier.maxQty}` : "+"} pcs
                       </p>
-                      <p className="text-sm font-bold text-slate-900 dark:text-slate-100 mt-0.5 tabular-nums">
+                      <p className="text-sm font-bold text-[#17231E] dark:text-[#E8EFEA] mt-1 tabular-nums font-mono">
                         {formatCurrency(tier.unitPrice)}
                       </p>
                       {isActive && (
-                        <span className="inline-block mt-0.5 text-[9px] text-emerald-600 dark:text-emerald-400 font-bold uppercase">
-                          Applied
+                        <span className="inline-block mt-1 text-[9px] text-[#B3853E] dark:text-[#D8AB64] font-bold uppercase tracking-wider">
+                          Active Tier
                         </span>
                       )}
                     </div>
@@ -406,40 +411,57 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           )}
 
           {/* 3. ORDER / INVENTORY ACTION BOX */}
-          <div className="bg-slate-900 text-white p-5 sm:p-6 rounded-xl space-y-4 border border-slate-800 shadow-xs">
-            <div className="flex items-baseline justify-between border-b border-slate-800 pb-3">
+          <div className="bg-[#0F1A17] text-white p-6 rounded-2xl space-y-5 border border-[#212E28] shadow-lg">
+            {availability && !isOpen && (
+              <div className="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-1 text-xs text-amber-200">
+                <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                  <Clock className="w-4 h-4 text-amber-400" />
+                  <span>Ordering Service Temporarily Closed</span>
+                </div>
+                <p className="text-[11px] text-amber-200/90 leading-relaxed">
+                  {availability.closureMessage}
+                </p>
+                {availability.nextOpenTime && (
+                  <p className="text-[11px] font-semibold text-amber-300">
+                    Next Service Window: {availability.nextOpenTime}
+                  </p>
+                )}
+              </div>
+            )}
+
+            <div className="flex items-baseline justify-between border-b border-[#212E28] pb-4">
               <div>
-                <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                <p className="text-[10px] uppercase font-bold text-[#9BA59E] tracking-wider">
                   Wholesale Unit Price
                 </p>
-                <p className="text-xl font-bold text-amber-400 tabular-nums">
+                <p className="text-2xl font-bold text-[#D8AB64] tabular-nums font-mono">
                   {formatCurrency(currentUnitPrice)}
-                  <span className="text-xs font-normal text-slate-400 ml-1">/ unit</span>
+                  <span className="text-xs font-normal text-[#9BA59E] ml-1">/ unit</span>
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                <p className="text-[10px] uppercase font-bold text-[#9BA59E] tracking-wider">
                   Line Subtotal
                 </p>
-                <p className="text-lg font-bold text-white tabular-nums">
+                <p className="text-xl font-bold text-white tabular-nums font-mono">
                   {formatCurrency(lineTotal)}
                 </p>
               </div>
             </div>
 
             {availableUnits > 0 ? (
-              <div className="space-y-3.5">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <label className="text-xs font-semibold block text-slate-200">
+                    <label className="text-xs font-semibold block text-[#E8EFEA]">
                       Order Quantity (Min: {selectedVariant.minOrderQty} pcs)
                     </label>
-                    <span className="text-[11px] text-emerald-400 tabular-nums">
+                    <span className="text-[11px] text-emerald-400 tabular-nums font-mono">
                       {availableUnits} units available in live warehouse stock
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 bg-slate-800 p-1 rounded-lg border border-slate-700 self-start sm:self-auto">
+                  <div className="flex items-center gap-1.5 bg-[#18221D] p-1 rounded-xl border border-[#2B3B33] self-start sm:self-auto">
                     <button
                       onClick={() =>
                         setQuantity((q) =>
@@ -447,7 +469,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                         )
                       }
                       disabled={quantity <= selectedVariant.minOrderQty}
-                      className="w-7 h-7 rounded bg-slate-700 hover:bg-slate-600 flex items-center justify-center font-bold text-xs disabled:opacity-30 transition"
+                      className="w-8 h-8 rounded-lg bg-[#212E28] hover:bg-[#285C4D] flex items-center justify-center font-bold text-xs disabled:opacity-30 transition cursor-pointer"
                       aria-label="Decrease quantity"
                     >
                       -
@@ -461,7 +483,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                         const val = parseInt(e.target.value) || selectedVariant.minOrderQty;
                         setQuantity(val);
                       }}
-                      className="w-12 text-center bg-transparent text-white font-bold text-xs focus:outline-none tabular-nums"
+                      className="w-14 text-center bg-transparent text-white font-bold text-xs focus:outline-none tabular-nums font-mono"
                       aria-label="Order quantity"
                     />
                     <button
@@ -469,7 +491,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                         setQuantity((q) => Math.min(availableUnits, q + 1))
                       }
                       disabled={quantity >= availableUnits}
-                      className="w-7 h-7 rounded bg-slate-700 hover:bg-slate-600 flex items-center justify-center font-bold text-xs disabled:opacity-30 transition"
+                      className="w-8 h-8 rounded-lg bg-[#212E28] hover:bg-[#285C4D] flex items-center justify-center font-bold text-xs disabled:opacity-30 transition cursor-pointer"
                       aria-label="Increase quantity"
                     >
                       +
@@ -479,7 +501,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
                 {feedbackMessage && (
                   <div
-                    className={`p-2.5 rounded-lg text-xs flex items-center gap-2 ${
+                    className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
                       feedbackMessage.type === "success"
                         ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                         : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
@@ -489,18 +511,18 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                   <button
                     onClick={handleAddToBasket}
-                    className="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold text-xs rounded-lg transition flex items-center justify-center gap-2 shadow-2xs"
+                    className="w-full py-3 bg-[#B3853E] hover:bg-[#9E7332] text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
                   >
-                    <ShoppingCart className="w-3.5 h-3.5" />
+                    <ShoppingCart className="w-4 h-4" />
                     <span>Add to Wholesale Cart</span>
                   </button>
                   <Link
                     href="/cart"
                     onClick={handleAddToBasket}
-                    className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-lg transition flex items-center justify-center gap-2 border border-slate-700"
+                    className="w-full py-3 bg-[#18221D] hover:bg-[#212E28] text-white font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2 border border-[#2B3B33] cursor-pointer"
                   >
                     Review Order Request
                   </Link>
@@ -508,32 +530,32 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               </div>
             ) : (
               /* SOLD OUT / NOTIFY ME SECTION */
-              <div className="space-y-3">
-                <div className="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-xs text-rose-300">
+              <div className="space-y-3.5">
+                <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs text-rose-300">
                   This variant is currently SOLD OUT. Subscribe below for an automatic notification when new brand-sealed units arrive.
                 </div>
 
                 {!notifySubmitted ? (
-                  <form onSubmit={handleRestockSubmit} className="space-y-2">
+                  <form onSubmit={handleRestockSubmit} className="space-y-2.5">
                     <input
                       type="email"
                       required
                       placeholder="Enter dealer email for restock alert"
                       value={notifyEmail}
                       onChange={(e) => setNotifyEmail(e.target.value)}
-                      className="w-full bg-slate-800 text-white placeholder-slate-400 text-xs rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400"
+                      className="w-full bg-[#18221D] text-white placeholder-[#9BA59E] text-xs rounded-xl px-3.5 py-2.5 border border-[#2B3B33] focus:outline-none focus:border-[#B3853E]"
                     />
                     <button
                       type="submit"
-                      className="w-full py-2 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold text-xs rounded-lg transition flex items-center justify-center gap-1.5"
+                      className="w-full py-2.5 bg-[#B3853E] hover:bg-[#9E7332] text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
                     >
                       <Bell className="w-3.5 h-3.5" />
                       <span>Notify Me When Back in Stock</span>
                     </button>
                   </form>
                 ) : (
-                  <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs text-emerald-300 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-300 flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
                     <span>Restock alert active. You will receive an email as soon as fresh units arrive.</span>
                   </div>
                 )}
@@ -544,32 +566,32 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       </div>
 
       {/* TECHNICAL SPECIFICATIONS TABLE */}
-      <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 space-y-5 shadow-2xs">
+      <section className="bg-white dark:bg-[#18221D] rounded-2xl border border-[#DDE3DC] dark:border-[#212E28] p-6 sm:p-8 space-y-6 shadow-2xs">
         <div>
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
+          <h2 className="text-lg sm:text-xl font-bold text-[#17231E] dark:text-[#E8EFEA]">
             Technical Specifications
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs sm:text-sm text-[#69736D] dark:text-[#9BA59E] mt-1">
             Verified hardware specifications for dealer inspection and retail customer advisory
           </p>
         </div>
 
-        <div className="space-y-5 divide-y divide-slate-100 dark:divide-slate-800">
+        <div className="space-y-6 divide-y divide-[#DDE3DC] dark:divide-[#212E28]">
           {Object.entries(specsByGroup).map(([group, specs]) => (
-            <div key={group} className="pt-4 first:pt-0">
-              <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-2.5">
+            <div key={group} className="pt-5 first:pt-0">
+              <h3 className="font-bold text-xs uppercase tracking-wider text-[#173B35] dark:text-[#D8AB64] mb-3">
                 {group}
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1.5 text-xs">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-xs">
                 {specs.map((spec) => (
                   <div
                     key={spec.id}
-                    className="flex items-baseline justify-between py-1 border-b border-slate-100 dark:border-slate-800/60"
+                    className="flex items-baseline justify-between py-1.5 border-b border-[#EAECE8] dark:border-[#212E28]/60"
                   >
-                    <span className="font-medium text-slate-500 dark:text-slate-400">
+                    <span className="font-medium text-[#69736D] dark:text-[#9BA59E]">
                       {spec.key}
                     </span>
-                    <span className="font-semibold text-slate-900 dark:text-slate-100 text-right ml-4">
+                    <span className="font-semibold text-[#17231E] dark:text-[#E8EFEA] text-right ml-4">
                       {spec.value}
                     </span>
                   </div>

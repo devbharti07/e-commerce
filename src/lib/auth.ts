@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
 
 const SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "jagdamba_wholesale_super_secret_jwt_key_2026_secured"
@@ -57,18 +58,46 @@ export class AuthError extends Error {
 }
 
 export async function requireUser(): Promise<TokenPayload> {
-  const user = await getCurrentUser();
+  const session = await getCurrentUser();
+  if (!session || !session.userId) {
+    throw new AuthError("Unauthorized", 401);
+  }
+
+  // Authoritative server-side verification against PostgreSQL database
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      name: true,
+      approvalStatus: true,
+      isSuspended: true,
+    },
+  });
+
   if (!user) {
     throw new AuthError("Unauthorized", 401);
   }
-  return user;
+
+  if (user.isSuspended || user.approvalStatus === "SUSPENDED") {
+    throw new AuthError("Forbidden: Retailer account is suspended", 403);
+  }
+
+  if (user.role === "CUSTOMER" && user.approvalStatus !== "APPROVED") {
+    throw new AuthError("Forbidden: Account is awaiting admin approval", 403);
+  }
+
+  return {
+    userId: user.id,
+    email: user.email,
+    role: user.role as "CUSTOMER" | "OWNER",
+    name: user.name,
+  };
 }
 
 export async function requireOwner(): Promise<TokenPayload> {
-  const user = await getCurrentUser();
-  if (!user) {
-    throw new AuthError("Unauthorized", 401);
-  }
+  const user = await requireUser();
   if (user.role !== "OWNER") {
     throw new AuthError("Forbidden: Owner access required", 403);
   }

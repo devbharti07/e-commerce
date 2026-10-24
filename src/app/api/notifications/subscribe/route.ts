@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const SubscribeSchema = z.object({
   variantId: z.string().min(1),
@@ -10,6 +11,15 @@ const SubscribeSchema = z.object({
 
 export async function POST(req: Request) {
   try {
+    const clientIp = getClientIp(req);
+    const rateLimit = checkRateLimit(`restock:ip:${clientIp}`, 10, 5 * 60 * 1000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Too many subscription requests. Please try again later." },
+        { status: 429, headers: { "Retry-After": rateLimit.retryAfterSeconds.toString() } }
+      );
+    }
+
     const body = await req.json();
     const result = SubscribeSchema.safeParse(body);
 
@@ -18,6 +28,14 @@ export async function POST(req: Request) {
     }
 
     const { variantId, email, phone } = result.data;
+
+    // Verify variant exists
+    const variant = await prisma.productVariant.findUnique({
+      where: { id: variantId },
+    });
+    if (!variant) {
+      return NextResponse.json({ error: "Product variant not found" }, { status: 404 });
+    }
 
     // Check if active subscription already exists
     const existing = await prisma.notificationSubscription.findFirst({

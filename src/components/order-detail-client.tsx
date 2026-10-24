@@ -14,6 +14,9 @@ import {
   Check,
   X,
   FileEdit,
+  ShieldCheck,
+  MapPin,
+  Clock,
 } from "lucide-react";
 
 interface AddressSnapshot {
@@ -258,47 +261,47 @@ export function OrderDetailClient({
     switch (st) {
       case "REQUESTED":
         return {
-          bg: "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border-blue-200 dark:border-blue-800",
-          label: "Requested (Awaiting Dealer Review)",
+          bg: "bg-[#B3853E]/10 text-[#B3853E] dark:text-[#D8AB64] border-[#B3853E]/30",
+          label: "Requested (Awaiting Review)",
         };
       case "AWAITING_CUSTOMER_APPROVAL":
         return {
-          bg: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border-amber-200 dark:border-amber-800",
+          bg: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30",
           label: "Awaiting Customer Approval",
         };
       case "CONFIRMED":
         return {
-          bg: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
-          label: "Dealer Confirmed (Stock Allocated)",
+          bg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+          label: "Confirmed (Stock Allocated)",
         };
       case "PROCESSING":
         return {
-          bg: "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800",
+          bg: "bg-[#173B35]/15 text-[#173B35] dark:text-[#D8AB64] border-[#173B35]/30",
           label: "Processing in Warehouse",
         };
       case "READY_FOR_DISPATCH":
         return {
-          bg: "bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300 border-sky-200 dark:border-sky-800",
-          label: "Ready for Dispatch / Freight",
+          bg: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20",
+          label: "Ready for Dispatch",
         };
       case "DELIVERED":
         return {
-          bg: "bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300 border-teal-200 dark:border-teal-800",
-          label: "Delivered to Retail Outlet",
+          bg: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
+          label: "Delivered to Retailer",
         };
       case "CANCELLED":
         return {
-          bg: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700",
+          bg: "bg-slate-200/80 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700",
           label: "Order Cancelled",
         };
       case "REJECTED":
         return {
-          bg: "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border-rose-200 dark:border-rose-800",
+          bg: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20",
           label: "Dealer Rejected",
         };
       default:
         return {
-          bg: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700",
+          bg: "bg-[#EAECE8] text-[#17231E] dark:bg-[#18221D] dark:text-white border-[#DDE3DC]",
           label: st,
         };
     }
@@ -307,28 +310,28 @@ export function OrderDetailClient({
   const statusBadge = getStatusBadge(status);
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 bg-[#F6F5F0] dark:bg-[#111916] text-[#17231E] dark:text-[#E8EFEA] min-h-[85vh] transition-colors">
       {/* Back to Orders Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#DDE3DC] dark:border-[#212E28]">
+        <div className="flex items-center gap-3.5">
           <Link
             href="/orders"
-            className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 transition"
+            className="p-2.5 rounded-xl bg-white dark:bg-[#18221D] border border-[#DDE3DC] dark:border-[#212E28] hover:border-[#173B35] text-[#17231E] dark:text-[#E8EFEA] transition shadow-2xs cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
-            <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-semibold text-slate-900 dark:text-white font-mono">
+            <div className="flex items-center gap-3">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-[#17231E] dark:text-[#E8EFEA] font-mono">
                 Order #{order.orderNumber}
               </h1>
               <span
-                className={`text-[11px] font-medium px-2.5 py-0.5 rounded-md border ${statusBadge.bg}`}
+                className={`text-[11px] font-bold px-3 py-0.5 rounded-full border ${statusBadge.bg}`}
               >
                 {statusBadge.label}
               </span>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-[#69736D] dark:text-[#9BA59E] mt-1">
               Placed on {formatDateTime(order.createdAt)} • Retailer:{" "}
               {order.customer.businessName || order.customer.name}
             </p>
@@ -337,12 +340,12 @@ export function OrderDetailClient({
 
         {/* OWNER ACTIONS (Confirm / Reject / Propose Revision / Dispatch) */}
         {currentUserRole === "OWNER" && (
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2.5">
             {(status === "REQUESTED" || status === "UNDER_REVIEW" || status === "AWAITING_CUSTOMER_APPROVAL") && (
               <>
                 <button
                   onClick={() => setShowRevisionForm(!showRevisionForm)}
-                  className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-medium text-xs rounded-lg shadow-xs transition flex items-center gap-1.5"
+                  className="px-4 py-2 bg-[#B3853E] hover:bg-[#9E7332] text-white font-bold text-xs rounded-xl shadow-2xs transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <FileEdit className="w-3.5 h-3.5" />
                   {showRevisionForm ? "Close Revision Form" : "Propose Revision"}
@@ -350,14 +353,14 @@ export function OrderDetailClient({
                 <button
                   onClick={() => handleUpdateStatus("CONFIRMED")}
                   disabled={statusActionLoading}
-                  className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs rounded-lg shadow-xs transition"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-2xs transition cursor-pointer disabled:opacity-50"
                 >
                   Accept & Allocate Stock
                 </button>
                 <button
                   onClick={() => handleUpdateStatus("REJECTED")}
                   disabled={statusActionLoading}
-                  className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs rounded-lg shadow-xs transition"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-2xs transition cursor-pointer disabled:opacity-50"
                 >
                   Reject Request
                 </button>
@@ -368,7 +371,7 @@ export function OrderDetailClient({
               <button
                 onClick={() => handleUpdateStatus("PROCESSING")}
                 disabled={statusActionLoading}
-                className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs rounded-lg shadow-xs transition"
+                className="px-4 py-2 bg-[#173B35] hover:bg-[#285C4D] text-white font-bold text-xs rounded-xl shadow-2xs transition cursor-pointer"
               >
                 Move to Warehouse Processing
               </button>
@@ -378,7 +381,7 @@ export function OrderDetailClient({
               <button
                 onClick={() => handleUpdateStatus("READY_FOR_DISPATCH")}
                 disabled={statusActionLoading}
-                className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 font-medium text-xs rounded-lg shadow-xs transition"
+                className="px-4 py-2 bg-[#173B35] hover:bg-[#285C4D] text-white font-bold text-xs rounded-xl shadow-2xs transition cursor-pointer"
               >
                 Mark Ready for Dispatch
               </button>
@@ -388,7 +391,7 @@ export function OrderDetailClient({
               <button
                 onClick={() => handleUpdateStatus("DELIVERED")}
                 disabled={statusActionLoading}
-                className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs rounded-lg shadow-xs transition"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-2xs transition cursor-pointer"
               >
                 Confirm Verified Delivery
               </button>
@@ -401,7 +404,7 @@ export function OrderDetailClient({
           <button
             onClick={() => handleUpdateStatus("CANCELLED")}
             disabled={statusActionLoading}
-            className="px-3 py-1.5 border border-rose-300 dark:border-rose-900 text-rose-600 dark:text-rose-400 font-medium text-xs rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition"
+            className="px-4 py-2 border border-rose-300 dark:border-rose-900 text-rose-600 dark:text-rose-400 font-semibold text-xs rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/30 transition cursor-pointer"
           >
             Cancel Order Request
           </button>
@@ -412,21 +415,21 @@ export function OrderDetailClient({
       {currentUserRole === "OWNER" && showRevisionForm && (
         <form
           onSubmit={handleProposeRevision}
-          className="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/60 p-5 rounded-xl space-y-4 shadow-xs"
+          className="bg-[#B3853E]/10 dark:bg-[#B3853E]/20 border border-[#B3853E]/30 p-6 rounded-2xl space-y-4 shadow-2xs"
         >
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-xs text-amber-900 dark:text-amber-200 flex items-center gap-2">
-              <FileEdit className="w-4 h-4 text-amber-600" />
+            <h3 className="font-bold text-xs uppercase tracking-wider text-[#17231E] dark:text-[#E8EFEA] flex items-center gap-2">
+              <FileEdit className="w-4 h-4 text-[#B3853E]" />
               Propose Order Revision to Customer
             </h3>
-            <span className="text-xs text-amber-700 dark:text-amber-400 tabular-nums">
+            <span className="text-xs text-[#17231E] dark:text-[#E8EFEA] font-mono tabular-nums">
               Current Total: {formatCurrency(totalAmount)}
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="font-medium block text-slate-700 dark:text-slate-300 mb-1">
+              <label className="font-semibold block text-[#17231E] dark:text-[#E8EFEA] mb-1">
                 Summary of Proposed Changes *
               </label>
               <input
@@ -435,12 +438,12 @@ export function OrderDetailClient({
                 placeholder="e.g. Volume discount of ₹1,480 applied for direct payment term"
                 value={revisionSummary}
                 onChange={(e) => setRevisionSummary(e.target.value)}
-                className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="w-full bg-white dark:bg-[#18221D] border border-[#DDE3DC] dark:border-[#212E28] rounded-xl px-3.5 py-2.5 text-[#17231E] dark:text-white focus:outline-none focus:ring-1 focus:ring-[#173B35]"
               />
             </div>
 
             <div>
-              <label className="font-medium block text-slate-700 dark:text-slate-300 mb-1">
+              <label className="font-semibold block text-[#17231E] dark:text-[#E8EFEA] mb-1">
                 Revised Total Amount (in ₹ INR) *
               </label>
               <input
@@ -449,7 +452,7 @@ export function OrderDetailClient({
                 required
                 value={revisionAmountRupees}
                 onChange={(e) => setRevisionAmountRupees(e.target.value)}
-                className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500 font-semibold tabular-nums"
+                className="w-full bg-white dark:bg-[#18221D] border border-[#DDE3DC] dark:border-[#212E28] rounded-xl px-3.5 py-2.5 text-[#17231E] dark:text-white focus:outline-none focus:ring-1 focus:ring-[#173B35] font-semibold tabular-nums font-mono"
               />
             </div>
           </div>
@@ -458,14 +461,14 @@ export function OrderDetailClient({
             <button
               type="button"
               onClick={() => setShowRevisionForm(false)}
-              className="px-3.5 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:underline"
+              className="px-4 py-2 text-xs font-semibold text-[#69736D] hover:underline cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submittingRevision}
-              className="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 font-medium text-xs rounded-lg transition disabled:opacity-50"
+              className="px-5 py-2 bg-[#173B35] hover:bg-[#285C4D] text-white font-semibold text-xs rounded-xl transition disabled:opacity-50 cursor-pointer shadow-2xs"
             >
               {submittingRevision ? "Submitting Revision..." : "Send Revision for Customer Approval"}
             </button>
@@ -475,27 +478,27 @@ export function OrderDetailClient({
 
       {/* CUSTOMER: Pending Revision Alert with Action Buttons */}
       {currentUserRole === "CUSTOMER" && pendingRevision && (
-        <div className="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-300 dark:border-amber-800 rounded-xl p-4 sm:p-5 space-y-4 shadow-xs">
+        <div className="bg-[#B3853E]/10 dark:bg-[#B3853E]/20 border border-[#B3853E]/30 rounded-2xl p-5 sm:p-6 space-y-4 shadow-2xs">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-900/50 text-amber-900 dark:text-amber-200 text-xs font-medium">
-                <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#B3853E] text-white text-xs font-bold">
+                <AlertTriangle className="w-3.5 h-3.5" />
                 Action Required: Dealer Proposed an Order Revision
               </span>
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-white mt-2">
+              <h3 className="text-sm font-bold text-[#17231E] dark:text-white mt-2.5">
                 Revision #{pendingRevision.revisionNumber}: {pendingRevision.changesSummary}
               </h3>
-              <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
-                Previous Total: <span className="line-through tabular-nums">{formatCurrency(pendingRevision.previousTotal)}</span>{" "}
-                ➔ Revised Total: <strong className="text-emerald-700 dark:text-emerald-400 text-xs tabular-nums">{formatCurrency(pendingRevision.newTotal)}</strong>
+              <p className="text-xs text-[#69736D] dark:text-[#9BA59E] mt-1">
+                Previous Total: <span className="line-through tabular-nums font-mono">{formatCurrency(pendingRevision.previousTotal)}</span>{" "}
+                ➔ Revised Total: <strong className="text-emerald-700 dark:text-emerald-400 text-xs tabular-nums font-mono">{formatCurrency(pendingRevision.newTotal)}</strong>
               </p>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2.5 shrink-0">
               <button
                 onClick={() => handleReviewRevision(pendingRevision.id, "ACCEPT")}
                 disabled={statusActionLoading}
-                className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs rounded-lg shadow-xs flex items-center gap-1.5 transition"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-2xs flex items-center gap-1.5 transition cursor-pointer"
               >
                 <Check className="w-3.5 h-3.5" />
                 Approve Revision
@@ -503,7 +506,7 @@ export function OrderDetailClient({
               <button
                 onClick={() => handleReviewRevision(pendingRevision.id, "REJECT")}
                 disabled={statusActionLoading}
-                className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs rounded-lg shadow-xs flex items-center gap-1.5 transition"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-2xs flex items-center gap-1.5 transition cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
                 Decline
@@ -513,31 +516,31 @@ export function OrderDetailClient({
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Order Items, Revisions History, & Shipping Address Snapshot */}
         <div className="lg:col-span-7 space-y-6">
           {/* Order Items Table */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 space-y-4 shadow-xs">
-            <h2 className="font-semibold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-              <FileText className="w-4 h-4 text-slate-500" />
+          <div className="bg-white dark:bg-[#18221D] rounded-2xl border border-[#DDE3DC] dark:border-[#212E28] p-5 sm:p-6 space-y-4 shadow-2xs">
+            <h2 className="font-bold text-sm uppercase tracking-wider text-[#17231E] dark:text-[#E8EFEA] flex items-center gap-2">
+              <FileText className="w-4 h-4 text-[#B3853E]" />
               Wholesale Order Line Items
             </h2>
 
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-[#DDE3DC] dark:divide-[#212E28]">
               {order.items.map((item) => (
-                <div key={item.id} className="py-3 flex items-center justify-between">
+                <div key={item.id} className="py-3.5 flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium text-xs text-slate-900 dark:text-white">
+                    <h4 className="font-bold text-xs sm:text-sm text-[#17231E] dark:text-white">
                       {item.productName}
                     </h4>
-                    <p className="text-[11px] text-slate-500">{item.variantName}</p>
-                    <p className="text-[10px] font-mono text-slate-400">SKU: {item.sku}</p>
+                    <p className="text-[11px] text-[#69736D] dark:text-[#9BA59E]">{item.variantName}</p>
+                    <p className="text-[10px] font-mono text-[#69736D]">SKU: {item.sku}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-slate-500 tabular-nums">
+                    <p className="text-xs text-[#69736D] tabular-nums font-mono">
                       {item.quantity} x {formatCurrency(item.unitPrice)}
                     </p>
-                    <p className="text-xs font-semibold tabular-nums text-slate-900 dark:text-white mt-0.5">
+                    <p className="text-sm font-bold tabular-nums font-mono text-[#17231E] dark:text-white mt-0.5">
                       {formatCurrency(item.lineTotal)}
                     </p>
                   </div>
@@ -546,59 +549,59 @@ export function OrderDetailClient({
             </div>
 
             {/* Totals */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2 text-xs">
-              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+            <div className="pt-4 border-t border-[#DDE3DC] dark:border-[#212E28] space-y-2.5 text-xs">
+              <div className="flex justify-between text-[#69736D] dark:text-[#9BA59E]">
                 <span>Wholesale Subtotal</span>
-                <span className="font-semibold tabular-nums text-slate-900 dark:text-white">
+                <span className="font-bold tabular-nums font-mono text-[#17231E] dark:text-white">
                   {formatCurrency(totalAmount)}
                 </span>
               </div>
-              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+              <div className="flex justify-between text-[#69736D] dark:text-[#9BA59E]">
                 <span>GST (18% Input Credit)</span>
                 <span>Included in invoice</span>
               </div>
-              <div className="flex justify-between font-bold text-sm text-slate-900 dark:text-white pt-2 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex justify-between font-extrabold text-base text-[#17231E] dark:text-white pt-2.5 border-t border-[#DDE3DC] dark:border-[#212E28]">
                 <span>Final Order Total</span>
-                <span className="tabular-nums">{formatCurrency(totalAmount)}</span>
+                <span className="tabular-nums font-mono text-[#B3853E] dark:text-[#D8AB64]">{formatCurrency(totalAmount)}</span>
               </div>
             </div>
           </div>
 
           {/* Revisions History Log (if any revisions exist) */}
           {revisions.length > 0 && (
-            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 space-y-4 shadow-xs">
-              <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                <History className="w-4 h-4 text-slate-500" />
+            <div className="bg-white dark:bg-[#18221D] rounded-2xl border border-[#DDE3DC] dark:border-[#212E28] p-5 sm:p-6 space-y-4 shadow-2xs">
+              <h3 className="font-bold text-xs tracking-wider uppercase text-[#17231E] dark:text-[#E8EFEA] flex items-center gap-2">
+                <History className="w-4 h-4 text-[#B3853E]" />
                 Order Revisions History
               </h3>
 
-              <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+              <div className="divide-y divide-[#DDE3DC] dark:divide-[#212E28] text-xs">
                 {revisions.map((rev) => (
                   <div key={rev.id} className="py-3 flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-slate-900 dark:text-white">
+                        <span className="font-bold text-[#17231E] dark:text-white">
                           Revision #{rev.revisionNumber}
                         </span>
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-medium border ${
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
                             rev.status === "ACCEPTED"
-                              ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
+                              ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
                               : rev.status === "REJECTED"
-                              ? "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800"
-                              : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800"
+                              ? "bg-rose-500/10 text-rose-600 border-rose-500/20"
+                              : "bg-[#B3853E]/10 text-[#B3853E] border-[#B3853E]/30"
                           }`}
                         >
                           {rev.status}
                         </span>
                       </div>
-                      <p className="text-slate-500 mt-1">{rev.changesSummary}</p>
+                      <p className="text-[#69736D] dark:text-[#9BA59E] mt-1">{rev.changesSummary}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-slate-400 line-through tabular-nums">
+                      <p className="text-[#69736D] line-through tabular-nums font-mono">
                         {formatCurrency(rev.previousTotal)}
                       </p>
-                      <p className="font-semibold tabular-nums text-slate-900 dark:text-white">
+                      <p className="font-bold tabular-nums font-mono text-[#17231E] dark:text-white">
                         {formatCurrency(rev.newTotal)}
                       </p>
                     </div>
@@ -609,13 +612,13 @@ export function OrderDetailClient({
           )}
 
           {/* Delivery Details Snapshot */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 space-y-3 shadow-xs">
-            <h3 className="font-semibold text-xs tracking-wider uppercase text-slate-700 dark:text-slate-300 flex items-center gap-2">
-              <Truck className="w-4 h-4 text-slate-500" />
+          <div className="bg-white dark:bg-[#18221D] rounded-2xl border border-[#DDE3DC] dark:border-[#212E28] p-5 sm:p-6 space-y-3 shadow-2xs">
+            <h3 className="font-bold text-xs tracking-wider uppercase text-[#17231E] dark:text-[#E8EFEA] flex items-center gap-2">
+              <Truck className="w-4 h-4 text-[#B3853E]" />
               Shipping Destination & Transit Instructions
             </h3>
-            <div className="text-xs text-slate-600 dark:text-slate-300 space-y-1">
-              <p className="font-semibold text-slate-900 dark:text-white">
+            <div className="text-xs text-[#69736D] dark:text-[#9BA59E] space-y-1 leading-relaxed">
+              <p className="font-bold text-[#17231E] dark:text-white">
                 {address.fullName} ({address.mobileNumber})
               </p>
               <p>
@@ -626,12 +629,12 @@ export function OrderDetailClient({
                 {address.city}, {address.state} - {address.pinCode}
               </p>
               {address.instructions && (
-                <p className="pt-1.5 text-amber-700 dark:text-amber-400 italic">
+                <p className="pt-1.5 text-[#B3853E] dark:text-[#D8AB64] italic">
                   Note: {address.instructions}
                 </p>
               )}
               {address.latitude && address.longitude && (
-                <p className="text-[10px] text-slate-400 font-mono pt-1">
+                <p className="text-[10px] text-[#69736D] font-mono pt-1">
                   GPS Coordinates: {address.latitude.toFixed(4)}, {address.longitude.toFixed(4)}
                 </p>
               )}
@@ -641,27 +644,27 @@ export function OrderDetailClient({
 
         {/* Right Column: Persistent Order Dealer Chat */}
         <div className="lg:col-span-5">
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col h-[480px] sm:h-[560px] shadow-xs overflow-hidden">
+          <div className="bg-white dark:bg-[#18221D] rounded-2xl border border-[#DDE3DC] dark:border-[#212E28] flex flex-col h-[480px] sm:h-[560px] shadow-2xs overflow-hidden">
             {/* Chat Header */}
-            <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-slate-500" />
+            <div className="p-4 bg-[#EAECE8]/70 dark:bg-[#212E28] border-b border-[#DDE3DC] dark:border-[#212E28] flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <MessageSquare className="w-4 h-4 text-[#B3853E]" />
                 <div>
-                  <h3 className="font-semibold text-xs text-slate-900 dark:text-white">
+                  <h3 className="font-bold text-xs text-[#17231E] dark:text-white">
                     Order Discussion Desk
                   </h3>
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-[10px] text-[#69736D] dark:text-[#9BA59E]">
                     Direct conversation between Retailer & Dealer (auto-synced)
                   </p>
                 </div>
               </div>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Live Polling Sync Active" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" title="Live Polling Sync Active" />
             </div>
 
             {/* Chat Messages Log */}
-            <div ref={chatScrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 text-xs">
+            <div ref={chatScrollRef} className="flex-1 overflow-y-auto p-4 space-y-3.5 text-xs">
               {messages.length === 0 ? (
-                <div className="text-center py-12 text-slate-400 text-xs">
+                <div className="text-center py-16 text-[#69736D] text-xs">
                   <p>No messages yet. Send a note to discuss terms or delivery schedule.</p>
                 </div>
               ) : (
@@ -674,18 +677,18 @@ export function OrderDetailClient({
                       key={msg.id}
                       className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
                     >
-                      <div className="flex items-center gap-1.5 mb-1 text-[10px] text-slate-400">
-                        <span className="font-medium text-slate-600 dark:text-slate-300">
+                      <div className="flex items-center gap-1.5 mb-1 text-[10px] text-[#69736D]">
+                        <span className="font-semibold text-[#17231E] dark:text-[#E8EFEA]">
                           {isOwnerSender ? "Jagdamba Desk" : msg.sender?.name || "Retailer"}
                         </span>
                         <span>•</span>
                         <span>{formatDateTime(msg.createdAt)}</span>
                       </div>
                       <div
-                        className={`p-2.5 rounded-lg max-w-[85%] text-xs leading-relaxed ${
+                        className={`p-3 rounded-xl max-w-[85%] text-xs leading-relaxed ${
                           isMe
-                            ? "bg-slate-900 text-white rounded-br-none dark:bg-slate-100 dark:text-slate-900"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white rounded-bl-none"
+                            ? "bg-[#173B35] text-white rounded-br-none shadow-2xs"
+                            : "bg-[#EAECE8] dark:bg-[#212E28] text-[#17231E] dark:text-white rounded-bl-none"
                         }`}
                       >
                         {msg.content}
@@ -699,19 +702,19 @@ export function OrderDetailClient({
             {/* Message Input Box */}
             <form
               onSubmit={handleSendMessage}
-              className="p-2.5 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2"
+              className="p-3 bg-[#EAECE8]/70 dark:bg-[#212E28] border-t border-[#DDE3DC] dark:border-[#212E28] flex items-center gap-2"
             >
               <input
                 type="text"
                 placeholder="Type your message to dealer..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-400"
+                className="flex-1 bg-white dark:bg-[#18221D] border border-[#DDE3DC] dark:border-[#285C4D] rounded-xl px-3.5 py-2 text-xs text-[#17231E] dark:text-white focus:outline-none focus:ring-1 focus:ring-[#173B35]"
               />
               <button
                 type="submit"
                 disabled={sending || !newMessage.trim()}
-                className="p-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 rounded-lg disabled:opacity-50 transition"
+                className="p-2.5 bg-[#173B35] hover:bg-[#285C4D] text-white rounded-xl disabled:opacity-50 transition cursor-pointer shadow-2xs"
               >
                 <Send className="w-3.5 h-3.5" />
               </button>

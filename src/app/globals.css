@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss" source(none);
 @source "..";
 
@@ -5,53 +6,63 @@
 
 @layer base {
   :root {
-    --background: #f8fafc;
-    --surface: #ffffff;
-    --surface-elevated: #f1f5f9;
-    --surface-muted: #f8fafc;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #64748b;
-    --border: #e2e8f0;
-    --border-subtle: #f1f5f9;
-    --primary: #0f172a;
-    --primary-foreground: #ffffff;
-    --accent: #2563eb;
-    --accent-foreground: #ffffff;
-    --brand-navy: #0f172a;
-    --brand-gold: #d97706;
-    --brand-gold-subtle: #fef3c7;
-    --success: #16a34a;
-    --success-subtle: #dcfce7;
-    --warning: #d97706;
-    --warning-subtle: #fef3c7;
-    --error: #dc2626;
-    --error-subtle: #fee2e2;
+    --background: #F6F5F0;
+    --surface: #FFFFFF;
+    --surface-elevated: #FFFFFF;
+    --surface-muted: #ECEFE9;
+    --text-primary: #17231E;
+    --text-secondary: #3D4E45;
+    --text-muted: #66786F;
+    --border: #D5DFD7;
+    --border-subtle: #E7EDE8;
+    --primary: #173B35;
+    --primary-hover: #1F4D45;
+    --primary-foreground: #FFFFFF;
+    --secondary: #285C4D;
+    --secondary-foreground: #FFFFFF;
+    --accent: #B3853E;
+    --accent-hover: #9B7233;
+    --accent-foreground: #FFFFFF;
+    --accent-subtle: #F8F3EA;
+    --brand-forest: #173B35;
+    --brand-brass: #B3853E;
+    --brand-brass-subtle: #F8F3EA;
+    --success: #1B6A47;
+    --success-subtle: #E6F4ED;
+    --warning: #B45309;
+    --warning-subtle: #FEF3C7;
+    --error: #B91C1C;
+    --error-subtle: #FEE2E2;
   }
 
   .dark {
-    --background: #090d16;
-    --surface: #0f172a;
-    --surface-elevated: #1e293b;
-    --surface-muted: #131c31;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --border: #1e293b;
-    --border-subtle: #172033;
-    --primary: #f8fafc;
-    --primary-foreground: #0f172a;
-    --accent: #3b82f6;
-    --accent-foreground: #ffffff;
-    --brand-navy: #f8fafc;
-    --brand-gold: #f59e0b;
-    --brand-gold-subtle: #78350f;
-    --success: #22c55e;
-    --success-subtle: #14532d;
-    --warning: #f59e0b;
-    --warning-subtle: #78350f;
-    --error: #ef4444;
-    --error-subtle: #7f1d1d;
+    --background: #111916;
+    --surface: #18221D;
+    --surface-elevated: #212E28;
+    --surface-muted: #141E19;
+    --text-primary: #E8EFEA;
+    --text-secondary: #A3B5AA;
+    --text-muted: #788B80;
+    --border: #26362E;
+    --border-subtle: #1E2B25;
+    --primary: #2D6A5A;
+    --primary-hover: #367C6B;
+    --primary-foreground: #FFFFFF;
+    --secondary: #3A564C;
+    --secondary-foreground: #E8EFEA;
+    --accent: #D8AB64;
+    --accent-hover: #E2BC7A;
+    --accent-foreground: #111916;
+    --accent-subtle: #2A2214;
+    --brand-forest: #2D6A5A;
+    --brand-brass: #D8AB64;
+    --brand-brass-subtle: #2A2214;
+    --success: #22C55E;
+    --success-subtle: #133824;
+    --warning: #F59E0B;
+    --warning-subtle: #45270A;
+    --error: #EF4444;
+    --error-subtle: #451212;
   }
 }
 
@@ -70,7 +81,7 @@ html {
 body {
   background-color: var(--background);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   min-height: 100vh;
   margin: 0;
   -webkit-font-smoothing: antialiased;
@@ -117,3 +128,97 @@ h1, h2, h3, h4, h5, h6, p, span, a, label, td, th {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   UI/UX PRO MAX - HERO ENTRANCE & ACCENT KEYFRAMES
+   Smooth GPU-accelerated transforms & opacity, zero layout shifts
+   ────────────────────────────────────────────────────────────────────────── */
+@keyframes heroEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroPhoneReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes pulseSubtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-hero-entrance {
+  animation: heroEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-hero-delay-1 {
+  animation: heroEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.12s forwards;
+  opacity: 0;
+}
+
+.animate-hero-delay-2 {
+  animation: heroEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.24s forwards;
+  opacity: 0;
+}
+
+.animate-phone-reveal {
+  animation: heroPhoneReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+  opacity: 0;
+}
+
+.animate-float-gentle {
+  animation: floatGentle 5s ease-in-out infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulseSubtle 3s ease-in-out infinite;
+}
+
+/* Respect user preferences for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-hero-entrance,
+  .animate-hero-delay-1,
+  .animate-hero-delay-2,
+  .animate-phone-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .animate-float-gentle,
+  .animate-pulse-subtle {
+    animation: none !important;
+  }
+}
+
